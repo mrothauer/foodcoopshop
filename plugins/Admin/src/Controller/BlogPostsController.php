@@ -6,7 +6,6 @@ use Cake\Core\Configure;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Datasource\Exception\RecordNotFoundException;
-use Cake\Log\Log;
 
 /**
  * BlogPostsController
@@ -189,9 +188,7 @@ class BlogPostsController extends AdminAppController
             ->where(['active' => 1])
             ->contain(['AddressCustomers'])
             ->toList();
-
-        $emailTO = Configure::read('appDb.FCS_APP_EMAIL');
-
+            
         $this->BlogPost = TableRegistry::getTableLocator()->get('BlogPosts');
 
         $blogPost = $this->BlogPost->find('all', [
@@ -204,16 +201,14 @@ class BlogPostsController extends AdminAppController
             ]
         ])->first();
 
-        Log::write('error',$query);
-
-        $url = Configure::read('app.cakeServerName') . Configure::read('app.slugHelper')->getBlogPostDetail($blogPostID, $blogPost->title);
-
         $email = new AppEmail();
         $email->setTemplate('Admin.send_blog_post')
-            ->setTo($emailTO)
+        ->setTo(Configure::read('appDb.FCS_APP_EMAIL'))
             ->setSubject('Neuer Blog-Artikel')
-            ->setBcc(array_column($query, "email"))
-            ->setViewVars(['link' => $url])
+            ->setBcc(array_column($query, 'email'))
+            ->setViewVars([
+                'link' => Configure::read('app.cakeServerName') . Configure::read('app.slugHelper')->getBlogPostDetail($blogPostID, $blogPost->title)
+            ])
             ->send();
 
         $this->redirect('/');

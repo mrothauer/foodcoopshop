@@ -83,20 +83,21 @@ class BlogPostsControllerTest extends AppCakeTestCase
 
         $this->EmailLog = TableRegistry::getTableLocator()->get('EmailLogs');
         $emailLogs = $this->EmailLog->find('all')->toArray();
-
-        $bcc = [Configure::read('test.loginEmailCustomer') ,
-            Configure::read('test.loginEmailAdmin'),
-            Configure::read('test.loginEmailSuperadmin')];
-
-        $this->assertEmailLogs($emailLogs[0],
+        $this->assertEmailLogs(
+            $emailLogs[0],
             'Neuer Blog-Artikel',
             [],
             [Cake\Core\Configure::read('appDb.FCS_APP_EMAIL')],
             [],
-            $bcc);
+            [
+                Configure::read('test.loginEmailCustomer') ,
+                Configure::read('test.loginEmailAdmin'),
+                Configure::read('test.loginEmailSuperadmin')
+            ]
+        );
     }
 
-    public function testSendBlogPostAsManufaturer() {
+    public function testSendBlogPostAsManufacturer() {
         $this->loginAsMeatManufacturer();
         $this->browser->get('/admin/blog-posts/sendBlogPost/2');
         $this->assertAccessDeniedWithRedirectToLoginForm();
