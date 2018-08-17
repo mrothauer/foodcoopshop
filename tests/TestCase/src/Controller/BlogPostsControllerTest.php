@@ -15,6 +15,7 @@
  */
 use App\Test\TestCase\AppCakeTestCase;
 use Cake\ORM\TableRegistry;
+use Cake\Core\Configure;
 
 class BlogPostsControllerTest extends AppCakeTestCase
 {
@@ -75,17 +76,24 @@ class BlogPostsControllerTest extends AppCakeTestCase
         $this->assertAccessDeniedWithRedirectToLoginForm();
     }
 
-    public function testSendBlogPost()
+    public function testSendBlogPostAsSuperadmin()
     {
         $this->loginAsSuperadmin();
         $this->browser->get('/admin/blog-posts/sendBlogPost/2');
 
-        //$this->debug($result);
-        $this->debug($this->browser->getHeaders());
-
         $this->EmailLog = TableRegistry::getTableLocator()->get('EmailLogs');
         $emailLogs = $this->EmailLog->find('all')->toArray();
-        $this->assertEmailLogs($emailLogs[0], 'Neuer Blog-Artikel');
+
+        $bcc = [Configure::read('test.loginEmailCustomer') ,
+            Configure::read('test.loginEmailAdmin'),
+            Configure::read('test.loginEmailSuperadmin')];
+
+        $this->assertEmailLogs($emailLogs[0],
+            'Neuer Blog-Artikel',
+            [],
+            [Cake\Core\Configure::read('appDb.FCS_APP_EMAIL')],
+            [],
+            $bcc);
     }
 
     public function testSendBlogPostAsManufaturer() {

@@ -6,6 +6,7 @@ use Cake\Core\Configure;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Log\Log;
 
 /**
  * BlogPostsController
@@ -202,6 +203,8 @@ class BlogPostsController extends AdminAppController
                 'Manufacturers'
             ]
         ])->first();
+
+        Log::write('error',$query);
 
         $url = Configure::read('app.cakeServerName') . Configure::read('app.slugHelper')->getBlogPostDetail($blogPostID, $blogPost->title);
 
