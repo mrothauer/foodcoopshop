@@ -1,6 +1,7 @@
 <?php
 namespace Admin\Controller;
 
+use App\Mailer\AppEmail;
 use Cake\Core\Configure;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -169,6 +170,45 @@ class BlogPostsController extends AdminAppController
         }
 
         $this->set('blogPost', $blogPost);
+    }
+
+    public function sendBlogPost($blogPostID, $sendToManufacturer = false) {
+
+        if(!$sendToManufacturer) {
+            $this->Customer->dropManufacturersInNextFind();
+        }
+
+        $query = $this->Customer->find()
+            ->select(['email'])
+            ->where(['active' => 1])
+            ->contain(['AddressCustomers'])
+            ->toList();
+
+        $emailTO = Configure::read('appDb.FCS_APP_EMAIL');
+
+        $this->BlogPost = TableRegistry::getTableLocator()->get('BlogPosts');
+
+        $blogPost = $this->BlogPost->find('all', [
+            'conditions' => [
+                'BlogPosts.active' => APP_ON,
+                'BlogPosts.id_blog_post' => $blogPostID
+            ],
+            'contain' => [
+                'Manufacturers'
+            ]
+        ])->first();
+
+        $url = Configure::read('app.cakeServerName') . Configure::read('app.slugHelper')->getBlogPostDetail($blogPostID, $blogPost->title); //Hardcode aktuelles?
+
+        $email = new AppEmail();
+        $email->setTemplate('Admin.send_blog_post')
+            ->setTo($emailTO)
+            ->setSubject('Neuer Blog-Artikel')
+            ->setBcc(array_column($query, "email"))
+            ->setViewVars(['link' => $url])
+            ->send();
+
+        $this->redirect('/');
     }
 
     public function index()

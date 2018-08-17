@@ -75,6 +75,16 @@ class BlogPostsControllerTest extends AppCakeTestCase
         $this->assertAccessDeniedWithRedirectToLoginForm();
     }
 
+    public function testSendBlogPost()
+    {
+        $this->browser->get('/admin/blog-posts/sendBlogPost/35');
+
+        $this->EmailLog = TableRegistry::getTableLocator()->get('EmailLogs');
+        $emailLogs = $this->EmailLog->find('all')->toArray();
+        //$emailLogs = TableRegistry::getTableLocator()->get('fcs_Email_Log')->find('all')->toArray();
+        $this->assertEmailLogs($emailLogs[0], 'Neuer Blog-Artikel');
+    }
+
     protected function changeBlogPost($blogPostId, $isPrivate = 0, $manufacturerId = 0, $active = 1)
     {
         $query = 'UPDATE ' . $this->BlogPost->getTable() . ' SET is_private = :isPrivate, id_manufacturer = :manufacturerId, active = :active WHERE id_blog_post = :blogPostId;';
