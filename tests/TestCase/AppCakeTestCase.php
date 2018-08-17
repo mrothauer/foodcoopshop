@@ -8,6 +8,7 @@ use App\View\Helper\MyTimeHelper;
 use App\View\Helper\SlugHelper;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
+use Cake\Filesystem\File;
 use Cake\ORM\TableRegistry;
 use Cake\View\View;
 
@@ -31,11 +32,11 @@ require_once ROOT . DS . 'tests' . DS . 'config' . DS . 'test.config.php';
 abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
 {
 
-    protected static $dbConnection;
+    protected $dbConnection;
 
-    protected static $testDumpDir;
+    protected $testDumpDir;
 
-    protected static $appDumpDir;
+    protected $appDumpDir;
 
     public $Slug;
 
@@ -66,16 +67,41 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
         $this->Customer = TableRegistry::getTableLocator()->get('Customers');
         $this->Manufacturer = TableRegistry::getTableLocator()->get('Manufacturers');
 
-        self::resetTestDatabaseData();
-
+        $this->resetTestDatabaseData();
+        $this->resetLogs();
+        
+    }
+    
+    private function getLogFile($name)
+    {
+        return new File(ROOT . DS . 'logs' . DS . $name . '.log');
     }
 
-    protected static function resetTestDatabaseData()
+    protected function resetLogs()
+    {
+        $this->getLogFile('debug')->write('');
+        $this->getLogFile('error')->write('');
+    }
+    
+    public function tearDown()
+    {
+        parent::tearDown();
+        $this->assertLogFilesForErrors();
+    }
+    
+    protected function assertLogFilesForErrors()
+    {
+        $log = $this->getLogFile('debug')->read(true, 'r');
+        $log .= $this->getLogFile('error')->read(true, 'r');
+        $this->assertNotRegExp('/(Warning|Notice)/', $log);
+    }
+    
+    protected function resetTestDatabaseData()
     {
 
-        self::$dbConnection = ConnectionManager::get('test');
-        self::$testDumpDir = ROOT . DS .  'tests' . DS . 'config' . DS . 'sql' . DS;
-        self::importDump(self::$testDumpDir . 'test-db-data.sql');
+        $this->dbConnection = ConnectionManager::get('test');
+        $this->testDumpDir = ROOT . DS .  'tests' . DS . 'config' . DS . 'sql' . DS;
+        $this->importDump($this->testDumpDir . 'test-db-data.sql');
 
         // regenerate password hashes
         $ph = new AppPasswordHasher();
@@ -83,7 +109,7 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
         $params = [
             'passwd' => $ph->hash(Configure::read('test.loginPassword'))
         ];
-        $statement = self::$dbConnection->prepare($query);
+        $statement = $this->dbConnection->prepare($query);
         $statement->execute($params);
 
     }
@@ -96,9 +122,9 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
         $this->browser->loginPassword = Configure::read('test.loginPassword');
     }
 
-    protected static function importDump($file)
+    protected function importDump($file)
     {
-        self::$dbConnection->query(file_get_contents($file));
+        $this->dbConnection->query(file_get_contents($file));
     }
 
     protected function assertJsonError()
@@ -257,7 +283,7 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
             'value' => $value,
             'configKey' => $configKey
         ];
-        $statement = self::$dbConnection->prepare($query);
+        $statement = $this->dbConnection->prepare($query);
         return $statement->execute($params);
     }
 
@@ -275,7 +301,7 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
             'newValue' => $newValue,
             'configKey' => $configKey
         ];
-        $statement = self::$dbConnection->prepare($query);
+        $statement = $this->dbConnection->prepare($query);
         $statement->execute($params);
         $this->Configuration->loadConfigurations();
         $this->logout();
@@ -295,7 +321,7 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo
         ];
-        $statement = self::$dbConnection->prepare($query);
+        $statement = $this->dbConnection->prepare($query);
         $statement->execute($params);
     }
 
@@ -303,7 +329,7 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param int $productId
      * @param int $amount
-     * @return json string
+     * @return string
      */
     protected function addProductToCart($productId, $amount)
     {
@@ -318,24 +344,44 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
     protected function finishCart($general_terms_and_conditions_accepted = 1, $cancellation_terms_accepted = 1, $comment = '', $timebaseCurrencyTimeSum = null)
     {
         $data = [
-            'Orders' => [
+            'Carts' => [
                 'general_terms_and_conditions_accepted' => $general_terms_and_conditions_accepted,
                 'cancellation_terms_accepted' => $cancellation_terms_accepted
-            ]
+            ],
         ];
 
         if ($comment != '') {
-            $data['Orders']['comment'] = $comment;
+            $data['Carts']['pickup_day_entities'][0] = [
+                'customer_id' => $this->browser->getLoggedUserId(),
+                'comment' => $comment
+            ];
         }
 
         if ($timebaseCurrencyTimeSum !== null) {
-            $data['timebased_currency_order']['seconds_sum_tmp'] = $timebaseCurrencyTimeSum;
+            $data['Carts']['timebased_currency_seconds_sum_tmp'] = $timebaseCurrencyTimeSum;
         }
 
         $this->browser->post(
             $this->Slug->getCartFinish(), $data
         );
     }
+    
+    
+    protected function getCartById($cartId)
+    {
+        $cart = $this->Cart->find('all', [
+            'conditions' => [
+                'Carts.id_cart' => $cartId
+            ],
+            'contain' => [
+                'CartProducts.OrderDetails.OrderDetailTaxes',
+                'CartProducts.OrderDetails.OrderDetailUnits',
+                'CartProducts.OrderDetails.TimebasedCurrencyOrderDetails'
+            ]
+        ])->first();
+        return $cart;
+    }
+    
 
     /**
      * @param string $productId
@@ -368,7 +414,7 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
             'value' => $value,
             'manufacturerId' => $manufacturerId
         ];
-        $statement = self::$dbConnection->prepare($query);
+        $statement = $this->dbConnection->prepare($query);
         return $statement->execute($params);
     }
 
@@ -379,7 +425,7 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
             'value' => $value,
             'customerId' => $customerId
         ];
-        $statement = self::$dbConnection->prepare($query);
+        $statement = $this->dbConnection->prepare($query);
         return $statement->execute($params);
     }
 

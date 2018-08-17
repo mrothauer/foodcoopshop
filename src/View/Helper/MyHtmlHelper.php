@@ -30,8 +30,28 @@ class MyHtmlHelper extends HtmlHelper
         $this->helpers[] = 'MyNumber';
         parent::__construct($View, $config);
     }
+    
+    public function getOrderStateFontawesomeIcon($orderState)
+    {
+        switch($orderState)
+        {
+            case ORDER_STATE_OPEN:
+                return 'fa-unlock ok';
+                break;
+            case ORDER_STATE_ORDER_LIST_SENT_TO_MANUFACTURER:
+                return 'fa-envelope ok';
+                break;
+            case ORDER_STATE_BILLED_CASHLESS:
+            case ORDER_STATE_BILLED_CASH:
+            case ORDER_STATE_CASH_FREE:
+            case ORDER_STATE_CASH:
+                return 'fa-lock not-ok';
+                break;
+        }
+        return '';
+    }
 
-    function wrapJavascriptBlock($content) {
+    public function wrapJavascriptBlock($content) {
         return "<script>
             //<![CDATA[
                 $(document).ready(function() {
@@ -39,6 +59,19 @@ class MyHtmlHelper extends HtmlHelper
                 });
             //]]>
         </script>";
+    }
+    
+    public function getYesNo($value)
+    {
+        return $this->getYesNoArray()[$value];
+    }
+    
+    public function getYesNoArray()
+    {
+        return [
+            APP_ON => __('yes'),
+            APP_OFF => __('no')
+        ];
     }
 
     public function getCurrencyName($currencySymbol)
@@ -241,6 +274,15 @@ class MyHtmlHelper extends HtmlHelper
         ];
     }
 
+    public function getOrderStateBilled()
+    {
+        $billedOrderState = ORDER_STATE_BILLED_CASH;
+        if ($this->paymentIsCashless()) {
+            $billedOrderState = ORDER_STATE_BILLED_CASHLESS;
+        }
+        return $billedOrderState;
+    }
+    
     public function paymentIsCashless()
     {
         return in_array('cashless', Configure::read('app.paymentMethods'));
@@ -305,10 +347,10 @@ class MyHtmlHelper extends HtmlHelper
         }
     }
 
-    public function getOrderIdFromCartFinishedUrl($url)
+    public function getCartIdFromCartFinishedUrl($url)
     {
-        $orderId = explode('/', $url);
-        return (int) $orderId[5];
+        $cartId = explode('/', $url);
+        return (int) $cartId[5];
     }
 
     public function getCustomerNameForSql()
@@ -584,20 +626,23 @@ class MyHtmlHelper extends HtmlHelper
         ];
     }
 
-    public function getVisibleOrderStates()
-    {
-        return Configure::read('app.visibleOrderStates');
-    }
-
     public function getOrderStates()
     {
-        $orderStates = self::getVisibleOrderStates();
-        $orderStates[ORDER_STATE_CANCELLED] = __('order_state_cancelled');
-        return $orderStates;
+        return Configure::read('app.orderStates');
+    }
+    
+    public function getOrderStatesCashless()
+    {
+        return [
+            ORDER_STATE_CASH_FREE,
+            ORDER_STATE_OPEN,
+            ORDER_STATE_ORDER_LIST_SENT_TO_MANUFACTURER,
+            ORDER_STATE_BILLED_CASHLESS
+        ];
     }
 
     public function getOrderStateIds()
     {
-        return array_keys(self::getVisibleOrderStates());
+        return array_keys(self::getOrderStates());
     }
 }

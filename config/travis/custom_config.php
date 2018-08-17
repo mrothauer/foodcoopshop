@@ -20,6 +20,7 @@
  */
 
 return [
+    'debug' => true,
     'EmailTransport' => [
         'default' => [
             'className' => 'Mail',
@@ -62,11 +63,6 @@ return [
          * sendOrderListsWeekday is defined in config.php and preset to 3, i.e. "wednesday"
          */
         'deliveryDayDelta' => 2,
-
-        /**
-         * optional: message that is displayed in the dialog where order status can be changed (/admin/orders)
-         */
-        'additionalOrderStatusChangeInfo' => '',
 
         /**
          * your host's name, eg. http://www.yourfoodcoop.com
