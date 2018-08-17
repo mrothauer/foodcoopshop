@@ -50,6 +50,11 @@ class BlogPostsController extends AdminAppController
                     return true;
                 }
                 break;
+            case 'sendBlogPost':
+                    if($this->AppAuth->isSuperadmin() || $this->AppAuth->isAdmin()) {
+                        return true;
+                    }
+                break;
             default:
                 return $this->AppAuth->isSuperadmin() || $this->AppAuth->isAdmin() || $this->AppAuth->isManufacturer();
         }
@@ -198,7 +203,7 @@ class BlogPostsController extends AdminAppController
             ]
         ])->first();
 
-        $url = Configure::read('app.cakeServerName') . Configure::read('app.slugHelper')->getBlogPostDetail($blogPostID, $blogPost->title); //Hardcode aktuelles?
+        $url = Configure::read('app.cakeServerName') . Configure::read('app.slugHelper')->getBlogPostDetail($blogPostID, $blogPost->title);
 
         $email = new AppEmail();
         $email->setTemplate('Admin.send_blog_post')

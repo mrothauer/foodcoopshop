@@ -77,12 +77,21 @@ class BlogPostsControllerTest extends AppCakeTestCase
 
     public function testSendBlogPost()
     {
-        $this->browser->get('/admin/blog-posts/sendBlogPost/35');
+        $this->loginAsSuperadmin();
+        $this->browser->get('/admin/blog-posts/sendBlogPost/2');
+
+        //$this->debug($result);
+        $this->debug($this->browser->getHeaders());
 
         $this->EmailLog = TableRegistry::getTableLocator()->get('EmailLogs');
         $emailLogs = $this->EmailLog->find('all')->toArray();
-        //$emailLogs = TableRegistry::getTableLocator()->get('fcs_Email_Log')->find('all')->toArray();
         $this->assertEmailLogs($emailLogs[0], 'Neuer Blog-Artikel');
+    }
+
+    public function testSendBlogPostAsManufaturer() {
+        $this->loginAsMeatManufacturer();
+        $this->browser->get('/admin/blog-posts/sendBlogPost/2');
+        $this->assertAccessDeniedWithRedirectToLoginForm();
     }
 
     protected function changeBlogPost($blogPostId, $isPrivate = 0, $manufacturerId = 0, $active = 1)
