@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2018-08-13 10:10+0200\n"
-"PO-Revision-Date: 2018-08-13 09:40+0200\n"
+"POT-Creation-Date: 2018-09-09 21:52+0200\n"
+"PO-Revision-Date: 2018-09-09 21:54+0200\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "Language: en_US\n"
@@ -29,6 +29,15 @@ msgstr "Sorry, but manufacturers do not have access."
 
 msgid "Your_cart"
 msgstr "Your cart"
+
+msgid "Product_{0}:_Only_{1}_units_on_stock"
+msgstr "Low stock for product \"{0}\": {1}"
+
+msgid "Hello"
+msgstr "Hello"
+
+msgid "You_can_unsubscribe_this_email_<a href=\"{0}\">in_the_settings_of_the_manufacturer</a>."
+msgstr "You can unsubscribe this e-mail <a href=\"{0}\">in the manufacturer's settings</a>."
 
 msgid "Order_confirmation"
 msgstr "Order confirmation"
@@ -63,8 +72,17 @@ msgstr "The attribute does not exist."
 msgid "The_product_{0}_is_not_activated_any_more."
 msgstr "The product {0} is not activated any more."
 
-msgid "The_manufacturer_of_the_product_{0}_is_on_holiday_or_product_is_not_activated."
+msgid "The_manufacturer_of_the_product_{0}_has_a_delivery_break_or_product_is_not_activated."
 msgstr "The manufacturer of the product {0} either has a delivery break or the product is not activated any more."
+
+msgid "Please_enter_how_much_you_want_to_pay_in_{0}."
+msgstr "Please enter how much you want to pay in {0}."
+
+msgid "Please_enter_a_number."
+msgstr "Please enter a number."
+
+msgid "Your_overdraft_frame_of_{0}_is_reached."
+msgstr "Your overdraft frame of {0} is reached."
 
 msgid "Errors_occurred."
 msgstr "Errors occurred."
@@ -408,20 +426,11 @@ msgstr "Really generate orders as PDF?"
 msgid "Email_addresses"
 msgstr "E-mail addresses"
 
-msgid "Change_order_status?"
-msgstr "Change order status?"
-
-msgid "Really_change_order_status_from_{0}?"
-msgstr "Do you really want to change the status of the order from {0}?"
-
-msgid "order_state_cancelled"
-msgstr "cancelled"
-
-msgid "order_state_open"
-msgstr "open"
-
 msgid "Decrease_amount"
 msgstr "Decrease amount"
+
+msgid "Stock"
+msgstr "Stock"
 
 msgid "The_amount_can_only_be_decreased_to_increase_plaese_order_product_again."
 msgstr "The amount can only be decreased. To increase, please order product again."
@@ -512,9 +521,6 @@ msgstr "Please tell us, why you want to adapt the price."
 
 msgid "Cancellation_reason_is_mandatory."
 msgstr "Please tell us, why you want to cancel the product."
-
-msgid "Please_enter_a_number."
-msgstr "Please enter a number."
 
 msgid "Add_new_attribute_for_product"
 msgstr "Add new attribute for product"
@@ -657,6 +663,24 @@ msgstr "The member needs to sign in again."
 msgid "Member"
 msgstr "Member"
 
+msgid "Why_is_pickup_day_changed?"
+msgstr "Why is the pickup day changed?"
+
+msgid "Change_pickup_day"
+msgstr "Change pickup day"
+
+msgid "New_pickup_day"
+msgstr "New pickup day"
+
+msgid "Change_pickup_day_invoices_info_text"
+msgstr "When you change the pickup day, please consider that the pickup day is relvevant for the automatically generated invoices!"
+
+msgid "products"
+msgstr "products"
+
+msgid "product"
+msgstr "product"
+
 msgid "Were_the_products_picked_up?"
 msgstr "Were the products picked up?"
 
@@ -735,6 +759,66 @@ msgstr "Deposit"
 msgid "Enter_zero_for_delete"
 msgstr "0 deletes deposit"
 
+msgid "Is_the_product_a_stock_product?"
+msgstr "Is the product a stock product?"
+
+msgid "Stock_product"
+msgstr "Stock product"
+
+msgid "Current_stock"
+msgstr "Current stock"
+
+msgid "Available_amount"
+msgstr "Available amount"
+
+msgid "Orders_possible_until_amount_of"
+msgstr "Order possible until amount of"
+
+msgid "zero_or_smaller_zero"
+msgstr "0 or smaller than 0"
+
+msgid "For_manufacturers_and_contact_persons._Can_be_changed_in_manufacturer_settings."
+msgstr "For manufacturers and contact persons. Can be changed in the manufacturer settings."
+
+msgid "Notification_if_amount_lower_than"
+msgstr "Notification if amount is lower than"
+
+msgid "Is_product_a_stock_product?"
+msgstr "Is the product a stock product?"
+
+msgid "The_delivery_rhythm_of_stock_products_is_always_weekly."
+msgstr "The delivery rhythm of stock products is always \"weekly\" and can't be changed."
+
+msgid "Delivery_rhythm"
+msgstr "Delivery rhythm"
+
+msgid "First_delivery_day"
+msgstr "First delivery day"
+
+msgid "Delivery_day"
+msgstr "Delivery day"
+
+msgid "Individual_delivery_day_info."
+msgstr "The product can be ordered from now on and will be deactivated automatically as soon as the last order day of the given delivery day is reached."
+
+msgid "First_delivery_day_info."
+msgstr "The product can be ordered from now on."
+
+msgid "can_be_left_blank"
+msgstr "can be left blank"
+
+msgid "Order_possible_until"
+msgstr "Order possible until"
+
+msgid "Order_possible_until_info."
+msgstr "The product can only be ordered until this date."
+
+msgid "Info_page_for_delivery_rhythm"
+msgstr "Info page for delivery rhythms"
+
+msgid "docs_route_order_handling"
+msgstr "order-handling"
+
 msgid "delete"
 msgstr "delete"
 
@@ -770,9 +854,6 @@ msgstr "VAT"
 
 msgid "Order_day"
 msgstr "Order day"
-
-msgid "Delivery_day"
-msgstr "Delivery day"
 
 msgid "Total_sum"
 msgstr "Total sum"
@@ -840,17 +921,14 @@ msgstr "Product: Default attribute changed"
 msgid "Action_Log_Network_module_product_synchronized"
 msgstr "Network module: Products synchronized"
 
+msgid "Action_Log_Delivery_rhythm_changed"
+msgstr "Product: Delivery rhythm changed"
+
 msgid "Action_Log_Order_status_changed"
 msgstr "Order: Status changed"
 
-msgid "Action_Log_Order_detail_status_changed"
-msgstr "Ordered product: Status changed"
-
 msgid "Action_Log_Orders_closed"
 msgstr "Orders: closed"
-
-msgid "Action_Log_Order_details_closed"
-msgstr "Ordered product: closed"
 
 msgid "Action_Log_Order_comment_changed"
 msgstr "Order: Comment changed"
@@ -872,6 +950,9 @@ msgstr "Ordered product: Amount changed"
 
 msgid "Action_Log_Ordered_product_cancelled"
 msgstr "Ordered product: Cancelled"
+
+msgid "Action_Log_Ordered_product_pickup_day_changed"
+msgstr "Ordered product: Pickup day changed"
 
 msgid "Action_Log_Member_credit_upload_added"
 msgstr "Member: Credit uploaded"
@@ -1086,6 +1167,9 @@ msgstr "Please enter the last name of the invoice holder."
 msgid "Please_enter_an_email_address."
 msgstr "Please enter an email address."
 
+msgid "{0}_needs_to_be_a_{1}."
+msgstr "{0} needs to be a {1}."
+
 msgid "Please_enter_a_number_between_{0}_and_{1}."
 msgstr "Please enter a number between {0} and {1}."
 
@@ -1215,6 +1299,12 @@ msgstr "Delivery break"
 msgid "online"
 msgstr "online"
 
+msgid "The_pickup_day_is_not_valid."
+msgstr "The pickup day is not valid."
+
+msgid "The_pickup_day"
+msgstr "The pickup day"
+
 msgid "{0,plural,=1{1_product} other{#_products}}"
 msgstr "{0,plural,=1{1 product} other{# products}}"
 
@@ -1224,6 +1314,27 @@ msgstr "Please enter a correct number."
 msgid "The_amount_(money)_needs_to_be_greater_than_0."
 msgstr "The amount needs to be greater than 0."
 
+msgid "The_delivery_ryhthm_is_not_valid."
+msgstr "The delivery rhythm is not valid."
+
+msgid "The_first_delivery_day_is_not_valid."
+msgstr "The first delivery day is not valid."
+
+msgid "The_order_possible_until_field_is_not_valid."
+msgstr "The field \"order possible until\" is not valid."
+
+msgid "The_order_possible_until_field_needs_to_be_smaller_than_the_delivery_date."
+msgstr "The field \"order possible until\" needs to be smaller than the delivery day."
+
+msgid "The_first_delivery_day"
+msgstr "The first delivery day"
+
+msgid "The_first_delivery_day_needs_to_be_a_last_{0}_of_the_month."
+msgstr "The first delivery day needs to be a last {0} of the month."
+
+msgid "The_first_delivery_day_needs_to_be_a_first_{0}_of_the_month."
+msgstr "The first delivery day needs to be a first {0} of the month."
+
 msgid "The_name_of_the_product_{0}_needs_to_be_at_least_{1}_characters_long."
 msgstr "The name of the product {0} needs to be at least {1} characters long."
 
@@ -1232,6 +1343,24 @@ msgstr "New product of"
 
 msgid "Please_upload_an_image."
 msgstr "Please upload an image."
+
+msgid "The_quantity_needs_to_be_a_number."
+msgstr "The quantity needs to be a number."
+
+msgid "Field:_Stock"
+msgstr "Field: stock"
+
+msgid "The_quantity_limit_needs_to_be_a_number."
+msgstr "The quantity limit needs to be a number."
+
+msgid "Field:_Order_possible_until"
+msgstr "Field: order possible until stock"
+
+msgid "The_sold_out_quantity_needs_to_be_a_number."
+msgstr "The quantity for sending a notification needs to be a number."
+
+msgid "Field:_Notification_if_quantity_limit_reached"
+msgstr "Field: notification if quantity limit reached"
 
 msgid "Please_enter_a_tax_rate."
 msgstr "Please enter a tax rate."
@@ -1431,9 +1560,6 @@ msgstr "Your account was created but not activated yet. This means, you can't lo
 msgid "You_will_get_an_email_as_soon_as_we_activated_you."
 msgstr "You will get an e-mail as soon as we activate you."
 
-msgid "Hello"
-msgstr "Hello"
-
 msgid "terms_and_conditions"
 msgstr "terms and conditions"
 
@@ -1466,6 +1592,9 @@ msgstr "Value added tax"
 
 msgid "Show_cart_button"
 msgstr "Show cart"
+
+msgid "Already_ordered_products"
+msgstr "Already ordered products"
 
 msgid "Information"
 msgstr "Information"
@@ -1554,6 +1683,9 @@ msgstr "Product"
 msgid "Price"
 msgstr "Price"
 
+msgid "Total"
+msgstr "Total"
+
 msgid "You_can_sign_in_here_for_ordering"
 msgstr "You can sign in here for placing a new order"
 
@@ -1581,11 +1713,23 @@ msgstr "New"
 msgid "More_infos_to_product_{0}"
 msgstr "More infos to product {0}"
 
+msgid "Instant_order"
+msgstr "Instant order"
+
 msgid "Edit_product"
 msgstr "Edit product"
 
 msgid "from_which_{0}_%"
 msgstr "from which {0} %"
+
+msgid "The_manufacturer_has_reached_the_limit_to_pay_in_{0}."
+msgstr "The manufacturer has reached the limit to pay in {0}."
+
+msgid "Part_in_{0}"
+msgstr "Part in {0}"
+
+msgid "in"
+msgstr "in"
 
 msgid "Your_account_at_{0}_has_just_been_activated."
 msgstr "Your account at {0} has just been activated."
@@ -1635,6 +1779,21 @@ msgstr "You can find a detailed list of your ordered products in the attached or
 msgid "This_is_the_text_of_the_email_(with_attached_logo)."
 msgstr "This is the text of the email (with attached logo)."
 
+msgid "Units_on_stock:"
+msgstr "Units on stock:"
+
+msgid "Product_orders_are_not_possible_any_more!"
+msgstr "Orders are not possible any more!"
+
+msgid "Product_orders_possible_until:"
+msgstr "Product orders possible until:"
+
+msgid "This_notification_triggered_if_stock_available_is_less_than:"
+msgstr "This email notification triggered if stock is less or equals:"
+
+msgid "Click_here_to_edit_the_product."
+msgstr "Click here to edit the product."
+
 msgid "route_search"
 msgstr "search"
 
@@ -1651,7 +1810,7 @@ msgid "This_email_was_created_automatcially."
 msgstr "This e-mail was automatically created."
 
 msgid "You_can_unsubscribe_it_<a href=\"{0}\">in_your_settings</a>."
-msgstr "You can unsubscribe it <href=\"{0}\">in your settings</a>."
+msgstr "You can unsubscribe it <a href=\"{0}\">in your settings</a>."
 
 msgid "News_from"
 msgstr "News from"
@@ -1725,6 +1884,21 @@ msgstr "Credit"
 msgid "Member_fee"
 msgstr "Member fee"
 
+msgid "weekly"
+msgstr "weekly"
+
+msgid "every_{0}_week"
+msgstr "every {0} week"
+
+msgid "every_{0}_{1}_of_a_month"
+msgstr "every {0} {1} of a month"
+
+msgid "every_last_{0}_of_a_month"
+msgstr "every last {0} of a month"
+
+msgid "individual_date"
+msgstr "individual date"
+
 msgid "yes"
 msgstr "yes"
 
@@ -1737,17 +1911,8 @@ msgstr "Deleted member"
 msgid "Deleted_Email_Address"
 msgstr "Deleted e-mail address"
 
-msgid "delivery_break_since_holiday_active"
-msgstr "since"
-
-msgid "delivery_break_since_holiday_not_active"
-msgstr "since"
-
-msgid "delivery_break_until"
-msgstr "until"
-
-msgid "The_manufacturer_{0}_has_{1}_delivery_break."
-msgstr "The manufacturer {0} is on delivery break {1}."
+msgid "The_manufacturer_{0}_has_delivery_break:_{1}"
+msgstr "The manufacturer {0} is on delivery break: {1}"
 
 msgid "Website"
 msgstr "Website"
@@ -1902,6 +2067,9 @@ msgstr "paid in cash"
 msgid "This_order_contains_the_variable_member_fee."
 msgstr "This order contains the variable member fee."
 
+msgid "order_state_order_placed"
+msgstr "order placed"
+
 msgid "order_state_closed"
 msgstr "closed"
 
@@ -1919,6 +2087,70 @@ msgstr "information-about-right-of-withdrawal"
 
 msgid "route_product"
 msgstr "product"
+
+#~ msgid "The_manufacturer_of_the_product_{0}_is_on_holiday_or_product_is_not_activated."
+#~ msgstr "The manufacturer of the product {0} either has a delivery break or the product is not activated any more."
+
+#~ msgid "delivery_break_since_holiday_active"
+#~ msgstr "since"
+
+#~ msgid "delivery_break_since_holiday_not_active"
+#~ msgstr "since"
+
+#~ msgid "delivery_break_until"
+#~ msgstr "until"
+
+#~ msgid "Always_online"
+#~ msgstr "Always online"
+
+#~ msgid "Always_online_explanation"
+#~ msgstr "Should the product always appear online to be ordered, or just in the last week before the delivery day?"
+
+#, fuzzy
+#~ msgid "First_delivery_day_explanation"
+#~ msgstr "First delivery day"
+
+#~ msgid "monthly"
+#~ msgstr "monthly"
+
+#~ msgid "every"
+#~ msgstr "every"
+
+#~ msgid "week"
+#~ msgstr "week"
+
+#~ msgid "month"
+#~ msgstr "month"
+
+#~ msgid "delivery_rhythm_type_week"
+#~ msgstr "week"
+
+#~ msgid "delivery_rhythm_type_month"
+#~ msgstr "month"
+
+#~ msgid "Product_{0}_is_almost_sold_out."
+#~ msgstr "The product {0} is almost sold out."
+
+#~ msgid "Change_order_status?"
+#~ msgstr "Change order status?"
+
+#~ msgid "Really_change_order_status_from_{0}?"
+#~ msgstr "Do you really want to change the status of the order from {0}?"
+
+#~ msgid "order_state_cancelled"
+#~ msgstr "cancelled"
+
+#~ msgid "order_state_open"
+#~ msgstr "open"
+
+#~ msgid "Change_stock"
+#~ msgstr "Change stock"
+
+#~ msgid "Action_Log_Order_detail_status_changed"
+#~ msgstr "Ordered product: Status changed"
+
+#~ msgid "Action_Log_Order_details_closed"
+#~ msgstr "Ordered product: closed"
 
 #~ msgid "Set_date_of_order_back_to"
 #~ msgstr "Set date of order back to"

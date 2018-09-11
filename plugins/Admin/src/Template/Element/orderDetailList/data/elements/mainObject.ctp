@@ -9,7 +9,7 @@
  * @since         FoodCoopShop 2.2.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 
@@ -19,7 +19,8 @@ if ($groupBy != '') {
     $groupByObjectHref = '/admin/order-details/index/' .
         '?pickupDay[]=' . join(',', $pickupDay) .
         '&' . $groupBy.'Id=' . $orderDetail[$groupBy . '_id'] .
-        '&orderStates[]=' . join(',', $orderStates) .
+        '&productId=' . $productId .
+        (isset($orderDetail['manufacturer_id']) ? '' : '&manufacturerd=' . $manufacturerId );
         (isset($orderDetail['customer_id']) ? '' : '&customerId=' . $customerId );
         $groupByObjectLink = $this->Html->link($orderDetail['name'], $groupByObjectHref);
 }
@@ -27,7 +28,7 @@ if ($groupBy != '') {
 if ($groupBy == '' || $groupBy == 'product') {
     echo '<td>';
     if ($groupBy == '') {
-        echo $this->MyHtml->link($orderDetail->product_name, '/admin/order-details/index/?pickupDay[]=' . join(',', $pickupDay) . '&productId=' . $orderDetail->product_id . '&orderStates[]=' . join(',', $orderStates), [
+        echo $this->MyHtml->link($orderDetail->product_name, '/admin/order-details/index/?pickupDay[]=' . join(',', $pickupDay) . '&productId=' . $orderDetail->product_id, [
             'class' => 'name-for-dialog'
         ]);
     }
@@ -39,7 +40,7 @@ if ($groupBy == '' || $groupBy == 'product') {
 
 echo '<td class="' . ($appAuth->isManufacturer() ? 'hide' : '') . '">';
 if ($groupBy == '') {
-    echo $this->MyHtml->link($orderDetail->product->manufacturer->name, '/admin/order-details/index/?pickupDay[]=' . join(',', $pickupDay) . '&manufacturerId=' . $orderDetail->product->id_manufacturer . '&orderStates[]=' . join(',', $orderStates) . '&customerId=' . $customerId . '&groupBy='.$groupBy);
+    echo $this->MyHtml->link($orderDetail->product->manufacturer->name, '/admin/order-details/index/?pickupDay[]=' . join(',', $pickupDay) . '&manufacturerId=' . $orderDetail->product->id_manufacturer . '&customerId=' . $customerId . '&groupBy='.$groupBy);
 }
 if ($groupBy == 'manufacturer') {
     echo $groupByObjectLink;
@@ -68,7 +69,7 @@ if ($groupBy == 'customer') {
     echo $name;
 }
 if ($groupBy == 'product') {
-    echo $this->MyHtml->link($orderDetail['manufacturer_name'], '/admin/order-details/index/?pickupDay[]=' . join(',', $pickupDay) . '&' . 'manufacturerId=' . $orderDetail['manufacturer_id'] . '&orderStates[]=' . join(',', $orderStates) . '&customerId=' . $customerId . '&groupBy=product');
+    echo $this->MyHtml->link($orderDetail['manufacturer_name'], '/admin/order-details/index/?pickupDay[]=' . join(',', $pickupDay) . '&manufacturerId=' . $orderDetail['manufacturer_id'] . '&customerId=' . $customerId . '&groupBy=product');
 }
 echo '</td>';
 

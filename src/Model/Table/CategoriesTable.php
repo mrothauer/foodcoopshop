@@ -15,7 +15,7 @@ use Cake\Validation\Validator;
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 class CategoriesTable extends AppTable
@@ -114,11 +114,7 @@ class CategoriesTable extends AppTable
         }
 
         $sql = 'SELECT ';
-        if ($countMode) {
-            $sql .= 'DISTINCT COUNT(*) as count ';
-        } else {
-            $sql .= $this->getFieldsForProductListQuery();
-        }
+        $sql .= $this->getFieldsForProductListQuery();
         $sql .= "FROM ".$this->tablePrefix."product Products ";
 
         if (! $filterByNewProducts) {
@@ -154,11 +150,12 @@ class CategoriesTable extends AppTable
         $statement = $this->getConnection()->prepare($sql);
         $statement->execute($params);
         $products = $statement->fetchAll('assoc');
+        $products = $this->hideProductsWithActivatedDeliveryRhythmOrDeliveryBreak($products);
 
         if (! $countMode) {
             return $products;
         } else {
-            return $products[0]['count'];
+            return count($products);
         }
 
         return $products;

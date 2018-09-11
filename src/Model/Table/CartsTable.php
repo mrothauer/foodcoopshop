@@ -2,8 +2,10 @@
 
 namespace App\Model\Table;
 
+use App\Controller\Component\StringComponent;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 
 /**
@@ -16,7 +18,7 @@ use Cake\Validation\Validator;
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 class CartsTable extends AppTable
@@ -114,7 +116,7 @@ class CartsTable extends AppTable
                 'CartProducts.id_cart' => $cart['id_cart']
             ],
             'order' => [
-                'Products.name' => 'ASC'
+                'Products.name',
             ],
             'contain' => [
                 'OrderDetails',
@@ -128,7 +130,6 @@ class CartsTable extends AppTable
             ]
         ])->toArray();
         
-        
         if (!empty($cartProducts)) {
             $cart->pickup_day_entities = $this->CartProducts->setPickupDays($cartProducts, $customerId, $instantOrderMode);
         }
@@ -139,7 +140,7 @@ class CartsTable extends AppTable
         ];
 
         foreach ($cartProducts as &$cartProduct) {
-
+            
             $imageId = 0;
             if (!empty($cartProduct->product->image)) {
                 $imageId = $cartProduct->product->image->id_image;
@@ -164,11 +165,29 @@ class CartsTable extends AppTable
             $productData['image'] = $productImage;
             $productData['productLink'] = $productLink;
             $productData['manufacturerLink'] = $manufacturerLink;
-
+            if (!$instantOrderMode) {
+                $productData['nextDeliveryDay'] = Configure::read('app.timeHelper')->getDateFormattedWithWeekday(strtotime($cartProduct->product->next_delivery_day));
+            } else {
+                $productData['nextDeliveryDay'] = Configure::read('app.timeHelper')->getDateFormattedWithWeekday(Configure::read('app.timeHelper')->getCurrentDay());
+            }
+            
             $preparedCart['CartProducts'][] = $productData;
 
         }
-
+        
+        $productName = [];
+        $deliveryDay = [];
+        foreach($preparedCart['CartProducts'] as $cartProduct) {
+            $deliveryDay[] = StringComponent::slugify($cartProduct['nextDeliveryDay']);
+            $productName[] = StringComponent::slugify($cartProduct['productName']);
+        }
+        
+        array_multisort(
+            $deliveryDay, SORT_ASC,
+            $productName, SORT_DESC, // !SIC - array is reversed later
+            $preparedCart['CartProducts']
+        );
+        
         // sum up deposits and products
         $preparedCart['ProductsWithUnitCount'] = $this->getProductsWithUnitCount($preparedCart['CartProducts']);
         $preparedCart['CartDepositSum'] = 0;
@@ -195,15 +214,45 @@ class CartsTable extends AppTable
         }
         return $preparedCart;
     }
+    
+    public function getCartGroupedByPickupDay($cart)
+    {
+        $manufacturerName = [];
+        $productName = [];
+        foreach($cart['CartProducts'] as $cartProduct) {
+            $manufacturerName[] = StringComponent::slugify($cartProduct['manufacturerName']);
+            $productName[] = StringComponent::slugify($cartProduct['productName']);
+        }
+        
+        array_multisort(
+            $manufacturerName, SORT_ASC,
+            $productName, SORT_ASC,
+            $cart['CartProducts']
+        );
+        
+        $preparedCartProducts = [];
+        foreach($cart['CartProducts'] as $cartProduct) {
+            $pickupDay = $cartProduct['pickupDay'];
+            @$preparedCartProducts[$pickupDay]['CartDepositSum'] += $cartProduct['deposit'];
+            @$preparedCartProducts[$pickupDay]['CartProductSum'] += $cartProduct['price'];
+            @$preparedCartProducts[$pickupDay]['Products'][] = $cartProduct;
+        }
+        $cart['CartProducts'] = $preparedCartProducts;
+        return $cart;
+    }
 
     private function addTimebasedCurrencyProductData($productData, $cartProduct, $grossPricePerPiece, $netPricePerPiece)
     {
         $manufacturersTable = TableRegistry::getTableLocator()->get('Manufacturers');
+        
         if (Configure::read('appDb.FCS_TIMEBASED_CURRENCY_ENABLED') && $this->getLoggedUser()['timebased_currency_enabled']) {
             if ($manufacturersTable->getOptionTimebasedCurrencyEnabled($cartProduct->product->manufacturer->timebased_currency_enabled)) {
-                $productData['timebasedCurrencyMoneyIncl'] = round($manufacturersTable->getTimebasedCurrencyMoney($grossPricePerPiece, $cartProduct->product->manufacturer->timebased_currency_max_percentage), 2) * $cartProduct->amount;
-                $productData['timebasedCurrencyMoneyExcl'] = round($manufacturersTable->getTimebasedCurrencyMoney($netPricePerPiece, $cartProduct->product->manufacturer->timebased_currency_max_percentage), 2) * $cartProduct->amount;
-                $productData['timebasedCurrencySeconds'] = $manufacturersTable->getCartTimebasedCurrencySeconds($grossPricePerPiece, $cartProduct->product->manufacturer->timebased_currency_max_percentage) * $cartProduct->amount;
+                $manufacturerLimitReached = $manufacturersTable->hasManufacturerReachedTimebasedCurrencyLimit($cartProduct->product->id_manufacturer);
+                if (!$manufacturerLimitReached) {
+                    $productData['timebasedCurrencyMoneyIncl'] = round($manufacturersTable->getTimebasedCurrencyMoney($grossPricePerPiece, $cartProduct->product->manufacturer->timebased_currency_max_percentage), 2) * $cartProduct->amount;
+                    $productData['timebasedCurrencyMoneyExcl'] = round($manufacturersTable->getTimebasedCurrencyMoney($netPricePerPiece, $cartProduct->product->manufacturer->timebased_currency_max_percentage), 2) * $cartProduct->amount;
+                    $productData['timebasedCurrencySeconds'] = $manufacturersTable->getCartTimebasedCurrencySeconds($grossPricePerPiece, $cartProduct->product->manufacturer->timebased_currency_max_percentage) * $cartProduct->amount;
+                }
             }
         }
         return $productData;
@@ -248,7 +297,8 @@ class CartsTable extends AppTable
             'price' => $grossPrice,
             'priceExcl' => $cartProduct->product->price * $cartProduct->amount,
             'tax' => $tax,
-            'pickupDay' => $cartProduct->pickup_day
+            'pickupDay' => $cartProduct->pickup_day,
+            'isStockProduct' => $cartProduct->product->is_stock_product
         ];
         
         $deposit = 0;
@@ -261,7 +311,6 @@ class CartsTable extends AppTable
         $unitAmount = 0;
         $priceInclPerUnit = 0;
         $quantityInUnits = 0;
-        $productQuantityInUnits = 0;
         $unity = $cartProduct->product->unity;
         $productData['unity'] = $unity;
         if (!empty($cartProduct->product->unit_product) && $cartProduct->product->unit_product->price_per_unit_enabled) {
@@ -317,7 +366,8 @@ class CartsTable extends AppTable
             'price' => $grossPrice,
             'priceExcl' => $cartProduct->product_attribute->price * $cartProduct->amount,
             'tax' => $tax,
-            'pickupDay' => $cartProduct->pickup_day
+            'pickupDay' => $cartProduct->pickup_day,
+            'isStockProduct' => $cartProduct->product->is_stock_product
         ];
 
         $deposit = 0;
@@ -331,7 +381,6 @@ class CartsTable extends AppTable
         $unitAmount = 0;
         $priceInclPerUnit = 0;
         $quantityInUnits = 0;
-        $productQuantityInUnits = 0;
 
         if (!empty($cartProduct->product_attribute->unit_product_attribute) && $cartProduct->product_attribute->unit_product_attribute->price_per_unit_enabled) {
             $unitName = $cartProduct->product_attribute->unit_product_attribute->name;

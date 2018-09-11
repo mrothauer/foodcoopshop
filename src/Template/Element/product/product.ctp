@@ -9,7 +9,7 @@
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 
@@ -60,12 +60,25 @@ if ($product['description'] != '') {
     echo '<div class="toggle-content description">'.$product['description'].'</div>';
 }
 
+    if ($product['delivery_rhythm_type'] == 'individual' && !$this->Time->isDatabaseDateNotSet($product['delivery_rhythm_order_possible_until'])) {
+        echo '<br />' . __('Order_possible_until') . ': ' . $this->Time->getDateFormattedWithWeekday(strtotime($product['delivery_rhythm_order_possible_until']));
+    }
+    echo '<br />'.__('Pickup_day').': ';
+    echo '<span class="pickup-day">';
+        if ($this->request->getSession()->check('Auth.instantOrderCustomer')) {
+            $pickupDayDetailText = __('Instant_order');
+        } else {
+            $pickupDayDetailText = $this->Html->getDeliveryRhythmString($product['delivery_rhythm_type'], $product['delivery_rhythm_count']);
+        }
+        echo $this->Time->getDateFormattedWithWeekday(strtotime($product['next_delivery_day']));
+    echo '</span>';
+    echo ' (' . $pickupDayDetailText . ')';
+    
     echo '<br />'.__('Manufacturer').': ';
     echo $this->Html->link(
         $product['ManufacturersName'],
         $this->Slug->getManufacturerDetail($product['id_manufacturer'], $product['ManufacturersName'])
     );
-
 
     if ($appAuth->isSuperadmin() || ($appAuth->isManufacturer() && $product['id_manufacturer'] == $appAuth->getManufacturerId())) {
         echo $this->Html->getJqueryUiIcon(
@@ -84,12 +97,12 @@ if ($product['description'] != '') {
     if (!empty($product['attributes'])) {
         // PRODUCT WITH ATTRIBUTES
 
-        // 1) kick attributes if quantity = 0
+        // 1) kick attributes if not available
         $hasCheckedAttribute = false;
         $i = 0;
         $preparedProductAttributes = [];
         foreach ($product['attributes'] as $attribute) {
-            if ($attribute['StockAvailables']['quantity'] > 0) {
+            if ($attribute['StockAvailables']['quantity'] - $attribute['StockAvailables']['quantity_limit'] > 0) {
                 $preparedProductAttributes[] = $attribute;
             }
             $i++;
@@ -138,6 +151,7 @@ if ($product['description'] != '') {
                 }
                 if (!$this->request->getSession()->check('Auth.instantOrderCustomer') && !empty($attribute['timebased_currency_money_incl'])) {
                     echo $this->element('timebasedCurrency/addProductInfo', [
+                        'manufacturerLimitReached' => $attribute['timebased_currency_manufacturer_limit_reached'],
                         'class' => 'timebased-currency-product-info',
                         'money' => $attribute['timebased_currency_money_incl'],
                         'seconds' => $attribute['timebased_currency_seconds'],
@@ -149,9 +163,9 @@ if ($product['description'] != '') {
             }
             if (! Configure::read('appDb.FCS_SHOW_PRODUCTS_FOR_GUESTS') || $appAuth->user()) {
                 echo $this->element('product/hiddenProductIdField', ['productId' => $product['id_product'] . '-' . $attribute['ProductAttributes']['id_product_attribute']]);
-                echo $this->element('product/amountWrapper', ['stockAvailable' => $attribute['StockAvailables']['quantity']]);
-                echo $this->element('product/cartButton', ['productId' => $product['id_product'] . '-' . $attribute['ProductAttributes']['id_product_attribute'], 'stockAvailable' => $attribute['StockAvailables']['quantity']]);
-                echo $this->element('product/notAvailableInfo', ['stockAvailable' => $attribute['StockAvailables']['quantity']]);
+                echo $this->element('product/amountWrapper', ['stockAvailable' => $attribute['StockAvailables']]);
+                echo $this->element('product/cartButton', ['productId' => $product['id_product'] . '-' . $attribute['ProductAttributes']['id_product_attribute'], 'stockAvailableQuantity' => $attribute['StockAvailables']['quantity'], 'stockAvailableQuantityLimit' => $attribute['StockAvailables']['quantity_limit']]);
+                echo $this->element('product/notAvailableInfo', ['stockAvailable' => $attribute['StockAvailables']]);
             }
             if ($showProductPrice) {
                 echo $pricePerUnitInfoText;
@@ -196,6 +210,7 @@ if ($product['description'] != '') {
                 echo '</div>';
                 if (!$this->request->getSession()->read('Auth.instantOrderCustomer') && !empty($product['timebased_currency_money_incl'])) {
                     echo $this->element('timebasedCurrency/addProductInfo', [
+                        'manufacturerLimitReached' => $product['timebased_currency_manufacturer_limit_reached'],
                         'class' => 'timebased-currency-product-info',
                         'money' => $product['timebased_currency_money_incl'],
                         'seconds' => $product['timebased_currency_seconds'],
@@ -206,9 +221,9 @@ if ($product['description'] != '') {
         }
         if (! Configure::read('appDb.FCS_SHOW_PRODUCTS_FOR_GUESTS') || $appAuth->user()) {
             echo $this->element('product/hiddenProductIdField', ['productId' => $product['id_product']]);
-            echo $this->element('product/amountWrapper', ['stockAvailable' => $product['quantity']]);
-            echo $this->element('product/cartButton', ['productId' => $product['id_product'], 'stockAvailable' => $product['quantity']]);
-            echo $this->element('product/notAvailableInfo', ['stockAvailable' => $product['quantity']]);
+            echo $this->element('product/amountWrapper', ['stockAvailable' => $product]);
+            echo $this->element('product/cartButton', ['productId' => $product['id_product'], 'stockAvailableQuantity' => $product['quantity'], 'stockAvailableQuantityLimit' => $product['quantity_limit']]);
+            echo $this->element('product/notAvailableInfo', ['stockAvailable' => $product]);
         }
         if ($showProductPrice) {
             echo $pricePerUnitInfoText;

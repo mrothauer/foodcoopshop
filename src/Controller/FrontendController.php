@@ -5,10 +5,9 @@ namespace App\Controller;
 use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
+use Cake\I18n\FrozenDate;
 
 /**
- * FrontendController
- *
  * FoodCoopShop - The open source software for your foodcoop
  *
  * Licensed under The MIT License
@@ -18,7 +17,7 @@ use Cake\ORM\TableRegistry;
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 class FrontendController extends AppController
@@ -46,6 +45,21 @@ class FrontendController extends AppController
             $product['gross_price'] = $grossPrice;
             $product['tax'] = $grossPrice - $product['price'];
             $product['is_new'] = $this->Product->isNew($product['created']);
+            
+            if ($this->getRequest()->getSession()->check('Auth.instantOrderCustomer')) {
+                $product['next_delivery_day'] = Configure::read('app.timeHelper')->getCurrentDateForDatabase();
+            } else {
+                $product['next_delivery_day'] = $this->Product->calculatePickupDayRespectingDeliveryRhythm(
+                    $this->Product->newEntity([
+                        'delivery_rhythm_order_possible_until' => new FrozenDate($product['delivery_rhythm_order_possible_until']),
+                        'delivery_rhythm_first_delivery_day' => new FrozenDate($product['delivery_rhythm_first_delivery_day']),
+                        'delivery_rhythm_type' => $product['delivery_rhythm_type'],
+                        'delivery_rhythm_count' => $product['delivery_rhythm_count'],
+                        'is_stock_product' => $product['is_stock_product']
+                    ]
+                ));
+            }
+            
             $product['attributes'] = [];
 
             if ($this->AppAuth->isTimebasedCurrencyEnabledForCustomer()) {
@@ -53,7 +67,9 @@ class FrontendController extends AppController
                     $product['timebased_currency_money_incl'] = $this->Manufacturer->getTimebasedCurrencyMoney($product['gross_price'], $product['timebased_currency_max_percentage']);
                     $product['timebased_currency_money_excl'] = $this->Manufacturer->getTimebasedCurrencyMoney($product['price'], $product['timebased_currency_max_percentage']);
                     $product['timebased_currency_seconds'] = $this->Manufacturer->getCartTimebasedCurrencySeconds($product['gross_price'], $product['timebased_currency_max_percentage']);
+                    $product['timebased_currency_manufacturer_limit_reached'] = $this->Manufacturer->hasManufacturerReachedTimebasedCurrencyLimit($product['id_manufacturer']);
                 }
+                
             }
 
             $attributes = $this->ProductAttribute->find('all', [
@@ -80,7 +96,8 @@ class FrontendController extends AppController
                     'id_product_attribute' => $attribute->id_product_attribute
                 ];
                 $preparedAttributes['StockAvailables'] = [
-                    'quantity' => $attribute->stock_available->quantity
+                    'quantity' => $attribute->stock_available->quantity,
+                    'quantity_limit' => $attribute->stock_available->quantity_limit
                 ];
                 $preparedAttributes['DepositProductAttributes'] = [
                     'deposit' => !empty($attribute->deposit_product_attribute) ? $attribute->deposit_product_attribute->deposit : 0
@@ -104,6 +121,7 @@ class FrontendController extends AppController
                         $preparedAttributes['timebased_currency_money_incl'] = $this->Manufacturer->getTimebasedCurrencyMoney($grossPrice, $product['timebased_currency_max_percentage']);
                         $preparedAttributes['timebased_currency_money_excl'] = $this->Manufacturer->getTimebasedCurrencyMoney($attribute->price, $product['timebased_currency_max_percentage']);
                         $preparedAttributes['timebased_currency_seconds'] = $this->Manufacturer->getCartTimebasedCurrencySeconds($grossPrice, $product['timebased_currency_max_percentage']);
+                        $preparedAttributes['timebased_currency_manufacturer_limit_reached'] = $this->Manufacturer->hasManufacturerReachedTimebasedCurrencyLimit($product['id_manufacturer']);
                     }
                 }
 
@@ -194,7 +212,7 @@ class FrontendController extends AppController
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-
+        
         if (($this->name == 'Categories' && $this->getRequest()->getParam('action') == 'detail') || $this->name == 'Carts') {
             // do not allow but call isAuthorized
         } else {
@@ -216,6 +234,10 @@ class FrontendController extends AppController
 
             $shoppingLimitReached = Configure::read('appDb.FCS_MINIMAL_CREDIT_BALANCE') != - 1 && $creditBalance < Configure::read('appDb.FCS_MINIMAL_CREDIT_BALANCE') * - 1;
             $this->set('shoppingLimitReached', $shoppingLimitReached);
+            
+            $this->OrderDetail = TableRegistry::getTableLocator()->get('OrderDetails');
+            $futureOrderDetails = $this->OrderDetail->getGroupedFutureOrdersByCustomerId($this->AppAuth->getUserId());
+            $this->set('futureOrderDetails', $futureOrderDetails);
         }
         $this->AppAuth->setCart($this->AppAuth->getCart());
     }

@@ -104,8 +104,8 @@ INSERT INTO `fcs_configuration` VALUES
 (569,1,'FCS_TIMEBASED_CURRENCY_NAME','Stundenabrechnung: Name der Einheit<br /><div class=\"small\">max. 10 Zeichen</div>','Stunden','text',210,'de_DE','2018-03-16 15:23:34','2018-03-16 15:23:34'),
 (570,1,'FCS_TIMEBASED_CURRENCY_SHORTCODE','Stundenabrechnung: Abkürzung<br /><div class=\"small\">max. 3 Zeichen</div>','h','text',220,'de_DE','2018-03-16 15:23:34','2018-03-16 15:23:34'),
 (571,1,'FCS_TIMEBASED_CURRENCY_EXCHANGE_RATE','Stundenabrechnung: Umrechnungskurs<br /><div class=\"small\">in €, 2 Kommastellen</div>','10,00','number',230,'de_DE','2018-03-16 15:23:34','2018-03-16 15:23:34'),
-(572,1,'FCS_TIMEBASED_CURRENCY_MAX_CREDIT_BALANCE_CUSTOMER','Stundenabrechnung: Überziehungsrahmen für Mitglieder<br /><div class=\"small\">Wie viele Stunden kann ein Mitglied maximal ins Minus gehen?</div>','0','number',240,'de_DE','2018-03-16 15:23:34','2018-03-16 15:23:34'),
-(573,1,'FCS_TIMEBASED_CURRENCY_MAX_CREDIT_BALANCE_MANUFACTURER','Stundenabrechnung: Überziehungsrahmen für Hersteller<br /><div class=\"small\">Wie viele Stunden kann ein Hersteller maximal ins Plus gehen?</div>','0','number',250,'de_DE','2018-03-16 15:23:34','2018-03-16 15:23:34'),
+(572,1,'FCS_TIMEBASED_CURRENCY_MAX_CREDIT_BALANCE_CUSTOMER','Stundenabrechnung: Überziehungsrahmen für Mitglieder<br /><div class=\"small\">Wie viele Stunden kann ein Mitglied maximal ins Minus gehen?</div>','10','number',240,'de_DE','2018-03-16 15:23:34','2018-03-16 15:23:34'),
+(573,1,'FCS_TIMEBASED_CURRENCY_MAX_CREDIT_BALANCE_MANUFACTURER','Stundenabrechnung: Überziehungsrahmen für Hersteller<br /><div class=\"small\">Wie viele Stunden kann ein Hersteller maximal ins Plus gehen?</div>','100','number',250,'de_DE','2018-03-16 15:23:34','2018-03-16 15:23:34'),
 (574,1,'FCS_SHOW_PRODUCT_PRICE_FOR_GUESTS','Produktpreis für nicht eingeloggte Mitglieder anzeigen?','0','boolean',21,'de_DE','2018-05-28 18:05:54','2018-05-28 18:05:54'),
 (575,1,'FCS_CURRENCY_SYMBOL','Währungssymbol','€','readonly',52,'de_DE','2018-06-13 19:53:14','2018-06-13 19:53:14'),
 (576,1,'FCS_DEFAULT_LOCALE','Sprache','de_DE','readonly',55,'de_DE','2018-06-26 10:18:55','2018-06-26 10:18:55');
@@ -205,7 +205,9 @@ INSERT INTO `phinxlog` VALUES
 (20180702075300,'RenameShopOrderToInstantOrder','2018-07-02 07:23:18','2018-07-02 07:23:18',0),
 (20180717100910,'ProductTablesOptimization','2018-08-01 07:28:57','2018-08-01 07:28:57',0),
 (20180720130810,'RemoveOrdersTable','2018-08-01 07:28:57','2018-08-01 07:28:57',0),
-(20180727070325,'CorrectBicLength','2018-08-01 07:28:57','2018-08-01 07:28:57',0);
+(20180727070325,'CorrectBicLength','2018-08-01 07:28:57','2018-08-01 07:28:57',0),
+(20180814121543,'ImprovedStockManagement','2018-08-14 14:57:53','2018-08-14 14:57:53',0),
+(20180827074035,'AdditionalOrderPeriods','2018-08-27 08:28:29','2018-08-27 08:28:29',0);
 /*!40000 ALTER TABLE `phinxlog` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

@@ -12,7 +12,7 @@
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 
@@ -20,7 +20,7 @@ define('APP_ON', 1);
 define('APP_OFF', 0);
 define('APP_DEL', -1);
 
-define('ORDER_STATE_OPEN', 3);
+define('ORDER_STATE_ORDER_PLACED', 3);
 define('ORDER_STATE_ORDER_LIST_SENT_TO_MANUFACTURER', 10);
 define('ORDER_STATE_BILLED_CASHLESS', 11);
 define('ORDER_STATE_BILLED_CASH', 12);

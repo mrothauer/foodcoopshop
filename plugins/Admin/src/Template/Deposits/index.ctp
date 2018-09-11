@@ -9,7 +9,7 @@
  * @since         FoodCoopShop 1.1.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 
@@ -90,7 +90,7 @@ if ($appAuth->isSuperadmin()) {
                         'title' => __d('admin', 'Show_details'),
                     'class' => 'icon-with-text',
                     ],
-                    '/admin/order-details/?manufacturerId='.$manufacturerId.'&pickupDay[]='.$deposit['dateFrom'].'&pickupDay[]='.$deposit['dateTo'].'&deposit=1&orderStates[]='.join(',', $orderStates)
+                    '/admin/order-details/?manufacturerId='.$manufacturerId.'&pickupDay[]='.$deposit['dateFrom'].'&pickupDay[]='.$deposit['dateTo'].'&deposit=1'
                 ).'</span>';
                 echo '<span style="float: right;">';
                 echo $this->Number->formatAsCurrency($deposit['delivered']);

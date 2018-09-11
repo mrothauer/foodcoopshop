@@ -10,10 +10,11 @@
  * @since         FoodCoopShop 1.5.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 use App\Test\TestCase\AppCakeTestCase;
+use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 
 class ProductsFrontendControllerTest extends AppCakeTestCase
@@ -79,6 +80,34 @@ class ProductsFrontendControllerTest extends AppCakeTestCase
     public function testProductDetailNonExistingLoggedOut()
     {
         $productId = 3;
+        $this->browser->get($this->Slug->getProductDetail($productId, 'Demo Product'));
+        $this->assert404NotFoundHeader();
+    }
+    
+    public function testProductDetailIndividualDeliveryRhythmOrderPossibleUntilOver()
+    {
+        $this->loginAsSuperadmin();
+        $productId = 346;
+        $this->changeProductDeliveryRhythm($productId, '0-individual', '31.08.2018', '28.08.2018');
+        $this->browser->get($this->Slug->getProductDetail($productId, 'Demo Product'));
+        $this->assert404NotFoundHeader();
+    }
+    
+    public function testProductDetailIndividualDeliveryRhythmOrderPossibleUntilNotOver()
+    {
+        $this->loginAsSuperadmin();
+        $productId = 346;
+        $this->changeProductDeliveryRhythm($productId, '0-individual', date('Y-m-d', strtotime('next friday')), date('Y-m-d'));
+        $this->browser->get($this->Slug->getProductDetail($productId, 'Demo Product'));
+        $this->assert200OkHeader();
+    }
+    
+    public function testProductDetailDeliveryBreakActive()
+    {
+        $this->loginAsSuperadmin();
+        $productId = 346;
+        $manufacturerId = 5;
+        $this->changeManufacturerNoDeliveryDays($manufacturerId, Configure::read('app.timeHelper')->getDeliveryDateByCurrentDayForDb());
         $this->browser->get($this->Slug->getProductDetail($productId, 'Demo Product'));
         $this->assert404NotFoundHeader();
     }

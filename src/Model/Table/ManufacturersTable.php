@@ -17,7 +17,7 @@ use Cake\Validation\Validator;
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 
@@ -78,6 +78,30 @@ class ManufacturersTable extends AppTable
         $validator = $this->getNumberRangeValidator($validator, 'timebased_currency_max_credit_balance', 0, 400);
         return $validator;
     }
+    
+    public function hasManufacturerReachedTimebasedCurrencyLimit($manufacturerId)
+    {
+        $manufacturer = $this->find('all', [
+            'conditions' => ['id_manufacturer' => $manufacturerId]
+        ])->first();
+        
+        $timebasedCurrencyOrderDetailsTable = TableRegistry::getTableLocator()->get('TimebasedCurrencyOrderDetails');
+        $creditBalance = $timebasedCurrencyOrderDetailsTable->getCreditBalance($manufacturerId, null);
+        
+        $activeLimit = Configure::read('appDb.FCS_TIMEBASED_CURRENCY_MAX_CREDIT_BALANCE_MANUFACTURER') * 3600;
+        
+        if ($manufacturer->timebased_currency_max_credit_balance > 0) {
+            $activeLimit = $manufacturer->timebased_currency_max_credit_balance;
+        }
+        
+        if ($activeLimit > $creditBalance) {
+            return false;
+        }
+        
+        return true;
+        
+    }
+    
 
     public function getTimebasedCurrencyMoney($price, $percentage)
     {
@@ -283,9 +307,7 @@ class ManufacturersTable extends AppTable
             'fields' => [
                 'Manufacturers.id_manufacturer',
                 'Manufacturers.name',
-                'Manufacturers.holiday_from',
-                'Manufacturers.holiday_to',
-                'is_holiday_active' => '!' . $this->getManufacturerHolidayConditions()
+                'Manufacturers.no_delivery_days'
             ],
             'order' => [
                 'Manufacturers.name' => 'ASC'
@@ -298,19 +320,15 @@ class ManufacturersTable extends AppTable
             $manufacturerName = $manufacturer->name;
             $additionalInfo = '';
             if ($appAuth->user() || Configure::read('appDb.FCS_SHOW_PRODUCTS_FOR_GUESTS')) {
-                $additionalInfo = $productModel->getCountByManufacturerId($manufacturer->id_manufacturer);
+                $additionalInfo = $this->getProductsByManufacturerId($manufacturer->id_manufacturer, true);
             }
-            $holidayInfo = Configure::read('app.htmlHelper')->getManufacturerHolidayString($manufacturer->holiday_from, $manufacturer->holiday_to, $manufacturer->is_holiday_active);
-            if ($holidayInfo != '') {
-                $holidayInfo = __('Delivery_break') . ' ' . $holidayInfo;
-                if ($manufacturer->iss_holiday_active) {
-                    $additionalInfo = $holidayInfo;
-                } else {
-                    if ($appAuth->user() || Configure::read('appDb.FCS_SHOW_PRODUCTS_FOR_GUESTS')) {
-                        $additionalInfo .= ' - ';
-                    }
-                    $additionalInfo .= $holidayInfo;
+            $noDeliveryDaysString = Configure::read('app.htmlHelper')->getManufacturerNoDeliveryDaysString($manufacturer);
+            if ($noDeliveryDaysString != '') {
+                $noDeliveryDaysString = __('Delivery_break') . ': ' . $noDeliveryDaysString;
+                if ($appAuth->user() || Configure::read('appDb.FCS_SHOW_PRODUCTS_FOR_GUESTS')) {
+                    $additionalInfo .= ' - ';
                 }
+                $additionalInfo .= $noDeliveryDaysString;
             }
             if ($additionalInfo != '') {
                 $manufacturerName .= ' <span class="additional-info">('.$additionalInfo.')</span>';
@@ -399,7 +417,7 @@ class ManufacturersTable extends AppTable
         return $manufacturersForDropdown;
     }
 
-    public function getProductsByManufacturerId($manufacturerId)
+    public function getProductsByManufacturerId($manufacturerId, $countMode = false)
     {
         $sql = "SELECT ";
         $sql .= $this->getFieldsForProductListQuery();
@@ -420,8 +438,14 @@ class ManufacturersTable extends AppTable
         $statement = $this->getConnection()->prepare($sql);
         $statement->execute($params);
         $products = $statement->fetchAll('assoc');
-
-        return $products;
+        $products = $this->hideProductsWithActivatedDeliveryRhythmOrDeliveryBreak($products);
+        
+        if (! $countMode) {
+            return $products;
+        } else {
+            return count($products);
+        }
+        
     }
 
     /**

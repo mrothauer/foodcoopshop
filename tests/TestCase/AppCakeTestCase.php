@@ -26,7 +26,7 @@ require_once ROOT . DS . 'tests' . DS . 'config' . DS . 'test.config.php';
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
@@ -253,8 +253,10 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
         if ($expectedSubjectPattern != '') {
             $this->assertRegExpWithUnquotedString($expectedSubjectPattern, $emailLog->subject, 'email subject wrong');
         }
-        foreach ($expectedMessagePatterns as $expectedMessagePattern) {
-            $this->assertRegExpWithUnquotedString($expectedMessagePattern, $emailLog->message, 'email message wrong');
+        if (!empty($expectedMessagePatterns)) {
+            foreach ($expectedMessagePatterns as $expectedMessagePattern) {
+                $this->assertRegExpWithUnquotedString($expectedMessagePattern, $emailLog->message, 'email message wrong');
+            }
         }
 
         $preparedToAddresses = [];
@@ -313,13 +315,12 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
         ob_flush();
     }
 
-    protected function changeManufacturerHolidayMode($manufacturerId, $dateFrom = null, $dateTo = null)
+    protected function changeManufacturerNoDeliveryDays($manufacturerId, $noDeliveryDays = '')
     {
-        $query = 'UPDATE fcs_manufacturer SET holiday_from = :dateFrom, holiday_to = :dateTo WHERE id_manufacturer = :manufacturerId;';
+        $query = 'UPDATE fcs_manufacturer SET no_delivery_days = :noDeliveryDays WHERE id_manufacturer = :manufacturerId;';
         $params = [
             'manufacturerId' => $manufacturerId,
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo
+            'noDeliveryDays' => $noDeliveryDays
         ];
         $statement = $this->dbConnection->prepare($query);
         $statement->execute($params);
@@ -353,6 +354,7 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
         if ($comment != '') {
             $data['Carts']['pickup_day_entities'][0] = [
                 'customer_id' => $this->browser->getLoggedUserId(),
+                'pickup_day' => Configure::read('app.timeHelper')->getDeliveryDateByCurrentDayForDb(),
                 'comment' => $comment
             ];
         }
@@ -403,6 +405,17 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
             'priceUnitName' => $priceUnitName,
             'priceUnitAmount' => $priceUnitAmount,
             'priceQuantityInUnits' => $priceQuantityInUnits
+        ]);
+        return $this->browser->getJsonDecodedContent();
+    }
+    
+    protected function changeProductDeliveryRhythm($productId, $deliveryRhythmType, $deliveryRhythmFirstDeliveryDay = '', $deliveryRhythmOrderPossibleUntil = '')
+    {
+        $this->browser->ajaxPost('/admin/products/editDeliveryRhythm', [
+            'productId' => $productId,
+            'deliveryRhythmType' => $deliveryRhythmType,
+            'deliveryRhythmFirstDeliveryDay' => $deliveryRhythmFirstDeliveryDay,
+            'deliveryRhythmOrderPossibleUntil' => $deliveryRhythmOrderPossibleUntil
         ]);
         return $this->browser->getJsonDecodedContent();
     }

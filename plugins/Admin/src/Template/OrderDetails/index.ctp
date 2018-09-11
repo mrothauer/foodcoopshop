@@ -9,7 +9,7 @@
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 use Cake\Core\Configure;
@@ -22,10 +22,8 @@ use Cake\Core\Configure;
         'script' => Configure::read('app.jsNamespace') . ".Helper.initDatepicker();
             $('input.datepicker').datepicker();".
             Configure::read('app.jsNamespace').".Admin.init();" .
-            Configure::read('app.jsNamespace').".Admin.initCancelSelectionButton();" .
             Configure::read('app.jsNamespace').".Helper.setCakeServerName('" . Configure::read('app.cakeServerName') . "');" .
             Configure::read('app.jsNamespace').".Helper.setIsManufacturer(" . $appAuth->isManufacturer() . ");" .
-            Configure::read('app.jsNamespace').".Admin.initEmailToAllButton();" .
             Configure::read('app.jsNamespace').".Admin.selectMainMenuAdmin('".__d('admin', 'Orders')."');" .
             Configure::read('app.jsNamespace').".Admin.initProductDropdown(" . ($productId != '' ? $productId : '0') . ", " . ($manufacturerId != '' ? $manufacturerId : '0') . ");
         "
@@ -140,7 +138,7 @@ echo '</tr>';
 foreach ($orderDetails as $orderDetail) {
     
     $editRecordAllowed = $groupBy == '' && (
-        in_array($orderDetail->order_state, [ORDER_STATE_OPEN, ORDER_STATE_ORDER_LIST_SENT_TO_MANUFACTURER]) ||
+        in_array($orderDetail->order_state, [ORDER_STATE_ORDER_PLACED, ORDER_STATE_ORDER_LIST_SENT_TO_MANUFACTURER]) ||
         $orderDetail->bulkOrdersAllowed);
 
     $rowClasses = [];
@@ -159,66 +157,66 @@ foreach ($orderDetails as $orderDetail) {
         }
     echo '</td>';
 
-    echo $this->element('orderDetailList/data/elements/id', [
+    echo $this->element('orderDetailList/data/id', [
         'orderDetail' => $orderDetail,
         'groupBy' => $groupBy
     ]);
 
-    echo $this->element('orderDetailList/data/elements/amount', [
+    echo $this->element('orderDetailList/data/amount', [
         'orderDetail' => $orderDetail,
         'editRecordAllowed' => $editRecordAllowed,
         'groupBy' => $groupBy
     ]);
 
-    echo $this->element('orderDetailList/data/elements/mainObject', [
+    echo $this->element('orderDetailList/data/mainObject', [
         'orderDetail' => $orderDetail,
         'groupBy' => $groupBy
     ]);
     
-    echo $this->element('orderDetailList/data/elements/price', [
+    echo $this->element('orderDetailList/data/price', [
         'orderDetail' => $orderDetail,
         'editRecordAllowed' => $editRecordAllowed,
         'groupBy' => $groupBy
     ]);
 
     if ($groupBy == 'manufacturer') {
-        echo $this->element('orderDetailList/data/elements/variableMemberFee', [
+        echo $this->element('orderDetailList/data/variableMemberFee', [
             'orderDetail' => $orderDetail,
             'groupBy' => $groupBy
         ]);
     }
     
-    echo $this->element('orderDetailList/data/elements/deposit', [
+    echo $this->element('orderDetailList/data/deposit', [
         'orderDetail' => $orderDetail,
         'groupBy' => $groupBy
     ]);
     
-    echo $this->element('orderDetailList/data/elements/quantity', [
-        'orderDetail' => $orderDetail,
-        'editRecordAllowed' => $editRecordAllowed,
-        'groupBy' => $groupBy
-    ]);
-
-    echo $this->element('orderDetailList/data/elements/productsPickedUp', [
-        'orderDetail' => $orderDetail,
-        'groupBy' => $groupBy
-    ]);
-    
-    echo $this->element('orderDetailList/data/elements/customer', [
-        'orderDetail' => $orderDetail
-    ]);
-    
-    echo $this->element('orderDetailList/data/elements/pickupDay', [
-        'orderDetail' => $orderDetail
-    ]);
-    
-    echo $this->element('orderDetailList/data/elements/orderState', [
+    echo $this->element('orderDetailList/data/quantity', [
         'orderDetail' => $orderDetail,
         'editRecordAllowed' => $editRecordAllowed,
         'groupBy' => $groupBy
     ]);
 
-    echo $this->element('orderDetailList/data/elements/cancelButton', [
+    echo $this->element('orderDetailList/data/productsPickedUp', [
+        'orderDetail' => $orderDetail,
+        'groupBy' => $groupBy
+    ]);
+    
+    echo $this->element('orderDetailList/data/customer', [
+        'orderDetail' => $orderDetail
+    ]);
+    
+    echo $this->element('orderDetailList/data/pickupDay', [
+        'orderDetail' => $orderDetail
+    ]);
+    
+    echo $this->element('orderDetailList/data/orderState', [
+        'orderDetail' => $orderDetail,
+        'editRecordAllowed' => $editRecordAllowed,
+        'groupBy' => $groupBy
+    ]);
+
+    echo $this->element('orderDetailList/data/cancelButton', [
         'orderDetail' => $orderDetail,
         'editRecordAllowed' => $editRecordAllowed,
         'groupBy' => $groupBy
@@ -245,10 +243,18 @@ if ($groupBy == 'manufacturer') {
 }
 
 if ($groupBy == 'customer') {
-    echo '<td></td>';
-    if (count($pickupDay) == 1) {
-        echo '<td></td>';
+    $showAllOrderDetailsLink = '';
+    if (!empty($orderDetails)) {
+        $showAllOrderDetailsLink = $this->Html->getJqueryUiIcon($this->Html->image($this->Html->getFamFamFamPath('cart.png')) . (!$isMobile ? ' ' . __d('admin', 'All_products') : ''),
+            [
+                'title' => __d('admin', 'Show_all_ordered_products'),
+                'class' => 'icon-with-text'
+            ],
+            '/admin/order-details/index/?pickupDay[]=' . join(',', $pickupDay) . '&productId=' . $productId. '&manufacturerId=' . $manufacturerId
+        );
     }
+    echo '<td></td>';
+    echo '<td>'.$showAllOrderDetailsLink.'</td>';
 }
 if ($groupBy == 'product') {
     if ($appAuth->isManufacturer()) {
@@ -305,6 +311,12 @@ echo '<div class="bottom-button-container">';
     
     echo $this->element('orderDetailList/button/allProductsPickedUp', [
         'pickupDay' => $pickupDay
+    ]);
+    
+    echo $this->element('orderDetailList/button/changePickupDayOfSelectedOrderDetails', [
+        'deposit' => $deposit,
+        'orderDetails' => $orderDetails,
+        'groupBy' => $groupBy
     ]);
     
     echo $this->element('orderDetailList/button/cancelSelectedOrderDetails', [

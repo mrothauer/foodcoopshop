@@ -9,7 +9,7 @@
  * @since         FoodCoopShop 1.4.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 use App\Test\TestCase\AppCakeTestCase;
@@ -48,7 +48,59 @@ class OrderDetailsControllerTest extends AppCakeTestCase
         $this->EmailLog = TableRegistry::getTableLocator()->get('EmailLogs');
         $this->Manufacturer = TableRegistry::getTableLocator()->get('Manufacturers');
     }
+    
+    public function testEditPickupDayAsSuperadminWrongWeekday()
+    {
+        $this->loginAsSuperadmin();
+        $response = $this->editPickupDayOfOrderDetails([$this->orderDetailIdA, $this->orderDetailIdB], '2018-01-01', 'bla');
+        $this->assertRegExpWithUnquotedString('Der Abholtag muss ein Freitag sein.', $response->msg);
+        $this->assertJsonError();    
+    }
 
+    public function testEditPickupDayAsSuperadminEmptyReason()
+    {
+        $this->loginAsSuperadmin();
+        $response = $this->editPickupDayOfOrderDetails([$this->orderDetailIdA, $this->orderDetailIdB], '2018-01-01', '');
+        $this->assertRegExpWithUnquotedString('Bitte gib an, warum der Abholtag geändert wird.', $response->msg);
+        $this->assertJsonError();
+    }
+    
+    public function testEditPickupDayAsSuperadminNoOrderDetailIds()
+    {
+        $this->loginAsSuperadmin();
+        $response = $this->editPickupDayOfOrderDetails([], '2018-01-01', 'asdf');
+        $this->assertRegExpWithUnquotedString('error - no order detail id passed', $response->msg);
+        $this->assertJsonError();
+    }
+    
+    public function testEditPickupDayAsSuperadminWrongOrderDetailIds()
+    {
+        $this->loginAsSuperadmin();
+        $response = $this->editPickupDayOfOrderDetails([200,40], '2018-01-01', 'asdf');
+        $this->assertRegExpWithUnquotedString('error - order details wrong', $response->msg);
+        $this->assertJsonError();
+    }
+    
+    public function testEditPickupDayAsSuperadminOk()
+    {
+        $this->loginAsSuperadmin();
+        $reason = 'this is the reason';
+        $this->editPickupDayOfOrderDetails([$this->orderDetailIdA, $this->orderDetailIdB], '2018-09-07', $reason);
+        $this->assertJsonOk();
+        
+        $emailLogs = $this->EmailLog->find('all')->toArray();
+        $this->assertEmailLogs(
+            $emailLogs[0],
+            'Der Abholtag deiner Bestellung wurde geändert auf: Freitag, 07.09.2018',
+            [
+                $reason,
+                'Neuer Abholtag : <b>Freitag, 07.09.2018</b>',
+                'Alter Abholtag: Freitag, 02.02.2018',
+            ],
+            [Configure::read('test.loginEmailSuperadmin')]
+        );
+    }
+    
     public function testCancellationAsManufacturer()
     {
         $this->loginAsVegetableManufacturer();
@@ -136,9 +188,7 @@ class OrderDetailsControllerTest extends AppCakeTestCase
         $cart = $this->prepareTimebasedCurrencyCart();
         $orderDetailId = $cart->cart_products[1]->order_detail->id_order_detail;
         $this->deleteAndAssertRemoveFromDatabase([$orderDetailId]);
-
-        $changedOrderDetails = $this->getOrderDetailsFromDatabase([$orderDetailId]);
-
+        
         // assert if record TimebasedCurrencyOrderDetail was removed
         $this->TimebasedCurrencyOrderDetail = TableRegistry::getTableLocator()->get('TimebasedCurrencyOrderDetails');
         $timebasedCurrencyOrderDetail = $this->TimebasedCurrencyOrderDetail->find('all', [
@@ -215,7 +265,7 @@ class OrderDetailsControllerTest extends AppCakeTestCase
     public function testEditOrderDetailPriceWithTimebasedCurrency()
     {
         $cart = $this->prepareTimebasedCurrencyCart();
-        $orderDetailId = $cart->cart_products[0]->order_detail->id_order_detail;
+        $orderDetailId = $cart->cart_products[1]->order_detail->id_order_detail;
         $this->editOrderDetailPrice($orderDetailId, $this->newPrice, $this->editPriceReason);
         
         $changedOrderDetails = $this->getOrderDetailsFromDatabase([$orderDetailId]);
@@ -244,7 +294,7 @@ class OrderDetailsControllerTest extends AppCakeTestCase
         $this->changeProductPrice($this->productIdA, 0);
         $this->mockCart = $this->generateAndGetCart();
         
-        $mockOrderDetailId = $this->mockCart->cart_products[0]->order_detail->id_order_detail;
+        $mockOrderDetailId = $this->mockCart->cart_products[1]->order_detail->id_order_detail;
         $this->editOrderDetailPrice($mockOrderDetailId, $this->newPrice, $this->editPriceReason);
 
         $changedOrderDetails = $this->getOrderDetailsFromDatabase([$mockOrderDetailId]);
@@ -293,10 +343,10 @@ class OrderDetailsControllerTest extends AppCakeTestCase
         $this->mockCart = $this->generateAndGetCart(5, 2);
         $this->logout();
         $this->loginAsVegetableManufacturer();
-        $this->editOrderDetailAmount($this->mockCart->cart_products[0]->order_detail->id_order_detail, $this->newAmount, $this->editAmountReason);
+        $this->editOrderDetailAmount($this->mockCart->cart_products[1]->order_detail->id_order_detail, $this->newAmount, $this->editAmountReason);
 
         $changedOrder = $this->getChangedMockCartFromDatabase();
-        $this->assertEquals($this->newAmount, $changedOrder->cart_products[0]->order_detail->product_amount, 'order detail amount was not changed properly');
+        $this->assertEquals($this->newAmount, $changedOrder->cart_products[1]->order_detail->product_amount, 'order detail amount was not changed properly');
 
         $expectedToEmails = [Configure::read('test.loginEmailSuperadmin')];
         $expectedCcEmails = [];
@@ -309,7 +359,7 @@ class OrderDetailsControllerTest extends AppCakeTestCase
     {
 
         $cart = $this->prepareTimebasedCurrencyCart();
-        $orderDetailId = $cart->cart_products[0]->order_detail->id_order_detail;
+        $orderDetailId = $cart->cart_products[1]->order_detail->id_order_detail;
         $this->editOrderDetailAmount($orderDetailId, $this->newAmount, $this->editAmountReason);
         
         $changedOrderDetails = $this->getOrderDetailsFromDatabase([$orderDetailId]);
@@ -325,10 +375,10 @@ class OrderDetailsControllerTest extends AppCakeTestCase
         $this->loginAsSuperadmin();
         $this->mockCart = $this->generateAndGetCart(1, 2);
 
-        $this->editOrderDetailAmount($this->mockCart->cart_products[0]->order_detail->id_order_detail, $this->newAmount, $this->editAmountReason);
+        $this->editOrderDetailAmount($this->mockCart->cart_products[1]->order_detail->id_order_detail, $this->newAmount, $this->editAmountReason);
 
         $changedOrder = $this->getChangedMockCartFromDatabase();
-        $this->assertEquals($this->newAmount, $changedOrder->cart_products[0]->order_detail->product_amount, 'order detail amount was not changed properly');
+        $this->assertEquals($this->newAmount, $changedOrder->cart_products[1]->order_detail->product_amount, 'order detail amount was not changed properly');
 
         $expectedToEmails = [Configure::read('test.loginEmailSuperadmin')];
         $expectedCcEmails = [];
@@ -341,13 +391,13 @@ class OrderDetailsControllerTest extends AppCakeTestCase
     {
         $this->loginAsSuperadmin();
         $this->mockCart = $this->generateAndGetCart(1, 2);
-        $orderDetailId = $this->mockCart->cart_products[0]->order_detail->id_order_detail;
+        $orderDetailId = $this->mockCart->cart_products[1]->order_detail->id_order_detail;
         $this->simulateSendOrderListsCronjob($orderDetailId);
         
         $this->editOrderDetailAmount($orderDetailId, $this->newAmount, $this->editAmountReason);
         
         $changedOrder = $this->getChangedMockCartFromDatabase();
-        $this->assertEquals($this->newAmount, $changedOrder->cart_products[0]->order_detail->product_amount, 'order detail amount was not changed properly');
+        $this->assertEquals($this->newAmount, $changedOrder->cart_products[1]->order_detail->product_amount, 'order detail amount was not changed properly');
         
         $expectedToEmails = [Configure::read('test.loginEmailSuperadmin')];
         $expectedCcEmails = [
@@ -365,10 +415,10 @@ class OrderDetailsControllerTest extends AppCakeTestCase
         $manufacturerId = $this->Customer->getManufacturerIdByCustomerId(Configure::read('test.vegetableManufacturerId'));
         $this->changeManufacturer($manufacturerId, 'send_ordered_product_amount_changed_notification', 0);
 
-        $this->editOrderDetailAmount($this->mockCart->cart_products[0]->order_detail->id_order_detail, $this->newAmount, $this->editAmountReason);
+        $this->editOrderDetailAmount($this->mockCart->cart_products[1]->order_detail->id_order_detail, $this->newAmount, $this->editAmountReason);
 
         $changedOrder = $this->getChangedMockCartFromDatabase();
-        $this->assertEquals($this->newAmount, $changedOrder->cart_products[0]->order_detail->product_amount, 'order detail amount was not changed properly');
+        $this->assertEquals($this->newAmount, $changedOrder->cart_products[1]->order_detail->product_amount, 'order detail amount was not changed properly');
 
         $expectedToEmails = [Configure::read('test.loginEmailSuperadmin')];
         $expectedCcEmails = [];
@@ -384,10 +434,10 @@ class OrderDetailsControllerTest extends AppCakeTestCase
         $manufacturerId = $this->Customer->getManufacturerIdByCustomerId(Configure::read('test.vegetableManufacturerId'));
         $this->changeManufacturer($manufacturerId, 'bulk_orders_allowed', 1);
 
-        $this->editOrderDetailAmount($this->mockCart->cart_products[0]->order_detail->id_order_detail, $this->newAmount, $this->editAmountReason);
+        $this->editOrderDetailAmount($this->mockCart->cart_products[1]->order_detail->id_order_detail, $this->newAmount, $this->editAmountReason);
 
         $changedOrder = $this->getChangedMockCartFromDatabase();
-        $this->assertEquals($this->newAmount, $changedOrder->cart_products[0]->order_detail->product_amount, 'order detail amount was not changed properly');
+        $this->assertEquals($this->newAmount, $changedOrder->cart_products[1]->order_detail->product_amount, 'order detail amount was not changed properly');
 
         $expectedToEmails = [Configure::read('test.loginEmailSuperadmin')];
         $expectedCcEmails = [];
@@ -527,10 +577,23 @@ class OrderDetailsControllerTest extends AppCakeTestCase
         
     }
 
+    private function editPickupDayOfOrderDetails($orderDetailIds, $pickupDay, $reason)
+    {
+        $this->browser->ajaxPost(
+            '/admin/order-details/editPickupDay/',
+            [
+                'orderDetailIds' => $orderDetailIds,
+                'pickupDay' => $pickupDay,
+                'changePickupDayReason' => $reason
+            ]
+        );
+        return $this->browser->getJsonDecodedContent();
+    }
+    
     private function deleteOrderDetail($orderDetailIds, $cancellationReason)
     {
         $this->browser->post(
-            '/admin/orderDetails/delete/',
+            '/admin/order-details/delete/',
             [
                 'orderDetailIds' => $orderDetailIds,
                 'cancellationReason' => $cancellationReason
@@ -541,7 +604,7 @@ class OrderDetailsControllerTest extends AppCakeTestCase
     private function editOrderDetailPrice($orderDetailId, $productPrice, $editPriceReason)
     {
         $this->browser->post(
-            '/admin/orderDetails/editProductPrice/',
+            '/admin/order-details/editProductPrice/',
             [
                 'orderDetailId' => $orderDetailId,
                 'productPrice' => $productPrice,
@@ -553,7 +616,7 @@ class OrderDetailsControllerTest extends AppCakeTestCase
     private function editOrderDetailQuantity($orderDetailId, $productQuantity, $doNotChangePrice)
     {
         $this->browser->post(
-            '/admin/orderDetails/editProductQuantity/',
+            '/admin/order-details/editProductQuantity/',
             [
                 'orderDetailId' => $orderDetailId,
                 'productQuantity' => $productQuantity,
@@ -565,7 +628,7 @@ class OrderDetailsControllerTest extends AppCakeTestCase
     private function editOrderDetailAmount($orderDetailId, $productAmount, $editAmountReason)
     {
         $this->browser->post(
-            '/admin/orderDetails/editProductAmount/',
+            '/admin/order-details/editProductAmount/',
             [
                 'orderDetailId' => $orderDetailId,
                 'productAmount' => $productAmount,

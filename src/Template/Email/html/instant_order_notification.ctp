@@ -9,7 +9,7 @@
  * @since         FoodCoopShop 1.4.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 ?>
@@ -35,6 +35,7 @@
 <?php echo $this->element('email/tableHead', ['cellpadding' => 6]); ?>
     <?php echo $this->element('email/orderedProductsTable', [
         'manufacturerId' => $manufacturer->id_manufacturer,
+        'pickupDay' => $this->MyTime->getCurrentDateForDatabase(),
         'cartProducts' => $cart['CartProducts'],
         'depositSum' => $depositSum,
         'productSum' => $productSum,

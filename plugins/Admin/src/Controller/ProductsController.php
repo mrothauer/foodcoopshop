@@ -23,7 +23,7 @@ use Intervention\Image\ImageManagerStatic as Image;
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 class ProductsController extends AdminAppController
@@ -350,6 +350,101 @@ class ProductsController extends AdminAppController
         $this->getRequest()->getSession()->write('highlightedRowId', $newProduct->id_product);
         $this->redirect($this->referer());
     }
+    
+    public function editDeliveryRhythm() 
+    {
+        $this->RequestHandler->renderAs($this, 'ajax');
+        
+        $this->loadComponent('Sanitize');
+        $this->setRequest($this->getRequest()->withParsedBody($this->Sanitize->trimRecursive($this->getRequest()->getData())));
+        $this->setRequest($this->getRequest()->withParsedBody($this->Sanitize->stripTagsRecursive($this->getRequest()->getData())));
+        
+        $productId = (int) $this->getRequest()->getData('productId');
+        $deliveryRhythmTypeCombined = $this->getRequest()->getData('deliveryRhythmType');
+        $deliveryRhythmFirstDeliveryDay = $this->getRequest()->getData('deliveryRhythmFirstDeliveryDay');
+        $deliveryRhythmOrderPossibleUntil = $this->getRequest()->getData('deliveryRhythmOrderPossibleUntil');
+        
+        $splittedDeliveryRhythmType = explode('-', $deliveryRhythmTypeCombined);
+        
+        $oldProduct = $this->Product->find('all', [
+            'conditions' => [
+                'Products.id_product' => $productId
+            ],
+            'contain' => [
+                'Manufacturers'
+            ]
+        ])->first();
+        
+        $deliveryRhythmCount = $splittedDeliveryRhythmType[0];
+        $deliveryRhythmType = $splittedDeliveryRhythmType[1];
+        
+        $product2update = [
+            'delivery_rhythm_count' => $deliveryRhythmCount,
+            'delivery_rhythm_type' => $deliveryRhythmType
+        ];
+        
+        $isFirstDeliveryDayMandatory = in_array($deliveryRhythmTypeCombined, ['0-individual', '2-week']);
+        if ($deliveryRhythmFirstDeliveryDay != '' || $isFirstDeliveryDayMandatory) {
+            $product2update['delivery_rhythm_first_delivery_day'] = Configure::read('app.timeHelper')->formatToDbFormatDate($deliveryRhythmFirstDeliveryDay);
+        }
+        if ($deliveryRhythmFirstDeliveryDay == '' && !$isFirstDeliveryDayMandatory) {
+            $product2update['delivery_rhythm_first_delivery_day'] = '';
+        }
+        
+        $product2update['delivery_rhythm_order_possible_until'] = '';
+        if (in_array($deliveryRhythmTypeCombined, ['0-individual'])) {
+            $product2update['delivery_rhythm_order_possible_until'] = Configure::read('app.timeHelper')->formatToDbFormatDate($deliveryRhythmOrderPossibleUntil);
+        }
+        
+        try {
+            $entity = $this->Product->patchEntity(
+                $oldProduct,
+                $product2update,
+                [
+                    'validate' => 'deliveryRhythm'
+                ]
+            );
+            $entityWasDirty = $entity->isDirty();
+            if (!empty($entity->getErrors())) {
+                throw new InvalidParameterException(join('<br />', $this->Product->getAllValidationErrors($entity)));
+            }
+            $this->Product->save($entity);
+            
+            $messageString = __d('admin', 'The_delivery_rhythm_of_the_product_{0}_from_manufacturer_{1}_was_changed_successfully_to_{2}.', [
+                '<b>' . $oldProduct->name . '</b>',
+                '<b>' . $oldProduct->manufacturer->name . '</b>',
+                '<b>' . Configure::read('app.htmlHelper')->getDeliveryRhythmString($deliveryRhythmType, $deliveryRhythmCount) . '</b>'
+            ]);
+            
+            if ($deliveryRhythmFirstDeliveryDay != '') {
+                $messageString .= ' ';
+                if ($deliveryRhythmType == 'individual') {
+                    $messageString .= __d('admin', 'Delivery_day');
+                } else {
+                    $messageString .= __d('admin', 'First_delivery_day');
+                }
+                $messageString .= ': <b>'. Configure::read('app.timeHelper')->formatToDateShort($deliveryRhythmFirstDeliveryDay) . '</b>';
+                if ($product2update['delivery_rhythm_order_possible_until'] != '') {
+                    $messageString .= ', ' . __d('admin', 'Order_possible_until') . ': <b>'. Configure::read('app.timeHelper')->formatToDateShort($deliveryRhythmOrderPossibleUntil) . '</b>';
+                }
+            }
+            
+            if ($entityWasDirty) {
+                $this->ActionLog->customSave('product_delivery_rhythm_changed', $this->AppAuth->getUserId(), $productId, 'products', $messageString);
+            }
+            $this->Flash->success($messageString);
+            
+            $this->getRequest()->getSession()->write('highlightedRowId', $productId);
+            
+            die(json_encode([
+                'status' => 1,
+                'msg' => __d('admin', 'Saving_successful.')
+            ]));
+        } catch (InvalidParameterException $e) {
+            $this->sendAjaxError($e);
+        }
+        
+    }
 
     public function editTax()
     {
@@ -498,6 +593,47 @@ class ProductsController extends AdminAppController
             'msg' => __('Saving_successful.')
         ]));
     }
+    
+    public function editIsStockProduct()
+    {
+        $this->RequestHandler->renderAs($this, 'json');
+        
+        $originalProductId = $this->getRequest()->getData('productId');
+        
+        $ids = $this->Product->getProductIdAndAttributeId($originalProductId);
+        $productId = $ids['productId'];
+        
+        $oldProduct = $this->Product->find('all', [
+            'conditions' => [
+                'Products.id_product' => $productId
+            ],
+            'contain' => [
+                'StockAvailables',
+                'Manufacturers',
+                'ProductAttributes',
+                'ProductAttributes.StockAvailables',
+                'ProductAttributes.ProductAttributeCombinations.Attributes'
+            ]
+        ])->first();
+        
+        $product2update = [];
+        if (in_array('isStockProduct', array_keys($this->getRequest()->getData()))) {
+            $product2update['is_stock_product'] = $this->getRequest()->getData('isStockProduct');
+        }
+        if (!empty($product2update)) {
+            $this->Product->save(
+                $this->Product->patchEntity($oldProduct, $product2update)
+            );
+        }
+        $this->Flash->success(__d('admin', 'The_product_{0}_was_changed_successfully_to_a_stock_product.', ['<b>' . $oldProduct->name . '</b>']));
+        
+        $this->getRequest()->getSession()->write('highlightedRowId', $productId);
+        
+        die(json_encode([
+            'status' => 1,
+            'msg' => 'ok'
+        ]));
+    }
 
     public function editQuantity()
     {
@@ -533,9 +669,20 @@ class ProductsController extends AdminAppController
         }
 
         try {
+            $object2save = [
+                'quantity' => $this->getRequest()->getData('quantity'),
+            ];
+            if (in_array('quantityLimit', array_keys($this->getRequest()->getData()))) {
+                $object2save['quantity_limit'] = $this->getRequest()->getData('quantityLimit');
+            }
+            if (in_array('soldOutLimit', array_keys($this->getRequest()->getData()))) {
+                $object2save['sold_out_limit'] = $this->getRequest()->getData('soldOutLimit');
+            }
             $this->Product->changeQuantity(
                 [
-                    [$originalProductId => $this->getRequest()->getData('quantity')]
+                    [
+                        $originalProductId => $object2save
+                    ]
                 ]
             );
         } catch (InvalidParameterException $e) {
@@ -545,7 +692,9 @@ class ProductsController extends AdminAppController
         $quantity = $this->Product->getQuantityAsInteger($this->getRequest()->getData('quantity'));
         $this->Flash->success(__d('admin', 'The_amount_of_the_product_{0}_was_changed_successfully.', ['<b>' . $oldProduct->name . '</b>']));
 
-        $this->ActionLog->customSave('product_quantity_changed', $this->AppAuth->getUserId(), $productId, 'products', __d('admin', 'The_amount_of_the_product_{0}_from_manufacturer_{1}_was_changed_from_{2}_to_{3}.', ['<b>' . $oldProduct->name . '</b>', '<b>' . $oldProduct->manufacturer->name . '</b>', $oldProduct->stock_available->quantity, $quantity]));
+        if ($oldProduct->stock_available->quantity != $quantity) {
+            $this->ActionLog->customSave('product_quantity_changed', $this->AppAuth->getUserId(), $productId, 'products', __d('admin', 'The_amount_of_the_product_{0}_from_manufacturer_{1}_was_changed_from_{2}_to_{3}.', ['<b>' . $oldProduct->name . '</b>', '<b>' . $oldProduct->manufacturer->name . '</b>', $oldProduct->stock_available->quantity, $quantity]));
+        }
         $this->getRequest()->getSession()->write('highlightedRowId', $productId);
 
         die(json_encode([
@@ -856,9 +1005,6 @@ class ProductsController extends AdminAppController
             $manufacturer = $this->Manufacturer->find('all', [
                 'conditions' => [
                     'Manufacturers.id_manufacturer' => $manufacturerId
-                ],
-                'fields' => [
-                    'is_holiday_active' => '!'.$this->Product->Manufacturers->getManufacturerHolidayConditions()
                 ]
             ])
             ->select($this->Product->Manufacturers)
@@ -867,6 +1013,9 @@ class ProductsController extends AdminAppController
             $variableMemberFee = $this->Manufacturer->getOptionVariableMemberFee($manufacturer->variable_member_fee);
             $this->set('variableMemberFee', $variableMemberFee);
         }
+        
+        $advancedStockManagementEnabled = $manufacturerId == 'all' || (!empty($manufacturer) && $manufacturer->stock_management_enabled);
+        $this->set('advancedStockManagementEnabled', $advancedStockManagementEnabled);
 
         $this->set('title_for_layout', __d('admin', 'Products'));
 

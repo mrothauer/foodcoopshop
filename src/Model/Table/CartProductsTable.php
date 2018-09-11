@@ -16,7 +16,7 @@ use App\Lib\Error\Exception\InvalidParameterException;
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 class CartProductsTable extends AppTable
@@ -64,9 +64,6 @@ class CartProductsTable extends AppTable
             'conditions' => [
                 'Products.id_product' => $productId
             ],
-            'fields' => [
-                'is_holiday_active' => '!'.$this->Products->getManufacturerHolidayConditions()
-            ],
             'contain' => [
                 'Manufacturers',
                 'StockAvailables',
@@ -97,8 +94,9 @@ class CartProductsTable extends AppTable
         }
 
         // stock available check for product
-        if ($attributeId == 0 && $product->stock_available->quantity < $combinedAmount && $amount > 0) {
-            $message = __('The_desired_amount_{0}_of_the_product_{1}_is_not_available_any_more_available_amount_{2}.', ['<b>' . $combinedAmount . '</b>', '<b>' . $product->name . '</b>', $product->stock_available->quantity]);
+        $availableQuantity = $product->stock_available->quantity - $product->stock_available->quantity_limit;
+        if ($attributeId == 0 && $availableQuantity < $combinedAmount && $amount > 0) {
+            $message = __('The_desired_amount_{0}_of_the_product_{1}_is_not_available_any_more_available_amount_{2}.', ['<b>' . $combinedAmount . '</b>', '<b>' . $product->name . '</b>', $availableQuantity]);
             return [
                 'status' => 0,
                 'msg' => $message,
@@ -113,9 +111,9 @@ class CartProductsTable extends AppTable
                 if ($attribute->id_product_attribute == $attributeId) {
                     $attributeIdFound = true;
                     // stock available check for attribute
-                    if ($attribute->stock_available->quantity < $combinedAmount && $amount > 0) {
-                        $message = __('The_desired_amount_{0}_of_the_attribute_{1}_of_the_product_{2}_is_not_available_any_more_available_amount_{3}.', ['<b>' . $combinedAmount . '</b>', '<b>' . $attribute->product_attribute_combination->attribute->name . '</b>', '<b>' . $product->name . '</b>', $attribute->stock_available->quantity]);
-
+                    $availableQuantity = $attribute->stock_available->quantity - $attribute->stock_available->quantity_limit;
+                    if ($availableQuantity < $combinedAmount && $amount > 0) {
+                        $message = __('The_desired_amount_{0}_of_the_attribute_{1}_of_the_product_{2}_is_not_available_any_more_available_amount_{3}.', ['<b>' . $combinedAmount . '</b>', '<b>' . $attribute->product_attribute_combination->attribute->name . '</b>', '<b>' . $product->name . '</b>', $availableQuantity]);
                         return [
                             'status' => 0,
                             'msg' => $message,
@@ -144,8 +142,8 @@ class CartProductsTable extends AppTable
             ];
         }
 
-        if (! $product->manufacturer->active || $product->is_holiday_active) {
-            $message = __('The_manufacturer_of_the_product_{0}_is_on_holiday_or_product_is_not_activated.', ['<b>' . $product->name . '</b>']);
+        if (! $product->manufacturer->active || $this->Products->deliveryBreakEnabled($product->manufacturer->no_delivery_days, $product->next_delivery_day)) {
+            $message = __('The_manufacturer_of_the_product_{0}_has_a_delivery_break_or_product_is_not_activated.', ['<b>' . $product->name . '</b>']);
             return [
                 'status' => 0,
                 'msg' => $message,
@@ -178,9 +176,10 @@ class CartProductsTable extends AppTable
     public function setPickupDays($cartProducts, $customerId, $instantOrderMode)
     {
         $pickupDayTable = TableRegistry::getTableLocator()->get('PickupDays');
+        
         foreach($cartProducts as &$cartProduct) {
             if (!$instantOrderMode) {
-                $cartProduct->pickup_day = Configure::read('app.timeHelper')->getDeliveryDateByCurrentDayForDb();
+                $cartProduct->pickup_day = $cartProduct->product->next_delivery_day;
             } else {
                 $cartProduct->pickup_day = Configure::read('app.timeHelper')->getCurrentDateForDatabase();
             }
@@ -195,15 +194,22 @@ class CartProductsTable extends AppTable
             'order' => [
                 'PickupDays.pickup_day' => 'ASC'
             ]
-        ])->toArray();
+        ]);
         
-        if (empty($pickupDays)) {
-            $pickupDays = [
-                $pickupDayTable->newEntity([
+        $existingPickupDays = [];
+        foreach($pickupDays->all()->extract('pickup_day')->toArray() as $p) {
+            $existingPickupDays[] = $p->i18nFormat(Configure::read('app.timeHelper')->getI18Format('Database'));
+        }
+        $missingPickupDays = array_diff($uniquePickupDays, $existingPickupDays);
+        $pickupDays = $pickupDays->toArray();
+        
+        if (!empty($missingPickupDays)) {
+            foreach($missingPickupDays as $missingPickupDay) {
+                $pickupDays[] = $pickupDayTable->newEntity([
                     'customer_id' => $customerId,
-                    'pickup_day' => $uniquePickupDays[0]
-                ])
-            ];
+                    'pickup_day' => $missingPickupDay
+                ]);
+            }
         }
         return $pickupDays;
     }
@@ -242,6 +248,17 @@ class CartProductsTable extends AppTable
             'CartProducts.id_product_attribute' => $attributeId,
             'CartProducts.id_cart' => $cartId
         ];
+        
+        // if product attribute was deleted after adding product to cart,
+        // remove product without check for product_attribute_id so that the cart can be emptied!
+        $cartProducts = $this->find('all', [
+            'conditions' => $cartProduct2remove
+        ])->first();
+        
+        if (empty($cartProducts)) {
+            unset($cartProduct2remove['CartProducts.id_product_attribute']);
+        }
+        
         return $this->deleteAll($cartProduct2remove);
     }
 }

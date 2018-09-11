@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2018-08-13 10:10+0200\n"
-"PO-Revision-Date: 2018-08-13 10:11+0200\n"
+"POT-Creation-Date: 2018-09-09 21:52+0200\n"
+"PO-Revision-Date: 2018-09-07 14:30+0200\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "Language: en_US\n"
@@ -276,11 +276,20 @@ msgstr "The price of the ordered product {0} (amount {1}) was successfully adapt
 msgid "Ordered_price_adapted"
 msgstr "Price adapted"
 
+msgid "Please_enter_why_pickup_day_is_changed."
+msgstr "Please enter why the pickup day is changed."
+
+msgid "The_pickup_day_of_your_order_was_changed_to"
+msgstr "The pickup day of your order was changed to"
+
+msgid "The_pickup_day_of_{0,plural,=1{1_product} other{#_products}}_was_changed_successfully_to_{1}_and_{2,plural,=1{1_customer} other{#_customers}}_were_notified."
+msgstr "The pickup day of {0,plural,=1{one product} other{# products}} was successfully changed to {1] and {2,plural,=1{one member was} other{# members were}} got an email."
+
 msgid "The_pickup_day_comment_of_{0}_was_changed:"
 msgstr "The pickup day comment {0} was changed:"
 
-msgid "Product_{0}_with_a_price_of_{1}_from_{2}_was_successfully_cancelled."
-msgstr "Product {0} (price {1}) of from {2} was successfully cancelled."
+msgid "Product_{0}_from_manufacturer_{1}_with_a_price_of_{2}_ordered_on_{3}_was_successfully_cancelled."
+msgstr "Product {0} (manufacturer: {1}, price {2}) from {2} was successfully cancelled."
 
 msgid "Product_was_cancelled"
 msgstr "Product cancelled"
@@ -369,17 +378,29 @@ msgstr "The attribute {0} of the product {1} from manufacturer {2} was successfu
 msgid "A_new_product_was_created_for_{0}."
 msgstr "A new product was created for {0}."
 
+msgid "The_delivery_rhythm_of_the_product_{0}_from_manufacturer_{1}_was_changed_successfully_to_{2}."
+msgstr "The delivery rhythm of the product {0} from manufacturer {1} was changed successfully to {2}."
+
+msgid "Delivery_day"
+msgstr "Delivery day"
+
+msgid "First_delivery_day"
+msgstr "First delivery day"
+
+msgid "Saving_successful."
+msgstr "Saving successful."
+
 msgid "The_tax_rate_of_product_{0}_from_manufacturer_{1}_was_changed_from_{2}_to_{3}."
 msgstr "The tax rate of product {0} from manufacturer {1} was changed from {2} to {3}."
 
 msgid "Nothing_changed."
 msgstr "Nothing changed."
 
-msgid "Saving_successful."
-msgstr "Saving successful."
-
 msgid "The_categories_of_the_product_{0}_from_manufacturer_{1}_have_been_changed:_{2}"
 msgstr "The categories of the product {0} from manufacturer {1} have been changed: {2}"
+
+msgid "The_product_{0}_was_changed_successfully_to_a_stock_product."
+msgstr "The product {0} was changed successfully to a stock product."
 
 msgid "The_amount_of_the_product_{0}_was_changed_successfully."
 msgstr "The amount of the product {0} was changed successfully."
@@ -461,6 +482,36 @@ msgstr "The tax rate {0} has been {1}."
 
 msgid "Tax_rates"
 msgstr "Tax rates"
+
+msgid "The_time_entry_has_been_deleted"
+msgstr "The time entry has been deleted"
+
+msgid "The_time_entry_for_the_{0}_has_been_deleted"
+msgstr "The time entry for the {0} has been deleted"
+
+msgid "Your_time_entry_from_{0}_has_been_deleted."
+msgstr "Your time entry from {0} has been deleted."
+
+msgid "and_an_email_was_sent_to_{0}"
+msgstr "and an email was sent to {0}"
+
+msgid "Add_time_entry"
+msgstr "Add time entry"
+
+msgid "Edit_time_entry"
+msgstr "Edit time entry"
+
+msgid "Credit_balance_of_{0}"
+msgstr "Credit balance of {0}"
+
+msgid "of"
+msgstr "of"
+
+msgid "My_{0}_(time_account)"
+msgstr "My {0}"
+
+msgid "My_credit_balance"
+msgstr "My credit balance"
 
 msgid "all_activities"
 msgstr "all activities"
@@ -771,7 +822,7 @@ msgstr "Paying-with-time-module active?"
 msgid "I_want_to_be_able_to_pay_my_products_also_in_{0}."
 msgstr "I want to bea able to pay my products also in {0}."
 
-msgid "docs_route_paying-with-time-module"
+msgid "docs_route_paying_with_time_module"
 msgstr "paying-with-time-module"
 
 msgid "How_do_I_use_the_paying_with_time_module?"
@@ -939,14 +990,29 @@ msgstr "If you chose \"payback\", please enter the amount that you just transfer
 msgid "Please_chose_the_months_for_your_payment."
 msgstr "Please chose the months for your payment."
 
-msgid "Delivery_day"
-msgstr "Delivery day"
-
 msgid "Delivery_days"
 msgstr "Delivery days"
 
 msgid "Pickup_days"
 msgstr "Pickup days"
+
+msgid "All_products_picked_up?"
+msgstr "All products picked up?"
+
+msgid "Back_to_deposit_account"
+msgstr "Back to deposit account"
+
+msgid "Cancel_selected_products"
+msgstr "Cancel selected products"
+
+msgid "Change_pickup_day"
+msgstr "Change pickup day"
+
+msgid "Generate_orders_as_pdf"
+msgstr "Generate orders as PDF"
+
+msgid "Multiple_pickup_days"
+msgstr "Multiple pickup days"
 
 msgid "Click_to_change_amount"
 msgstr "Click to change amount"
@@ -1059,6 +1125,73 @@ msgstr "Order day"
 msgid "Order_list_grouped_by"
 msgstr "Order list grouped by"
 
+msgid "Add_new_attribute_for_product_{0}"
+msgstr "Add new attribute for product {0}"
+
+msgid "change_amount"
+msgstr "change amount"
+
+msgid "No_email_notifications_are_sent_for_this_product."
+msgstr "Notifications are never sent for this product if the stock is low."
+
+msgid "change_delivery_rhythm"
+msgstr "change delivery rhythm"
+
+msgid "delivery_rhythm_from"
+msgstr "beginning"
+
+#, fuzzy
+msgid "Order_possible_until"
+msgstr "Order count"
+
+msgid "change_deposit"
+msgstr "change deposit"
+
+msgid "add_image"
+msgstr "add image"
+
+msgid "New"
+msgstr "New"
+
+msgid "Mark_product_as_new_for_the_next_{0}_days?"
+msgstr "Mark product as new for the next {0} days?"
+
+msgid "Do_not_mark_product_as_new_any_more?"
+msgstr "Do not mark product as new any more?"
+
+msgid "Is_stock_product"
+msgstr "Is stock product"
+
+msgid "Long_description"
+msgstr "Long description"
+
+msgid "Delete_attribute_for_product_{0}"
+msgstr "Delete attribute for product {0}"
+
+msgid "This_attribute_is_the_default_attribute."
+msgstr "This attribute is the default attribute"
+
+msgid "Define_as_new_default_attribute"
+msgstr "Define as new default attribute"
+
+msgid "change_category"
+msgstr "change category"
+
+msgid "chose_category..."
+msgstr "chose category..."
+
+msgid "Category_\"all_products\"_is_missing!"
+msgstr "Category \"all products\" is missing!"
+
+msgid "product_preview"
+msgstr "product preview"
+
+msgid "change_price"
+msgstr "change price"
+
+msgid "change_tax_rate"
+msgstr "change tax rate"
+
 msgid "Dear_financial_responsible"
 msgstr "Dear financial responsible"
 
@@ -1140,6 +1273,21 @@ msgstr "Sorry, but sometimes our manufacturers are not able to deliver the order
 msgid "Thanks_for_respecting_that!"
 msgstr "Thanks for respecting that!"
 
+msgid "New_pickup_day"
+msgstr "New pickup day"
+
+msgid "Old_pickup_day"
+msgstr "Old pickup day"
+
+msgid "Why_was_the_pickup_day_changed?"
+msgstr "Why was the pickup day changed?"
+
+msgid "The_following_product_is_affected"
+msgstr "The following product is affected"
+
+msgid "The_following_{0}_products_are_affected"
+msgstr "The following products are affected"
+
 msgid "The_price_of_the_product_{0}_has_been_adapted."
 msgstr "The price of the product {0} has been adapted."
 
@@ -1199,6 +1347,9 @@ msgstr "Online help"
 
 msgid "docs_route_manufacturers"
 msgstr "manufacturers"
+
+msgid "docs_route_order_handling"
+msgstr "order-handling"
 
 msgid "You_can_change_your_imprint_by_yourself."
 msgstr "You can change your imprint by yourself."
@@ -1265,9 +1416,6 @@ msgstr "Delete logo?"
 
 msgid "Will_be_shown_on_manufacturers_overview_page_and_cannot_be_changed_by_the_manufacturer."
 msgstr "Will be shown on the manufacturer overview page. Can't be independently changed by the manufacturer."
-
-msgid "Long_description"
-msgstr "Long description"
 
 msgid "To_save_long_description_press_save_and_then_edit_manufacturer."
 msgstr "To save long description please press save and then edit the manufacturer."
@@ -1387,7 +1535,7 @@ msgid "Instant_orders"
 msgstr "Instant orders"
 
 msgid "to_receive_an_email_on_every_instant_order."
-msgstr "to receive an email on every instant order."
+msgstr "to receive an email on every instant order (except for stock products)."
 
 msgid "Other_settings"
 msgstr "Other settings"
@@ -1400,6 +1548,24 @@ msgstr "The invoice for the manufacturer will be reduced by the given percentage
 
 msgid "Preselected_tax_rate_for_new_products"
 msgstr "Preselected tax rate for new products"
+
+msgid "Advanced_stock_management_active?"
+msgstr "Advanced stock management active?"
+
+msgid "Infos_to_the_advanced_stock_management"
+msgstr "Information to the advanced stock management"
+
+msgid "Sold_out_limit_reached_notification_for_manufacturer?"
+msgstr "Sold out limit reached notification for manufacturer?"
+
+msgid "to_receive_a_notification_when_the_stock_limit_for_a_product_is_reached."
+msgstr "to receive an email when the stock limit for a product is reached."
+
+msgid "Sold_out_limit_reached_notification_for_contact_person?"
+msgstr "Sold out limit reached notification for contact person?"
+
+msgid "The_contact_person_wants_to_receive_a_notification_when_the_stock_limit_for_a_product_is_reached."
+msgstr "The contact person wants to receive an email when the stock limit for a product is reached."
 
 msgid "Manufacturer_optimized_for_bulk_orders?"
 msgstr "Manufacturer optimized for bulk orders?"
@@ -1431,11 +1597,17 @@ msgstr "Maximum credit balance in {0}"
 msgid "up_to_which_it_can_be_paid_in_{0}."
 msgstr "up to which the member can pay in {0}."
 
+msgid "Zero_means_no_limit_and_global_limit_of_{0}_is_used."
+msgstr "0 means: global limit of {0} is used."
+
+msgid "Stock_products"
+msgstr "Stock products"
+
 msgid "Sum_of_open_orders_in_given_time_range"
 msgstr "Sum of open orders in given time range"
 
 msgid "Open_orders_abbreviation"
-msgstr "O.o."
+msgstr "Oo"
 
 msgid "Settings_abbreviation"
 msgstr "Set."
@@ -1479,20 +1651,11 @@ msgstr "No orders found for the pickup day {0}."
 msgid "No_orders_found_for_delivery_period_{0}_-_{1}."
 msgstr "No orders found for the delivery period {0} to {1}."
 
-msgid "Multiple_pickup_days"
-msgstr "Multiple pickup days"
+msgid "All_products"
+msgstr "All products"
 
-msgid "Generate_orders_as_pdf"
-msgstr "Generate orders as PDF"
-
-msgid "All_products_picked_up?"
-msgstr "All products picked up?"
-
-msgid "Back_to_deposit_account"
-msgstr "Back to deposit account"
-
-msgid "Cancel_selected_products"
-msgstr "Cancel selected products"
+msgid "Show_all_ordered_products"
+msgstr "Show all ordered products"
 
 msgid "Page_title"
 msgstr "Page title"
@@ -1611,9 +1774,6 @@ msgstr "Your credit balance"
 msgid "chose_manufacturer..."
 msgstr "chose manufacturer..."
 
-msgid "chose_category..."
-msgstr "chose category..."
-
 msgid "amount"
 msgstr "amount"
 
@@ -1632,56 +1792,17 @@ msgstr "Name and categories"
 msgid "Product_declaration"
 msgstr "Product declaration"
 
+msgid "Stock_product"
+msgstr "Stock product"
+
 msgid "Tax_rate"
 msgstr "Tax rate"
 
 msgid "New?"
 msgstr "New?"
 
-msgid "Add_new_attribute_for_product_{0}"
-msgstr "Add new attribute for product {0}"
-
-msgid "add_image"
-msgstr "add image"
-
-msgid "Delete_attribute_for_product_{0}"
-msgstr "Delete attribute for product {0}"
-
-msgid "This_attribute_is_the_default_attribute."
-msgstr "This attribute is the default attribute"
-
-msgid "Define_as_new_default_attribute"
-msgstr "Define as new default attribute"
-
-msgid "change_category"
-msgstr "change category"
-
-msgid "Category_\"all_products\"_is_missing!"
-msgstr "Category \"all products\" is missing!"
-
-msgid "change_amount"
-msgstr "change amount"
-
-msgid "change_price"
-msgstr "change price"
-
-msgid "change_tax_rate"
-msgstr "change tax rate"
-
-msgid "New"
-msgstr "New"
-
-msgid "Mark_product_as_new_for_the_next_{0}_days?"
-msgstr "Mark product as new for the next {0} days?"
-
-msgid "Do_not_mark_product_as_new_any_more?"
-msgstr "Do not mark product as new any more?"
-
-msgid "change_deposit"
-msgstr "change deposit"
-
-msgid "product_preview"
-msgstr "product preview"
+msgid "Delivery_rhythm"
+msgstr "Delivery rhythm"
 
 msgid "docs_route_financial_reports"
 msgstr "financial-reports"
@@ -1719,9 +1840,6 @@ msgstr "e.g. 10 for 10%"
 msgid "Tax_rates_can_not_be_changed_later."
 msgstr "Tax rates can not be changed later."
 
-msgid "docs_route_paying_with_time_module"
-msgstr "paying-with-time-module"
-
 msgid "Show_product"
 msgstr "Show product"
 
@@ -1733,6 +1851,27 @@ msgstr "{0,plural,=1{record} other{records}}"
 
 msgid "The_delivered_weight_will_eventually_be_adapted_which_means_the_price_can_change_slightly."
 msgstr "The delivered weight will eventually be adapted, so the price can change slightly."
+
+#~ msgid "Zero_means_no_limit."
+#~ msgstr "0 means \"no limit\"."
+
+#~ msgid "Global_limit: {0}"
+#~ msgstr "Global limit: {0}"
+
+#~ msgid "The_pickup_day_was_not_changed."
+#~ msgstr "The pickup day was not changed."
+
+#~ msgid "docs_route_paying-with-time-module"
+#~ msgstr "paying-with-time-module"
+
+#~ msgid "Order_period"
+#~ msgstr "Order period"
+
+#~ msgid "per"
+#~ msgstr "per"
+
+#~ msgid "Stock"
+#~ msgstr "Stock"
 
 #~ msgid "The_order_status_of_the_ordered_product_{0}_of_{1}_was_successfully_changed_to_{2}."
 #~ msgstr "The order state of the ordered product of {0} of {1} was successfully changed to {2}."
@@ -1767,9 +1906,6 @@ msgstr "The delivered weight will eventually be adapted, so the price can change
 #~ msgid "Manually_send_order_list"
 #~ msgstr "Manually send order list"
 
-#~ msgid "Order_from"
-#~ msgstr "Order from"
-
 #~ msgid "The_comment_of_the_order_number_{0}_by_{1}_was_changed:"
 #~ msgstr "The comment of the order number {0} by {1} was changed:"
 
@@ -1778,9 +1914,6 @@ msgstr "The delivered weight will eventually be adapted, so the price can change
 
 #~ msgid "Change_order_status"
 #~ msgstr "Change order status"
-
-#~ msgid "Order_count"
-#~ msgstr "Order count"
 
 #~ msgid "Set_date_of_order_back"
 #~ msgstr "Set date of order back"

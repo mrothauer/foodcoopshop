@@ -9,7 +9,7 @@
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 
@@ -78,9 +78,9 @@ if ($blogPosts->count() > 0) {
     ]);
 }
 
-$manufacturerHolidayString = $this->Html->getManufacturerHolidayString($manufacturer->holiday_from, $manufacturer->holiday_to, $manufacturer->is_holiday_active, true, $manufacturer->name);
-if ($manufacturerHolidayString != '') {
-    echo '<h2 class="info">'.$manufacturerHolidayString.'</h2>';
+$manufacturerNoDeliveryDaysString = $this->Html->getManufacturerNoDeliveryDaysString($manufacturer, true);
+if ($manufacturerNoDeliveryDaysString != '') {
+    echo '<h2 class="info">'.$manufacturerNoDeliveryDaysString.'</h2>';
 }
 
 if (!empty($manufacturer['Products'])) {

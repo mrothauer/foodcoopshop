@@ -20,7 +20,7 @@ use Cake\ORM\TableRegistry;
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 class ManufacturersController extends FrontendController
@@ -63,7 +63,6 @@ class ManufacturersController extends FrontendController
             'order' => [
                 'Manufacturers.name' => 'ASC'
             ],
-            'fields' => ['is_holiday_active' => '!'.$this->Manufacturer->getManufacturerHolidayConditions()],
             'contain' => [
                 'AddressManufacturers'
             ]
@@ -74,9 +73,8 @@ class ManufacturersController extends FrontendController
         }
 
         if ($this->AppAuth->user() || Configure::read('appDb.FCS_SHOW_PRODUCTS_FOR_GUESTS')) {
-            $productModel = TableRegistry::getTableLocator()->get('Products');
             foreach ($manufacturers as $manufacturer) {
-                $manufacturer->product_count = $productModel->getCountByManufacturerId($manufacturer->id_manufacturer, true);
+                $manufacturer->product_count = $this->Manufacturer->getProductsByManufacturerId($manufacturer->id_manufacturer, true);
             }
         }
 
@@ -96,7 +94,6 @@ class ManufacturersController extends FrontendController
         $this->Manufacturer = TableRegistry::getTableLocator()->get('Manufacturers');
         $manufacturer = $this->Manufacturer->find('all', [
             'conditions' => $conditions,
-            'fields' => ['is_holiday_active' => '!'.$this->Manufacturer->getManufacturerHolidayConditions()],
             'contain' => [
                 'AddressManufacturers'
             ]

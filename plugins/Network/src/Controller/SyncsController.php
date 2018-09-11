@@ -21,7 +21,7 @@ use Cake\Utility\Hash;
  * @since         FoodCoopShop Network Plugin 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 class SyncsController extends AppController
@@ -260,8 +260,6 @@ class SyncsController extends AppController
           'CategoryProducts',
           'Categories',
           'Manufacturers',
-          'StockAvailables.depends_on_stock',
-          'StockAvailables.out_of_stock',
           'Taxes',
           'selectedCategories'
         ];

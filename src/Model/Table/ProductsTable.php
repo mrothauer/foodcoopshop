@@ -7,6 +7,8 @@ use App\Lib\Error\Exception\InvalidParameterException;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use Cake\Validation\Validator;
+use Cake\I18n\I18n;
 
 /**
  * FoodCoopShop - The open source software for your foodcoop
@@ -18,7 +20,7 @@ use Cake\Utility\Hash;
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 class ProductsTable extends AppTable
@@ -63,6 +65,126 @@ class ProductsTable extends AppTable
     {
         parent::__construct($id, $table, $ds);
         $this->Configuration = TableRegistry::getTableLocator()->get('Configurations');
+    }
+    
+    public function validationDeliveryRhythm(Validator $validator)
+    {
+        $validator->add('delivery_rhythm_type', 'allowed-count-values', [
+            'rule' => function ($value, $context) {
+                if ($value == 'week') {
+                    return in_array($context['data']['delivery_rhythm_count'], [1,2]);
+                }
+                if ($value == 'month') {
+                    return in_array($context['data']['delivery_rhythm_count'], [1,0]);
+                }
+                if ($value == 'individual') {
+                    return in_array($context['data']['delivery_rhythm_count'], [0]);
+                }
+                return false;
+            },
+            'message' => __('The_delivery_ryhthm_is_not_valid.')
+        ]);
+        $validator->allowEmpty('delivery_rhythm_first_delivery_day');
+        $validator->notEquals('delivery_rhythm_first_delivery_day', '1970-01-01', __('The_first_delivery_day_is_not_valid.'));
+        $validator->allowEmpty('delivery_rhythm_order_possible_until');
+        $validator->notEquals('delivery_rhythm_order_possible_until', '1970-01-01', __('The_order_possible_until_field_is_not_valid.'));
+        $validator->add('delivery_rhythm_order_possible_until', 'allowed-only-smaller-than-first-delivery-day', [
+            'rule' => function ($value, $context) {
+                if ($context['data']['delivery_rhythm_type'] == 'individual') {
+                    return $context['data']['delivery_rhythm_first_delivery_day'] > $value;
+                }
+                return true;
+            },
+            'message' => __('The_order_possible_until_field_needs_to_be_smaller_than_the_delivery_date.')
+        ]);
+        $validator = $this->getLastOrFirstDayOfMonthValidator($validator, 'delivery_rhythm_first_delivery_day', 'first');
+        $validator = $this->getLastOrFirstDayOfMonthValidator($validator, 'delivery_rhythm_first_delivery_day', 'last');
+        $validator = $this->getAllowOnlyOneWeekdayValidator($validator, 'delivery_rhythm_first_delivery_day', __('The_first_delivery_day'));
+        return $validator;
+    }
+    
+    private function getLastOrFirstDayOfMonthValidator(Validator $validator, $field, $firstOrLast)
+    {
+        $checkedCountValue = 0;
+        $deliveryWeekdayName = Configure::read('app.timeHelper')->getWeekdayName(Configure::read('app.timeHelper')->getDeliveryWeekday());
+        $message = __('The_first_delivery_day_needs_to_be_a_last_{0}_of_the_month.', [$deliveryWeekdayName]);
+        if ($firstOrLast == 'first') {
+            $checkedCountValue = 1;
+            $message = __('The_first_delivery_day_needs_to_be_a_first_{0}_of_the_month.', [$deliveryWeekdayName]);
+        }
+        $validator->add($field, 'allow-only-' . $firstOrLast . '-weekday-of-month', [
+            'rule' => function ($value, $context) use ($checkedCountValue, $firstOrLast) {
+                if ($context['data']['delivery_rhythm_type'] == 'month' && $context['data']['delivery_rhythm_count'] == $checkedCountValue) {
+                    $originalLocale = I18n::getLocale();
+                    I18n::setLocale('en_US');
+                    $deliveryDayAsWeekdayInEnglish = strtolower(Configure::read('app.timeHelper')->getWeekdayName(Configure::read('app.timeHelper')->getDeliveryWeekday()));
+                    I18n::setLocale($originalLocale);
+                    $firstDayOfMonth = Configure::read('app.timeHelper')->formatToDbFormatDate($value . ' ' . $firstOrLast . ' ' . $deliveryDayAsWeekdayInEnglish . ' of this month');
+                    if ($firstDayOfMonth != $value) {
+                        return false;
+                    }
+                }
+                return true;
+            },
+            'message' => $message
+        ]);
+        return $validator;
+    }
+    
+    public function deliveryBreakEnabled($noDeliveryDaysAsString, $deliveryDate)
+    {
+        return $noDeliveryDaysAsString != '' && preg_match('`' . $deliveryDate . '`', $noDeliveryDaysAsString);
+    }
+    
+    public function calculatePickupDayRespectingDeliveryRhythm($product, $currentDay=null)
+    {
+        
+        if (is_null($currentDay)) {
+            $currentDay = Configure::read('app.timeHelper')->getCurrentDateForDatabase();
+        }
+        $pickupDay = Configure::read('app.timeHelper')->getDbFormattedPickupDayByDbFormattedDate($currentDay);
+        
+        if ($product->is_stock_product) {
+            return $pickupDay;
+        }
+            
+        if ($product->delivery_rhythm_count > 1 && $product->delivery_rhythm_type == 'week') {
+            if (!is_null($product->delivery_rhythm_first_delivery_day)) {
+                $firstDeliveryDayFormatted = $product->delivery_rhythm_first_delivery_day->i18nFormat(Configure::read('app.timeHelper')->getI18Format('Database'));
+                $calculatedPickupDay = $firstDeliveryDayFormatted;
+                while($calculatedPickupDay < $pickupDay) {
+                    $calculatedPickupDay = strtotime($calculatedPickupDay . '+' . $product->delivery_rhythm_count . ' week');
+                    $calculatedPickupDay = date(Configure::read('app.timeHelper')->getI18Format('DatabaseAlt'), $calculatedPickupDay);
+                }
+                $pickupDay = $calculatedPickupDay;
+            }
+        }
+        
+        if ($product->delivery_rhythm_type == 'month') {
+            switch($product->delivery_rhythm_count) {
+                case '1':
+                    $ordinal = 'first';
+                    break;
+                case '2':
+                    $ordinal = 'second';
+                    break;
+                case '0':
+                    $ordinal = 'last';
+                    break;
+            }
+            $deliveryDayAsWeekdayInEnglish = strtolower(date('l', strtotime($pickupDay)));
+            $nthDeliveryDayOfThisMonth = date(Configure::read('app.timeHelper')->getI18Format('DatabaseAlt'), strtotime($currentDay . ' ' . $ordinal . ' ' . $deliveryDayAsWeekdayInEnglish . ' of this month'));
+            if ($nthDeliveryDayOfThisMonth < $pickupDay) {
+                $pickupDay = date(Configure::read('app.timeHelper')->getI18Format('DatabaseAlt'), strtotime($currentDay . ' ' . $ordinal . ' ' . $deliveryDayAsWeekdayInEnglish . ' of next month'));
+            }
+        }
+        
+        if ($product->delivery_rhythm_type == 'individual') {
+            $pickupDay = $product->delivery_rhythm_first_delivery_day->i18nFormat(Configure::read('app.timeHelper')->getI18Format('Database'));
+        }
+            
+        return $pickupDay;
+        
     }
 
     /**
@@ -325,43 +447,37 @@ class ProductsTable extends AppTable
      *  (
      *      [0] => Array
      *          (
-     *              [productId] => (int) quantity
+     *              [productId] => [
+     *                  'quantity' => (int) quantity
+     *              ]
      *          )
      *  )
      * @return boolean $success
      */
     public function changeQuantity($products)
     {
-
+        
         foreach ($products as $product) {
             $productId = key($product);
-            $quantity = $this->getQuantityAsInteger($product[$productId]);
-            if ($quantity < 0) {
-                throw new InvalidParameterException('input format not correct: '.$product[$productId]);
+            $entity = $this->ProductAttributes->StockAvailables->newEntity($product[$productId]);
+            if (!empty($entity->getErrors())) {
+                throw new InvalidParameterException(join(' ', $this->ProductAttributes->StockAvailables->getAllValidationErrors($entity)));
             }
         }
 
         foreach ($products as $product) {
             $productId = key($product);
-            $quantity = $product[$productId];
-
             $ids = $this->getProductIdAndAttributeId($productId);
-
             if ($ids['attributeId'] > 0) {
                 // update attribute - updateAll needed for multi conditions of update
-                $this->ProductAttributes->StockAvailables->updateAll([
-                    'quantity' => $quantity
-                ], [
+                $this->ProductAttributes->StockAvailables->updateAll($product[$productId], [
                     'id_product_attribute' => $ids['attributeId'],
                     'id_product' => $ids['productId']
                 ]);
                 $this->StockAvailables->updateQuantityForMainProduct($ids['productId']);
             } else {
-                $product2update = [
-                    'quantity' => $quantity
-                ];
                 $entity = $this->StockAvailables->get($ids['productId']);
-                $this->StockAvailables->save($this->StockAvailables->patchEntity($entity, $product2update));
+                $this->StockAvailables->save($this->StockAvailables->patchEntity($entity, $product[$productId]));
             }
         }
     }
@@ -422,26 +538,6 @@ class ProductsTable extends AppTable
         }
         
         return $success;
-    }
-
-    /**
-     * @param int $manufacturerId
-     * @param boolean $useHolidayMode
-     * @return array
-     */
-    public function getCountByManufacturerId($manufacturerId, $useHolidayMode = false)
-    {
-        $productCount = $this->find('all', [
-            'conditions' => [
-                'Products.active' => APP_ON,
-                $useHolidayMode ? $this->getManufacturerHolidayConditions() : null,
-                'Products.id_manufacturer' => $manufacturerId
-            ],
-            'contain' => [
-                'Manufacturers'
-            ]
-        ])->count();
-        return $productCount;
     }
 
     public function isNew($date)
@@ -561,7 +657,7 @@ class ProductsTable extends AppTable
         if ($controller) {
             $query = $controller->paginate($query, [
                 'sortWhitelist' => [
-                    'Images.id_image', 'Products.name', 'Products.is_declaration_ok', 'Taxes.rate', 'Products.active', 'Manufacturers.name'
+                    'Images.id_image', 'Products.name', 'Products.is_declaration_ok', 'Taxes.rate', 'Products.active', 'Manufacturers.name', 'Products.is_stock_product'
                 ],
                 'order' => $order
             ]);
@@ -685,7 +781,7 @@ class ProductsTable extends AppTable
                         $priceIsZero = true;
                     }
                     if (!empty($attribute->unit_product_attribute) && $attribute->unit_product_attribute->price_per_unit_enabled) {
-                        $productName =  $unity = Configure::read('app.pricePerUnitHelper')->getQuantityInUnitsStringForAttributes(
+                        $productName = Configure::read('app.pricePerUnitHelper')->getQuantityInUnitsStringForAttributes(
                             $attribute->product_attribute_combination->attribute->name,
                             $attribute->product_attribute_combination->attribute->can_be_used_as_unit,
                             $attribute->unit_product_attribute->price_per_unit_enabled,
@@ -704,6 +800,7 @@ class ProductsTable extends AppTable
                         'id_product' => $product->id_product . '-' . $attribute->id_product_attribute,
                         'gross_price' => $grossPrice,
                         'active' => - 1,
+                        'is_stock_product' => $product->is_stock_product,
                         'price_is_zero' => $priceIsZero,
                         'row_class' => join(' ', $rowClass),
                         'unchanged_name' => $product->unchanged_name,
@@ -716,7 +813,9 @@ class ProductsTable extends AppTable
                         ],
                         'default_on' => $attribute->default_on,
                         'stock_available' => [
-                            'quantity' => $attribute->stock_available->quantity
+                            'quantity' => $attribute->stock_available->quantity,
+                            'quantity_limit' => $attribute->stock_available->quantity_limit,
+                            'sold_out_limit' => $attribute->stock_available->sold_out_limit
                         ],
                         'deposit' => !empty($attribute->deposit_product_attribute) ? $attribute->deposit_product_attribute->deposit : 0,
                         'unit' => !empty($attribute->unit_product_attribute) ? $attribute->unit_product_attribute : [],

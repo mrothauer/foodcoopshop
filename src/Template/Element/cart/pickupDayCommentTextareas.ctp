@@ -9,7 +9,7 @@
  * @since         FoodCoopShop 2.2.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 
@@ -49,6 +49,7 @@ foreach($cart->pickup_day_entities as $pickupDay) {
     );
     echo '<div class="toggle-content pickup-day-comment">';
     echo $this->Form->hidden('Carts.pickup_day_entities.'.$i.'.customer_id');
+    echo $this->Form->hidden('Carts.pickup_day_entities.'.$i.'.pickup_day', ['value' => $formattedPickupDay]);
     echo $this->Form->control('Carts.pickup_day_entities.'.$i.'.comment', [
         'type' => 'textarea',
         'placeholder' => __('Placeholder_message_pickup_day_comment.'),

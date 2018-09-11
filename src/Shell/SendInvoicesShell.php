@@ -11,7 +11,7 @@
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 namespace App\Shell;
@@ -49,11 +49,17 @@ class SendInvoicesShell extends AppShell
         // update all order details that are already billed but cronjob did not change the order state
         // to new order state ORDER_STATE_BILLED (introduced in FCS 2.2)
         // can be removed safely in FCS v3.0
-        $this->OrderDetail->legacyUpdateOrderStateToNewBilledState($dateFrom, ORDER_STATE_CASH_FREE, ORDER_STATE_BILLED_CASHLESS);
-        $this->OrderDetail->legacyUpdateOrderStateToNewBilledState($dateFrom, ORDER_STATE_CASH, ORDER_STATE_BILLED_CASH);
-        $this->OrderDetail->legacyUpdateOrderStateToNewBilledState($dateFrom, ORDER_STATE_OPEN, Configure::read('app.htmlHelper')->getOrderStateBilled());
-        $this->OrderDetail->legacyUpdateOrderStateToNewBilledState(null, ORDER_STATE_CASH_FREE, ORDER_STATE_OPEN);
-        $this->OrderDetail->legacyUpdateOrderStateToNewBilledState(null, ORDER_STATE_CASH, ORDER_STATE_OPEN);
+        $changedRows = 0;
+        $changedRows += $this->OrderDetail->legacyUpdateOrderStateToNewBilledState($dateFrom, ORDER_STATE_CASH_FREE, ORDER_STATE_BILLED_CASHLESS);
+        $changedRows += $this->OrderDetail->legacyUpdateOrderStateToNewBilledState($dateFrom, ORDER_STATE_CASH, ORDER_STATE_BILLED_CASH);
+        $changedRows += $this->OrderDetail->legacyUpdateOrderStateToNewBilledState($dateFrom, ORDER_STATE_ORDER_PLACED, Configure::read('app.htmlHelper')->getOrderStateBilled());
+        $changedRows += $this->OrderDetail->legacyUpdateOrderStateToNewBilledState(null, ORDER_STATE_CASH_FREE, ORDER_STATE_ORDER_PLACED);
+        $changedRows += $this->OrderDetail->legacyUpdateOrderStateToNewBilledState(null, ORDER_STATE_CASH, ORDER_STATE_ORDER_PLACED);
+        
+        $firstCallAfterPickupDayUpdate = false;
+        if ($changedRows > 0) {
+            $firstCallAfterPickupDayUpdate = true;
+        }
         
         // 1) get all manufacturers (not only active ones)
         $manufacturers = $this->Manufacturer->find('all', [
@@ -122,7 +128,8 @@ class SendInvoicesShell extends AppShell
                 ->setSubject(__('Invoices_for_{0}_have_been_sent', [Configure::read('app.timeHelper')->getLastMonthNameAndYear()]))
                 ->setViewVars([
                 'dateFrom' => $dateFrom,
-                'dateTo' => $dateTo
+                'dateTo' => $dateTo,
+                'firstCallAfterPickupDayUpdate' => $firstCallAfterPickupDayUpdate
                 ])
                 ->send();
         }

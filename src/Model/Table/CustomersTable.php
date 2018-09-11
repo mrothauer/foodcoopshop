@@ -18,7 +18,7 @@ use Cake\Validation\Validator;
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 class CustomersTable extends AppTable
@@ -195,7 +195,7 @@ class CustomersTable extends AppTable
             'ValidOrderDetails.order_state IN (' . join(',', Configure::read('app.htmlHelper')->getOrderStateIds()) . ')'
         ]);
         $this->getAssociation('ActiveOrderDetails')->setConditions([
-            'ActiveOrderDetails.order_state IN (' . ORDER_STATE_OPEN . ')'
+            'ActiveOrderDetails.order_state IN (' . ORDER_STATE_ORDER_PLACED . ')'
         ]);
         $this->getAssociation('PaidCashlessOrderDetails')->setConditions([
             'PaidCashlessOrderDetails.order_state IN (' . join(',', Configure::read('app.htmlHelper')->getOrderStatesCashless()). ')'

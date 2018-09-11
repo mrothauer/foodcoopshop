@@ -9,16 +9,16 @@
  * @since         FoodCoopShop 2.2.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
-
 use Cake\Core\Configure;
 
-if (count($pickupDay) == 2 && $groupBy == '') {
-    echo '<td class="date-short2">';
-        echo $orderDetail->pickup_day->i18nFormat(Configure::read('app.timeHelper')->getI18Format('DateLong2'));
-    echo '</td>';
+if ($deposit == '' && $groupBy == '' && count($orderDetails) > 0) {
+    $this->element('addScript', [
+        'script' => Configure::read('app.jsNamespace').".Admin.initChangePickupDayOfSelectedProductsButton();"
+    ]);
+    echo '<a id="changePickupDayOfSelectedProductsButton" class="btn btn-default" href="javascript:void(0);"><i class="fa fa-calendar"></i> ' . __d('admin', 'Change_pickup_day') . '</a>';
 }
 
 ?>

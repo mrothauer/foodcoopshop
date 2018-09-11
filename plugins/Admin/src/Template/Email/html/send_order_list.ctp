@@ -9,7 +9,7 @@
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 use Cake\Core\Configure;
@@ -36,6 +36,7 @@ use Cake\Core\Configure;
 			<p>
 				<?php echo __d('admin', 'Help_pages'); ?>: <br />
 				<a href="<?php echo $this->MyHtml->getDocsUrl(__d('admin', 'docs_route_manufacturers'));?>"><?php echo $this->MyHtml->getDocsUrl(__d('admin', 'docs_route_manufacturers')); ?></a><br />
+				<a href="<?php echo $this->MyHtml->getDocsUrl(__d('admin', 'docs_route_order_handling'));?>"><?php echo $this->MyHtml->getDocsUrl(__d('admin', 'docs_route_order_handling')); ?></a><br />
 				<a href="<?php echo $this->MyHtml->getDocsUrl(__d('admin', 'docs_route_products'));?>"><?php echo $this->MyHtml->getDocsUrl(__d('admin', 'docs_route_products')); ?></a>
 			</p>
 			

@@ -8,7 +8,7 @@
  * @since         FoodCoopShop 2.1.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 foodcoopshop.DialogProduct = {
@@ -79,12 +79,63 @@ foodcoopshop.DialogProduct = {
         return dialogHtml;
     },
 
+    getHtmlForProductIsStockProductEdit : function(dialogId) {
+        var dialogHtml = '<label for="dialogIsStockProductIsStockProduct"></label>';
+        dialogHtml += '<label class="checkbox">';
+            dialogHtml += '<input type="checkbox" name="dialogIsStockProductIsStockProduct" id="dialogIsStockProductIsStockProduct" />';
+            dialogHtml += ' ' + foodcoopshop.LocalizedJs.dialogProduct.IsProductStockProduct;
+        dialogHtml += '</label>';
+        dialogHtml += '<p style="margin-top:10px;float:left;" class="small">' + foodcoopshop.LocalizedJs.dialogProduct.TheDeliveryRhythmOfStockProductsIsAlwaysWeekly + '</p>';
+        dialogHtml += '<input type="hidden" name="dialogIsStockProductProductId" id="dialogIsStockProductProductId" value="" />';
+        dialogHtml = foodcoopshop.Admin.addWrappersAndLoaderToDialogHtml(foodcoopshop.LocalizedJs.dialogProduct.StockProduct, dialogId, dialogHtml);
+        return dialogHtml;
+    },
+    
     getHtmlForProductQuantityEdit : function(dialogId) {
         var dialogHtml = '<label for="dialogQuantityQuantity"></label>';
-        dialogHtml += '<input type="text" name="dialogQuantityQuantity" id="dialogQuantityQuantity" value="" />';
+        dialogHtml += '<div class="field-wrapper">';
+            dialogHtml += '<label>' + foodcoopshop.LocalizedJs.dialogProduct.AvailableAmount + '</label>';
+            dialogHtml += '<input type="number" step="1" name="dialogQuantityQuantity" id="dialogQuantityQuantity" />';
+        dialogHtml += '</div>';
         dialogHtml += '<input type="hidden" name="dialogQuantityProductId" id="dialogQuantityProductId" value="" />';
         dialogHtml = foodcoopshop.Admin.addWrappersAndLoaderToDialogHtml(foodcoopshop.LocalizedJs.dialogProduct.ChangeAmount, dialogId, dialogHtml);
         return dialogHtml;
-    }
+    },
+    
+    getHtmlForProductQuantityIsStockProductEdit : function(dialogId) {
+        var dialogHtml = '<label for="dialogQuantityQuantity"></label>';
+        dialogHtml += '<div class="field-wrapper">';
+            dialogHtml += '<label>' + foodcoopshop.LocalizedJs.dialogProduct.CurrentStock + '</label>';
+            dialogHtml += '<input type="number" step="1" name="dialogQuantityQuantity" id="dialogQuantityQuantity" /><br />';
+            dialogHtml += '<label>' + foodcoopshop.LocalizedJs.dialogProduct.OrdersPossibleUntilAmountOf + '<br /><span class="small">' + foodcoopshop.LocalizedJs.dialogProduct.zeroOrSmallerZero + '.</span></label>';
+            dialogHtml += '<input max="0" type="number" step="1" name="dialogQuantityQuantityLimit" id="dialogQuantityQuantityLimit" /><br />';
+            dialogHtml += '<label>' + foodcoopshop.LocalizedJs.dialogProduct.NotificationIfAmountLowerThan + '<br /><span class="small">' + foodcoopshop.LocalizedJs.dialogProduct.ForManufacturersAndContactPersonsCanBeChangedInManufacturerSettings + '</span></label>';
+            dialogHtml += '<input style="margin-top:25px;" type="number" step="1" name="dialogQuantitySoldOutLimit" id="dialogQuantitySoldOutLimit" /><br />';
+        dialogHtml += '</div>';
+        dialogHtml += '<input type="hidden" name="dialogQuantityProductId" id="dialogQuantityProductId" value="" />';
+        dialogHtml = foodcoopshop.Admin.addWrappersAndLoaderToDialogHtml(foodcoopshop.LocalizedJs.admin.Stock, dialogId, dialogHtml);
+        return dialogHtml;
+    },
 
+    getHtmlForProductDeliveryRhythmEdit : function(dialogId) {
+        var dialogHtml = '<label for="dialogDeliveryRhythm"></label>';
+        dialogHtml += '<div class="field-wrapper">';
+            dialogHtml += '<label>' + foodcoopshop.LocalizedJs.dialogProduct.DeliveryRhythm + '</label>';
+            dialogHtml += '<select name="dialogDeliveryRhythmType" id="dialogDeliveryRhythmType" /></select>';
+            
+            dialogHtml += '<label class="dynamic-element default">' + foodcoopshop.LocalizedJs.dialogProduct.FirstDeliveryDay + '</label>';
+            dialogHtml += '<label class="dynamic-element individual">' + foodcoopshop.LocalizedJs.dialogProduct.DeliveryDay + '</label>';
+            dialogHtml += '<input class="datepicker" type="text" name="dialogDeliveryRhythmFirstDeliveryDay" id="dialogDeliveryRhythmFirstDeliveryDay" /><br />';
+            dialogHtml += '<div style="float:left;"><span class="small">' + foodcoopshop.LocalizedJs.dialogProduct.FirstDeliveryDayInfo + '</span><br /></div>';
+
+            dialogHtml += '<label style="margin-top:10px;" class="dynamic-element individual">' + foodcoopshop.LocalizedJs.dialogProduct.OrderPossibleUntil + '</label>';
+            dialogHtml += '<input style="margin-top:10px;" class="dynamic-element individual datepicker" type="text" name="dialogDeliveryRhythmOrderPossibleUntil" id="dialogDeliveryRhythmOrderPossibleUntil" /><br />';
+            
+            dialogHtml += '</div>';
+        dialogHtml += '<p style="margin-top:10px;float:right;"><a target="_blank" href="' + foodcoopshop.LocalizedJs.dialogProduct.DocsUrlOrderHandling + '">' + foodcoopshop.LocalizedJs.dialogProduct.InfoPageForDeliveryRhythm + '</a></p>';
+        dialogHtml += '<input type="hidden" name="dialogDeliveryRhythmProductId" id="dialogDeliveryRhythmProductId" value="" />';
+        dialogHtml = foodcoopshop.Admin.addWrappersAndLoaderToDialogHtml(foodcoopshop.LocalizedJs.dialogProduct.DeliveryRhythm, dialogId, dialogHtml);
+        return dialogHtml;
+    }
+    
 };

@@ -90,7 +90,11 @@ INSERT INTO `fcs_category` VALUES
 
 /*!40000 ALTER TABLE `fcs_category_product` DISABLE KEYS */;
 INSERT INTO `fcs_category_product` VALUES
-(16,339),
+(16,102),
+(16,103),
+(16,340),
+(16,347),
+(16,348),
 (20,60),
 (20,102),
 (20,103),
@@ -100,7 +104,9 @@ INSERT INTO `fcs_category_product` VALUES
 (20,344),
 (20,346),
 (20,347),
-(20,348);
+(20,348),
+(20,349),
+(20,350);
 /*!40000 ALTER TABLE `fcs_category_product` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `fcs_configuration` DISABLE KEYS */;
@@ -113,7 +119,7 @@ INSERT INTO `fcs_configuration` VALUES
 (538,1,'FCS_REGISTRATION_EMAIL_TEXT','Zusätzlicher Text, der in der Bestätigungsmail nach einer Registrierung versendet wird. <br /> <a href=\"/admin/configurations/previewEmail/FCS_REGISTRATION_EMAIL_TEXT\" target=\"_blank\"><img src=\"/js/vendor/famfamfam-silk/dist/png/information.png?1483041252\" alt=\"\"> E-Mail-Vorschau anzeigen</a>','','textarea_big',170,'de_DE','2016-06-26 00:00:00','2016-06-26 00:00:00'),
 (543,1,'FCS_RIGHT_INFO_BOX_HTML','Inhalt der Box in der rechten Spalte unterhalb des Warenkorbes. <br /><div class=\"small\">Um eine Zeile grün zu hinterlegen (Überschrift) bitte als \"Überschrift 3\" formatieren.<br />Die Variable {ABHOLTAG} zeigt automatisch das richtige Abholdatum an.</div>','<h3>Abholzeiten</h3>\r\n\r\n<p>Wenn du deine Produkte jetzt bestellst, kannst du sie am <strong>{ABHOLTAG}</strong>&nbsp;zwischen 17 und 19 Uhr abholen.</p>\r\n\r\n<p>Du kannst jede Woche bis sp&auml;testens Dienstag Mitternacht bestellen und sie am darauffolgenden Freitag abholen.</p>\r\n','textarea_big',150,'de_DE','2017-07-26 13:19:19','2017-07-26 13:19:19'),
 (544,1,'FCS_CART_ENABLED','Ist die Bestell-Funktion aktiviert?<br /><div class=\"small\">Falls die Foodcoop mal Urlaub macht, kann das Bestellen hier deaktiviert werden.</div>','1','boolean',10,'de_DE','2017-07-26 13:19:19','2017-07-26 13:19:19'),
-(545,1,'FCS_ACCOUNTING_EMAIL','E-Mail-Adresse des Finanzverantwortlichen<br /><div class=\"small\">Wer bekommt die Benachrichtigung über den erfolgten Rechnungsversand?</div>','','text',110,'de_DE','2017-07-26 13:19:19','2017-07-26 13:19:19'),
+(545,1,'FCS_ACCOUNTING_EMAIL','E-Mail-Adresse des Finanzverantwortlichen<br /><div class=\"small\">Wer bekommt die Benachrichtigung über den erfolgten Rechnungsversand?</div>','fcs-demo-superadmin@mailinator.com','text',110,'de_DE','2017-07-26 13:19:19','2017-07-26 13:19:19'),
 (546,1,'FCS_AUTHENTICATION_INFO_TEXT','Info-Text beim Registrierungsformular<br /><div class=\"small\">Beim Registrierungsformlar wird unterhalb der E-Mail-Adresse dieser Text angezeigt.</div>','Um bei uns zu bestellen musst du Vereinsmitglied sein.','textarea',160,'de_DE','2017-07-26 13:19:19','2017-07-26 13:19:19'),
 (547,1,'FCS_SHOW_PRODUCTS_FOR_GUESTS','Produkte für nicht eingeloggte Mitglieder sichtbar?','0','boolean',20,'de_DE','2017-07-26 13:19:19','2017-07-26 13:19:19'),
 (548,1,'FCS_DEFAULT_NEW_MEMBER_ACTIVE','Neue Mitglieder automatisch aktivieren?','0','boolean',50,'de_DE','2017-07-26 13:19:19','2017-07-26 13:19:19'),
@@ -137,8 +143,8 @@ INSERT INTO `fcs_configuration` VALUES
 (569,1,'FCS_TIMEBASED_CURRENCY_NAME','Stundenabrechnung: Name der Einheit<br /><div class=\"small\">max. 10 Zeichen</div>','Stunden','text',210,'de_DE','2018-03-16 15:23:31','2018-03-16 15:23:31'),
 (570,1,'FCS_TIMEBASED_CURRENCY_SHORTCODE','Stundenabrechnung: Abkürzung<br /><div class=\"small\">max. 3 Zeichen</div>','h','text',220,'de_DE','2018-03-16 15:23:31','2018-03-16 15:23:31'),
 (571,1,'FCS_TIMEBASED_CURRENCY_EXCHANGE_RATE','Stundenabrechnung: Umrechnungskurs<br /><div class=\"small\">in €, 2 Kommastellen</div>','10,00','number',230,'de_DE','2018-03-16 15:23:31','2018-03-16 15:23:31'),
-(572,1,'FCS_TIMEBASED_CURRENCY_MAX_CREDIT_BALANCE_CUSTOMER','Stundenabrechnung: Überziehungsrahmen für Mitglieder<br /><div class=\"small\">Wie viele Stunden kann ein Mitglied maximal ins Minus gehen?</div>','0','number',240,'de_DE','2018-03-16 15:23:31','2018-03-16 15:23:31'),
-(573,1,'FCS_TIMEBASED_CURRENCY_MAX_CREDIT_BALANCE_MANUFACTURER','Stundenabrechnung: Überziehungsrahmen für Hersteller<br /><div class=\"small\">Wie viele Stunden kann ein Hersteller maximal ins Plus gehen?</div>','0','number',250,'de_DE','2018-03-16 15:23:31','2018-03-16 15:23:31'),
+(572,1,'FCS_TIMEBASED_CURRENCY_MAX_CREDIT_BALANCE_CUSTOMER','Stundenabrechnung: Überziehungsrahmen für Mitglieder<br /><div class=\"small\">Wie viele Stunden kann ein Mitglied maximal ins Minus gehen?</div>','10','number',240,'de_DE','2018-03-16 15:23:31','2018-03-16 15:23:31'),
+(573,1,'FCS_TIMEBASED_CURRENCY_MAX_CREDIT_BALANCE_MANUFACTURER','Stundenabrechnung: Überziehungsrahmen für Hersteller<br /><div class=\"small\">Wie viele Stunden kann ein Hersteller maximal ins Plus gehen?</div>','100','number',250,'de_DE','2018-03-16 15:23:31','2018-03-16 15:23:31'),
 (574,1,'FCS_SHOW_PRODUCT_PRICE_FOR_GUESTS','Produktpreis für nicht eingeloggte Mitglieder anzeigen?','0','boolean',21,'de_DE','2018-05-28 18:05:57','2018-05-28 18:05:57'),
 (575,1,'FCS_CURRENCY_SYMBOL','Währungssymbol','€','readonly',52,'de_DE','2018-06-13 19:53:14','2018-06-13 19:53:14'),
 (576,1,'FCS_DEFAULT_LOCALE','Sprache','de_DE','readonly',55,'de_DE','2018-06-26 10:18:55','2018-06-26 10:18:55');
@@ -176,10 +182,10 @@ INSERT INTO `fcs_images` VALUES
 
 /*!40000 ALTER TABLE `fcs_manufacturer` DISABLE KEYS */;
 INSERT INTO `fcs_manufacturer` VALUES
-(4,'Demo Fleisch-Hersteller','<p>tests</p>\r\n','','2014-05-14 13:23:02','2015-05-15 13:31:41',1,NULL,NULL,0,'','','','','','','','','','',NULL,0,1,1,2,'testfcs1@mailinator.com;testfcs2@mailinator.com',0,NULL,NULL,NULL,NULL,NULL,0,30,100),
-(5,'Demo Gemüse-Hersteller','<p>Gem&uuml;se-Hersteller Beschreibung&nbsp;lang</p>','<div class=\"entry-content\">\r\n<p>Gem&uuml;se-Hersteller Beschreibung kurz</p>\r\n</div>','2014-05-14 13:36:44','2016-09-27 09:34:51',1,NULL,NULL,0,'','','','','','','','','','',NULL,10,1,1,1,'',0,NULL,NULL,NULL,NULL,'1',0,30,100),
-(15,'Demo Milch-Hersteller','<p>Ja, ich bin der Milchhersteller!</p>','','2014-06-04 21:45:12','2016-03-07 09:02:25',1,NULL,NULL,0,'','','','','','','','','','',NULL,0,1,1,4,'test@test.at',0,NULL,NULL,NULL,NULL,NULL,0,30,100),
-(16,'Hersteller ohne Customer-Eintrag','','','2014-06-04 21:45:12','2016-03-07 09:02:25',1,NULL,NULL,0,'','','','','','','','','','',NULL,10,1,1,1,'',0,NULL,NULL,NULL,NULL,NULL,0,30,100);
+(4,'Demo Fleisch-Hersteller','<p>tests</p>\r\n','','2014-05-14 13:23:02','2015-05-15 13:31:41',1,0,'','','','','','','','','','',NULL,0,1,1,2,'testfcs1@mailinator.com;testfcs2@mailinator.com',0,NULL,NULL,NULL,NULL,NULL,0,30,100,0,0,0,''),
+(5,'Demo Gemüse-Hersteller','<p>Gem&uuml;se-Hersteller Beschreibung&nbsp;lang</p>','<div class=\"entry-content\">\r\n<p>Gem&uuml;se-Hersteller Beschreibung kurz</p>\r\n</div>','2014-05-14 13:36:44','2016-09-27 09:34:51',1,0,'','','','','','','','','','',88,10,1,1,1,'',0,NULL,NULL,NULL,NULL,'1',0,30,100,1,1,1,''),
+(15,'Demo Milch-Hersteller','<p>Ja, ich bin der Milchhersteller!</p>','','2014-06-04 21:45:12','2016-03-07 09:02:25',1,0,'','','','','','','','','','',NULL,0,1,1,4,'test@test.at',0,NULL,NULL,NULL,NULL,NULL,0,30,100,0,0,0,''),
+(16,'Hersteller ohne Customer-Eintrag','','','2014-06-04 21:45:12','2016-03-07 09:02:25',1,0,'','','','','','','','','','',NULL,10,1,1,1,'',0,NULL,NULL,NULL,NULL,NULL,0,30,100,0,0,0,'');
 /*!40000 ALTER TABLE `fcs_manufacturer` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `fcs_order_detail` DISABLE KEYS */;
@@ -214,30 +220,36 @@ INSERT INTO `fcs_payments` VALUES
 
 /*!40000 ALTER TABLE `fcs_product` DISABLE KEYS */;
 INSERT INTO `fcs_product` VALUES
-(60,15,3,0,0.909091,'Milch','','1 Liter','',0,1,'2014-06-11 21:20:24','2014-12-14 19:47:33'),
-(102,4,2,0,0.000000,'Frankfurter','','<p>2 Paar</p>','',0,1,'2016-04-27 21:13:37','2014-09-19 14:32:51'),
-(103,4,2,0,3.181819,'Bratwürstel','','2 Paar','',0,1,'2016-05-05 08:28:49','2014-08-16 14:05:58'),
-(163,5,0,0,1.363637,'Mangold','','0,25kg','',0,1,'2014-07-12 20:41:43','2017-07-26 13:24:10'),
-(339,5,0,0,0.000000,'Kartoffel','','','',0,1,'2015-09-07 12:05:38','2015-02-26 13:54:07'),
-(340,4,0,0,4.545455,'Beuschl','','','',0,1,'2016-05-05 08:28:45','2015-06-23 14:52:53'),
-(344,5,0,0,0.636364,'Knoblauch','','','100 g',0,1,'2015-10-05 17:22:40','2015-07-06 10:24:44'),
-(346,5,2,0,1.652893,'Artischocke','','','Stück',0,1,'2015-08-19 09:35:46','2015-08-19 09:35:45'),
-(347,4,2,0,0.000000,'Forelle','','','Stück',0,1,'2018-05-17 16:13:39','2018-05-17 16:15:21'),
-(348,4,2,0,0.000000,'Rindfleisch','','','',0,1,'2018-05-17 16:15:33','2018-05-17 16:16:38');
+(60,15,3,0.909091,'Milch','','1 Liter','',0,0,1,'week',1,NULL,NULL,'2014-06-11 21:20:24','2014-12-14 19:47:33'),
+(102,4,2,0.000000,'Frankfurter','','<p>2 Paar</p>','',0,0,1,'week',1,NULL,NULL,'2016-04-27 21:13:37','2014-09-19 14:32:51'),
+(103,4,2,3.181819,'Bratwürstel','','2 Paar','',0,0,1,'week',1,NULL,NULL,'2016-05-05 08:28:49','2014-08-16 14:05:58'),
+(163,5,0,1.363637,'Mangold','','0,25kg','',0,0,1,'week',1,NULL,NULL,'2014-07-12 20:41:43','2017-07-26 13:24:10'),
+(339,5,0,0.000000,'Kartoffel','','','',0,0,1,'week',1,NULL,NULL,'2015-09-07 12:05:38','2015-02-26 13:54:07'),
+(340,4,0,4.545455,'Beuschl','','','',0,0,1,'week',1,NULL,NULL,'2016-05-05 08:28:45','2015-06-23 14:52:53'),
+(344,5,0,0.636364,'Knoblauch','','','100 g',0,0,1,'week',1,NULL,NULL,'2015-10-05 17:22:40','2015-07-06 10:24:44'),
+(346,5,2,1.652893,'Artischocke','','','Stück',0,0,1,'week',1,NULL,NULL,'2015-08-19 09:35:46','2015-08-19 09:35:45'),
+(347,4,2,0.000000,'Forelle','','','Stück',0,0,1,'week',1,NULL,NULL,'2018-05-17 16:13:39','2018-05-17 16:15:21'),
+(348,4,2,0.000000,'Rindfleisch','','','',0,0,1,'week',1,NULL,NULL,'2018-05-17 16:15:33','2018-05-17 16:16:38'),
+(349,5,2,4.545455,'Lagerprodukt','','','',0,1,1,'week',1,NULL,NULL,'2018-08-16 12:15:48','2018-08-16 12:16:51'),
+(350,5,2,0.000000,'Lagerprodukt mit Varianten','','','',0,1,1,'week',1,NULL,NULL,'2018-08-16 12:19:06','2018-08-16 12:19:23');
 /*!40000 ALTER TABLE `fcs_product` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `fcs_product_attribute` DISABLE KEYS */;
 INSERT INTO `fcs_product_attribute` VALUES
 (10,60,0.545455,0,0),
 (11,348,0.000000,0,1),
-(12,348,0.000000,0,0);
+(12,348,0.000000,0,0),
+(13,350,1.818182,0,1),
+(14,350,3.636364,0,0);
 /*!40000 ALTER TABLE `fcs_product_attribute` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `fcs_product_attribute_combination` DISABLE KEYS */;
 INSERT INTO `fcs_product_attribute_combination` VALUES
 (33,10),
 (35,12),
-(36,11);
+(35,14),
+(36,11),
+(36,13);
 /*!40000 ALTER TABLE `fcs_product_attribute_combination` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `fcs_sliders` DISABLE KEYS */;
@@ -247,20 +259,24 @@ INSERT INTO `fcs_sliders` VALUES
 
 /*!40000 ALTER TABLE `fcs_stock_available` DISABLE KEYS */;
 INSERT INTO `fcs_stock_available` VALUES
-(132,60,0,1015),
-(195,102,0,2996),
-(196,103,0,990),
-(318,163,0,988),
-(674,339,0,2959),
-(678,340,0,990),
-(680,344,0,78),
-(686,346,0,97),
-(692,60,9,996),
-(693,60,10,19),
-(704,347,0,999),
-(705,348,0,1998),
-(706,348,11,999),
-(707,348,12,999);
+(132,60,0,1015,0,NULL),
+(195,102,0,2996,0,NULL),
+(196,103,0,990,0,NULL),
+(318,163,0,988,0,NULL),
+(674,339,0,2959,0,NULL),
+(678,340,0,990,0,NULL),
+(680,344,0,78,0,NULL),
+(686,346,0,97,0,NULL),
+(692,60,9,996,0,NULL),
+(693,60,10,19,0,NULL),
+(704,347,0,999,0,NULL),
+(705,348,0,1998,0,NULL),
+(706,348,11,999,0,NULL),
+(707,348,12,999,0,NULL),
+(708,349,0,5,-5,0),
+(709,350,0,1004,0,NULL),
+(710,350,13,5,-5,0),
+(711,350,14,999,0,NULL);
 /*!40000 ALTER TABLE `fcs_stock_available` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `fcs_sync_domains` DISABLE KEYS */;
@@ -288,7 +304,10 @@ INSERT INTO `fcs_tax` VALUES
 INSERT INTO `fcs_units` VALUES
 (1,347,0,1.50,'g',100,1,350.000),
 (2,0,11,20.00,'kg',1,1,0.500),
-(3,0,12,20.00,'kg',1,1,1.000);
+(3,0,12,20.00,'kg',1,1,1.000),
+(4,349,0,0.00,'kg',1,0,0.000),
+(5,0,13,0.00,'kg',1,0,0.000),
+(6,0,14,0.00,'kg',1,0,0.000);
 /*!40000 ALTER TABLE `fcs_units` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `phinxlog` DISABLE KEYS */;
@@ -310,7 +329,9 @@ INSERT INTO `phinxlog` VALUES
 (20180702075300,'RenameShopOrderToInstantOrder','2018-07-02 07:23:18','2018-07-02 07:23:18',0),
 (20180717100910,'ProductTablesOptimization','2018-08-01 07:44:17','2018-08-01 07:44:17',0),
 (20180720130810,'RemoveOrdersTable','2018-08-01 07:44:17','2018-08-01 07:44:17',0),
-(20180727070325,'CorrectBicLength','2018-08-01 07:44:17','2018-08-01 07:44:17',0);
+(20180727070325,'CorrectBicLength','2018-08-01 07:44:17','2018-08-01 07:44:17',0),
+(20180814121543,'ImprovedStockManagement','2018-08-14 14:57:59','2018-08-14 14:57:59',0),
+(20180827074035,'AdditionalOrderPeriods','2018-08-27 08:28:29','2018-08-27 08:28:29',0);
 /*!40000 ALTER TABLE `phinxlog` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

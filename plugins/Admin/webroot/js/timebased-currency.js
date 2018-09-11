@@ -8,7 +8,7 @@
  * @since         FoodCoopShop 2.1.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 foodcoopshop.TimebasedCurrency = {
@@ -67,7 +67,7 @@ foodcoopshop.TimebasedCurrency = {
     updateHoursSumDropdown: function(maxSeconds, selectedIndex) {
 
         maxSeconds = Math.floor(parseFloat(maxSeconds) * 3600);
-        var dropdown = $('#timebased-currency-order-seconds-sum-tmp');
+        var dropdown = $('#carts-timebased-currency-seconds-sum-tmp');
 
         if (selectedIndex === undefined || selectedIndex > maxSeconds) {
             selectedIndex = maxSeconds;

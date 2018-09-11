@@ -6,6 +6,7 @@ use App\Mailer\AppEmail;
 use Cake\Core\Configure;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Event\Event;
+use Cake\I18n\FrozenDate;
 use Cake\ORM\TableRegistry;
 
 /**
@@ -20,7 +21,7 @@ use Cake\ORM\TableRegistry;
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 class CartsController extends FrontendController
@@ -154,6 +155,78 @@ class CartsController extends FrontendController
         $this->render('generateRightOfWithdrawalInformationAndForm');
     }
 
+    private function sendStockAvailableLimitReachedEmailToManufacturer($cartId)
+    {
+        $cart = $this->Cart->find('all', [
+            'conditions' => [
+                'Carts.id_cart' => $cartId
+            ],
+            'contain' => [
+                'CartProducts.Products.Manufacturers.AddressManufacturers',
+                'CartProducts.Products.Manufacturers.Customers.AddressCustomers',
+                'CartProducts.Products.StockAvailables',
+                'CartProducts.ProductAttributes.StockAvailables',
+                'CartProducts.OrderDetails'
+            ]
+        ])->first();
+        
+        foreach($cart->cart_products as $cartProduct) {
+            $stockAvailable = $cartProduct->product->stock_available;
+            if (!empty($cartProduct->product_attribute)) {
+                $stockAvailable = $cartProduct->product_attribute->stock_available;
+            }
+            if (is_null($stockAvailable->sold_out_limit)) {
+                continue;
+            }
+            $stockAvailableLimitReached = $stockAvailable->quantity <= $stockAvailable->sold_out_limit;
+            
+            // send email to manufacturer
+            if ($stockAvailableLimitReached && $cartProduct->product->manufacturer->stock_management_enabled && $cartProduct->product->is_stock_product && $cartProduct->product->manufacturer->send_product_sold_out_limit_reached_for_manufacturer) {
+                $email = new AppEmail();
+                $email->setTemplate('stock_available_limit_reached_notification')
+                ->setTo($cartProduct->product->manufacturer->address_manufacturer->email)
+                ->setSubject(__('Product_{0}:_Only_{1}_units_on_stock', [
+                    $cartProduct->order_detail->product_name,
+                    $stockAvailable->quantity
+                ]))
+                ->setViewVars([
+                    'appAuth' => $this->AppAuth,
+                    'greeting' => __('Hello') . ' ' . $cartProduct->product->manufacturer->address_manufacturer->firstname,
+                    'productEditLink' => Configure::read('app.slugHelper')->getProductAdmin(null, $cartProduct->product->id_product),
+                    'cartProduct' => $cartProduct,
+                    'stockAvailable' => $stockAvailable,
+                    'manufacturer' => $cartProduct->product->manufacturer,
+                    'showManufacturerUnsubscribeLink' => true
+                ]);
+                $email->send();
+            }
+            
+            // send email to contact person
+            if ($stockAvailableLimitReached && $cartProduct->product->manufacturer->stock_management_enabled && $cartProduct->product->is_stock_product && !empty($cartProduct->product->manufacturer->customer) && $cartProduct->product->manufacturer->send_product_sold_out_limit_reached_for_contact_person) {
+                $email = new AppEmail();
+                $email->setTemplate('stock_available_limit_reached_notification')
+                ->setTo($cartProduct->product->manufacturer->customer->address_customer->email)
+                ->setSubject(__('Product_{0}:_Only_{1}_units_on_stock', [
+                    $cartProduct->order_detail->product_name,
+                    $stockAvailable->quantity
+                ]))
+                ->setViewVars([
+                    'appAuth' => $this->AppAuth,
+                    'greeting' => __('Hello') . ' ' . $cartProduct->product->manufacturer->customer->firstname,
+                    'productEditLink' => Configure::read('app.slugHelper')->getProductAdmin($cartProduct->product->id_manufacturer, $cartProduct->product->id_product),
+                    'cartProduct' => $cartProduct,
+                    'stockAvailable' => $stockAvailable,
+                    'manufacturer' => $cartProduct->product->manufacturer,
+                    'showManufacturerName' => true,
+                    'notificationEditLink' => __('You_can_unsubscribe_this_email_<a href="{0}">in_the_settings_of_the_manufacturer</a>.', [Configure::read('app.cakeServerName') . Configure::read('app.slugHelper')->getManufacturerEditOptions($cartProduct->product->id_manufacturer)])
+                ]);
+                $email->send();
+            }
+            
+        }
+        
+    }
+    
     /**
      * does not send email to inactive users (superadmins can place shop orders for inactive users!)
      * @param array $cart
@@ -168,7 +241,7 @@ class CartsController extends FrontendController
             ->setTo($this->AppAuth->getEmail())
             ->setSubject(__('Order_confirmation'))
             ->setViewVars([
-                'cart' => $cart,
+                'cart' => $this->Cart->getCartGroupedByPickupDay($cart),
                 'appAuth' => $this->AppAuth,
                 'originalLoggedCustomer' => $this->getRequest()->getSession()->check('Auth.originalLoggedCustomer') ? $this->getRequest()->getSession()->read('Auth.originalLoggedCustomer') : null
             ]);
@@ -281,7 +354,6 @@ class CartsController extends FrontendController
                 'conditions' => [
                     'Products.id_product' => $ids['productId']
                 ],
-                'fields' => ['is_holiday_active' => '!'.$this->Product->getManufacturerHolidayConditions()],
                 'contain' => [
                     'Manufacturers',
                     'Manufacturers.AddressManufacturers',
@@ -298,10 +370,11 @@ class CartsController extends FrontendController
             ->first();
             $products[] = $product;
             $stockAvailableQuantity = $product->stock_available->quantity;
+            $stockAvailableAvailableQuantity = $product->stock_available->quantity - $product->stock_available->quantity_limit;
 
             // stock available check for product (without attributeId)
-            if ($ids['attributeId'] == 0 && $stockAvailableQuantity < $cartProduct['amount']) {
-                $message = __('The_desired_amount_{0}_of_the_product_{1}_is_not_available_any_more_available_amount_{2}.', ['<b>' . $cartProduct['amount'] . '</b>', '<b>' . $product->name . '</b>', $stockAvailableQuantity]);
+            if ($ids['attributeId'] == 0 && $stockAvailableAvailableQuantity < $cartProduct['amount']) {
+                $message = __('The_desired_amount_{0}_of_the_product_{1}_is_not_available_any_more_available_amount_{2}.', ['<b>' . $cartProduct['amount'] . '</b>', '<b>' . $product->name . '</b>', $stockAvailableAvailableQuantity]);
                 $message .= ' ' . __('Please_change_amount_or_delete_product_from_cart_to_place_order.');
                 $cartErrors[$cartProduct['productId']][] = $message;
             }
@@ -312,15 +385,16 @@ class CartsController extends FrontendController
                     if ($attribute->id_product_attribute == $ids['attributeId']) {
                         $attributeIdFound = true;
                         $stockAvailableQuantity = $attribute->stock_available->quantity;
+                        $stockAvailableAvailableQuantity = $attribute->stock_available->quantity - $attribute->stock_available->quantity_limit;
                         // stock available check for attribute
-                        if ($stockAvailableQuantity < $cartProduct['amount']) {
+                        if ($stockAvailableAvailableQuantity < $cartProduct['amount']) {
                             $this->Attribute = TableRegistry::getTableLocator()->get('Attributes');
                             $attribute = $this->Attribute->find('all', [
                                 'conditions' => [
                                     'Attributes.id_attribute' => $attribute->product_attribute_combination->id_attribute
                                 ]
                             ])->first();
-                            $message = __('The_desired_amount_{0}_of_the_attribute_{1}_of_the_product_{2}_is_not_available_any_more_available_amount_{3}.', ['<b>' . $cartProduct['amount'] . '</b>', '<b>' . $attribute->name . '</b> ', '<b>' . $product->name . '</b>', $stockAvailableQuantity]);
+                            $message = __('The_desired_amount_{0}_of_the_attribute_{1}_of_the_product_{2}_is_not_available_any_more_available_amount_{3}.', ['<b>' . $cartProduct['amount'] . '</b>', '<b>' . $attribute->name . '</b> ', '<b>' . $product->name . '</b>', $stockAvailableAvailableQuantity]);
                             $message .= ' ' . __('Please_change_amount_or_delete_product_from_cart_to_place_order.');
                             $cartErrors[$cartProduct['productId']][] = $message;
                         }
@@ -340,8 +414,8 @@ class CartsController extends FrontendController
                 $cartErrors[$cartProduct['productId']][] = $message;
             }
 
-            if (! $product->manufacturer->active || $product->is_holiday_active) {
-                $message = __('The_manufacturer_of_the_product_{0}_is_on_holiday_or_product_is_not_activated.', ['<b>' . $product->name . '</b>']);
+            if (! $product->manufacturer->active || $this->Product->deliveryBreakEnabled($product->manufacturer->no_delivery_days, $product->next_delivery_day)) {
+                $message = __('The_manufacturer_of_the_product_{0}_has_a_delivery_break_or_product_is_not_activated.', ['<b>' . $product->name . '</b>']);
                 $message .= ' ' . __('Please_change_amount_or_delete_product_from_cart_to_place_order.');
                 $cartErrors[$cartProduct['productId']][] = $message;
             }
@@ -355,7 +429,7 @@ class CartsController extends FrontendController
                 'total_price_tax_excl' => $cartProduct['priceExcl'],
                 'total_price_tax_incl' => $cartProduct['price'],
                 'id_tax' => $product->id_tax,
-                'order_state' => ORDER_STATE_OPEN,
+                'order_state' => ORDER_STATE_ORDER_PLACED,
                 'id_customer' => $this->AppAuth->getUserId(),
                 'id_cart_product' => $cartProduct['cartProductId'],
                 'pickup_day' => $cartProduct['pickupDay'],
@@ -392,10 +466,6 @@ class CartsController extends FrontendController
             $orderDetails2save[] = $orderDetail2save;
 
             $newQuantity = $stockAvailableQuantity - $cartProduct['amount'];
-            if ($newQuantity < 0) {
-                $message = 'attention, this should never happen! stock available would have been negative: productId: ' . $ids['productId'] . ', attributeId: ' . $ids['attributeId'] . '; changed it manually to 0 to avoid negative stock available value.';
-                $newQuantity = 0; // never ever allow negative stock available
-            }
             $stockAvailable2saveData[] = [
                 'quantity' => $newQuantity
             ];
@@ -411,20 +481,50 @@ class CartsController extends FrontendController
         
         if ($this->AppAuth->isTimebasedCurrencyEnabledForCustomer()) {
             $validator = $this->Cart->getValidator('default');
-            $validator->notEmpty('timebased_currency_seconds_sum_tmp', 'Bitte gib an, wie viel du in Stunden zahlen möchtest.');
-            $validator->numeric('timebased_currency_seconds_sum_tmp', 'Bitte trage eine Zahl ein.');
+            $validator->notEmpty(
+                'timebased_currency_seconds_sum_tmp',
+                __('Please_enter_how_much_you_want_to_pay_in_{0}.', [Configure::read('appDb.FCS_TIMEBASED_CURRENCY_NAME')])
+            );
+            $validator->numeric('timebased_currency_seconds_sum_tmp',
+                __('Please_enter_a_number.')
+            );
             $maxValue = $this->AppAuth->Cart->getTimebasedCurrencySecondsSumRoundedUp();
-            $validator = $this->Cart->getNumberRangeValidator($validator, 'timebased_currency_seconds_sum_tmp', 0, $maxValue);
+            $this->TimebasedCurrencyOrderDetail = TableRegistry::getTableLocator()->get('TimebasedCurrencyOrderDetails');
+            $customerCreditBalance = $this->TimebasedCurrencyOrderDetail->getCreditBalance(null, $this->AppAuth->getUserId());
+            $maxValueForCustomers = Configure::read('appDb.FCS_TIMEBASED_CURRENCY_MAX_CREDIT_BALANCE_CUSTOMER') * 3600 + $customerCreditBalance;
+            if ($maxValueForCustomers <= $maxValue) {
+                $validator = $this->Cart->getNumberRangeValidator(
+                    $validator,
+                    'timebased_currency_seconds_sum_tmp',
+                    0,
+                    $maxValueForCustomers,
+                    __('Your_overdraft_frame_of_{0}_is_reached.', [Configure::read('appDb.FCS_TIMEBASED_CURRENCY_MAX_CREDIT_BALANCE_CUSTOMER') . ' ' . Configure::read('appDb.FCS_TIMEBASED_CURRENCY_SHORTCODE')]),
+                    false
+                );
+            } else {
+                $validator = $this->Cart->getNumberRangeValidator($validator, 'timebased_currency_seconds_sum_tmp', 0, $maxValue);
+            }
             $this->Cart->setValidator('default', $validator);
         }
         
         $options = [];
         if (Configure::read('appDb.FCS_ORDER_COMMENT_ENABLED')) {
+            // save pickup day: primary key needs to be changed!
+            $this->Cart->PickupDayEntities->setPrimaryKey(['customer_id', 'pickup_day']);
             $options = [
                 'associated' => [
                     'PickupDayEntities'
                 ]
             ];
+            $fixedPickupDayRequest = [];
+            $pickupEntities = $this->getRequest()->getData('Carts.pickup_day_entities');
+            if (!empty($pickupEntities)) {
+                foreach($pickupEntities as $pickupDay) {
+                    $pickupDay['pickup_day'] = FrozenDate::createFromFormat(Configure::read('app.timeHelper')->getI18Format('DatabaseAlt'), $pickupDay['pickup_day']);
+                    $fixedPickupDayRequest[] = $pickupDay;
+                }
+                $this->setRequest($this->getRequest()->withData('Carts.pickup_day_entities', $fixedPickupDayRequest));
+            }
         }
         $cart['Cart'] = $this->Cart->patchEntity(
             $cart['Cart'],
@@ -458,10 +558,9 @@ class CartsController extends FrontendController
             $this->saveStockAvailable($stockAvailable2saveData, $stockAvailable2saveConditions);
 
             $manufacturersThatReceivedInstantOrderNotification = $this->sendInstantOrderNotificationToManufacturers($cart['CartProducts']);
-
+            $this->sendStockAvailableLimitReachedEmailToManufacturer($cart['Cart']->id_cart);
+            
             if (Configure::read('appDb.FCS_ORDER_COMMENT_ENABLED')) {
-                // save pickup day: primary key needs to be changed!
-                $this->Cart->PickupDayEntities->setPrimaryKey(['customer_id', 'pickup_day']);
                 $this->Cart->PickupDayEntities->saveMany($cart['Cart']->pickup_day_entities);
             }
             
@@ -514,12 +613,16 @@ class CartsController extends FrontendController
 
         $manufacturers = [];
         foreach ($cartProducts as $cartProduct) {
+            if ($cartProduct['isStockProduct']) {
+                continue;
+            }
             $manufacturers[$cartProduct['manufacturerId']][] = $cartProduct;
         }
 
         $this->Manufacturer = TableRegistry::getTableLocator()->get('Manufacturers');
         $manufacturersThatReceivedInstantOrderNotification = [];
         foreach ($manufacturers as $manufacturerId => $cartProducts) {
+            
             $manufacturer = $this->Manufacturer->find('all', [
                 'conditions' => [
                     'Manufacturers.id_manufacturer' => $manufacturerId
@@ -690,7 +793,6 @@ class CartsController extends FrontendController
         $errorMessages = [];
         $loadedProducts = count($orderDetails);
         if (count($orderDetails) > 0) {
-            $newCartProductsData = [];
             foreach($orderDetails as $orderDetail) {
                 $result = $this->CartProduct->add($this->AppAuth, $orderDetail->product_id, $orderDetail->product_attribute_id, $orderDetail->product_amount);
                 if (is_array($result)) {

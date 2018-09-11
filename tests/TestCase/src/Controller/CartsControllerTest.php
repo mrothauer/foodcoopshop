@@ -1,8 +1,5 @@
 <?php
-
 /**
- * CartsControllerTest
- *
  * FoodCoopShop - The open source software for your foodcoop
  *
  * Licensed under The MIT License
@@ -12,7 +9,7 @@
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 use App\Test\TestCase\AppCakeTestCase;
@@ -80,6 +77,14 @@ class CartsControllerTest extends AppCakeTestCase
         $this->assertJsonError();
     }
 
+    public function testAddAmountNotAvailableAnyMore()
+    {
+        $this->loginAsCustomer();
+        $response = $this->addProductToCart($this->productId1, 98);
+        $this->assertRegExpWithUnquotedString('Die gewünschte Anzahl <b>98</b> des Produktes <b>Artischocke</b> ist leider nicht mehr verfügbar. Verfügbare Menge: 97', $response->msg);
+        $this->assertJsonError();
+    }
+    
     public function testRemoveProduct()
     {
         $this->loginAsCustomer();
@@ -92,6 +97,20 @@ class CartsControllerTest extends AppCakeTestCase
         $response = $this->removeProduct($this->productId1);
         $this->assertRegExpWithUnquotedString('Produkt 346 war nicht in Warenkorb vorhanden.', $response->msg);
         $this->assertJsonError();
+    }
+    
+    public function testRemoveProductIfProductAttributeWasDeletedAndOtherProductAttributesExistAfterAddingToCart()
+    {
+        $this->loginAsCustomer();
+        $this->addProductToCart($this->productId2, 1);
+        $query = 'UPDATE ' . $this->Product->getTable().' SET active = 0 WHERE id_product = 60';
+        $this->dbConnection->execute($query);
+        $query = 'UPDATE ' . $this->Cart->CartProducts->getTable().' SET id_product_attribute = 5000 WHERE id_cart_product = 3';
+        $this->dbConnection->execute($query);
+        $this->removeProduct($this->productId2);
+        $cart = $this->Cart->getCart($this->browser->getLoggedUserId());
+        $this->assertEquals([], $cart['CartProducts'], 'cart must be empty');
+        $this->assertJsonOk();
     }
 
     public function testProductPlacedInCart()
@@ -164,18 +183,18 @@ class CartsControllerTest extends AppCakeTestCase
         $this->changeManufacturerStatus($manufacturerId, APP_ON);
     }
 
-    public function testManufacturerHolidayModeActivatedWhileShopping()
+    public function testManufacturerDeliveryBreakActivatedWhileShopping()
     {
         $this->loginAsSuperadmin();
         $this->fillCart();
         $this->checkCartStatus();
 
         $manufacturerId = 5;
-        $this->changeManufacturerHolidayMode($manufacturerId, date('Y-m-d'));
+        $this->changeManufacturerNoDeliveryDays($manufacturerId, Configure::read('app.timeHelper')->getDeliveryDateByCurrentDayForDb());
         $this->finishCart();
         $this->checkValidationError();
         $this->assertRegExp('/Der Hersteller des Produktes (.*) hat entweder Lieferpause oder er ist nicht mehr aktiviert und das Produkt ist somit nicht mehr bestellbar./', $this->browser->getContent());
-        $this->changeManufacturerHolidayMode($manufacturerId, null);
+        $this->changeManufacturerNoDeliveryDays($manufacturerId);
     }
 
     public function testProductStockAvailableDecreasedWhileShopping()
@@ -243,10 +262,10 @@ class CartsControllerTest extends AppCakeTestCase
         $pickupDay = Configure::read('app.timeHelper')->getDeliveryDateByCurrentDayForDb();
         
         // check order_details for product1
-        $this->checkOrderDetails($cart->cart_products[0]->order_detail, 'Artischocke : Stück', 2, 0, 1, 3.305786, 3.64, 0.17, 0.34, 2, $pickupDay);
+        $this->checkOrderDetails($cart->cart_products[2]->order_detail, 'Artischocke : Stück', 2, 0, 1, 3.305786, 3.64, 0.17, 0.34, 2, $pickupDay);
 
         // check order_details for product2 (third! index)
-        $this->checkOrderDetails($cart->cart_products[2]->order_detail, 'Milch : 0,5l', 3, 10, 1.5, 1.636365, 1.86, 0.07, 0.21, 3, $pickupDay);
+        $this->checkOrderDetails($cart->cart_products[0]->order_detail, 'Milch : 0,5l', 3, 10, 1.5, 1.636365, 1.86, 0.07, 0.21, 3, $pickupDay);
 
         // check order_details for product3 (second! index)
         $this->checkOrderDetails($cart->cart_products[1]->order_detail, 'Knoblauch : 100 g', 1, 0, 0, 0.636364, 0.636364, 0.000000, 0.000000, 0, $pickupDay);
@@ -279,7 +298,160 @@ class CartsControllerTest extends AppCakeTestCase
 
         $this->browser->doFoodCoopShopLogout();
     }
+    
+    public function testProductsWithAllowedNegativeStock() {
+        $this->loginAsCustomer();
+        $this->addProductToCart(349, 8);
+        $this->assertJsonOk();
+    }
+    
+    public function testProductsWithAllowedNegativeStockButTooHighAmount() {
+        $this->loginAsCustomer();
+        $response = $this->addProductToCart(349, 11);
+        $this->assertRegExpWithUnquotedString('Die gewünschte Anzahl <b>11</b> des Produktes <b>Lagerprodukt</b> ist leider nicht mehr verfügbar. Verfügbare Menge: 10', $response->msg);
+        $this->assertJsonError();
+    }
+    
+    private function placeOrderWithStockProducts() {
+        $stockProductId = 349;
+        $stockProductAttributeId = '350-13';
+        $this->addProductToCart($stockProductId, 6);
+        $this->addProductToCart($stockProductAttributeId, 5);
+        $this->finishCart(1, 1);
+    }
+    
+    public function testFinishOrderWithMultiplePickupDays() {
+        
+        $this->loginAsSuperadmin();
+        $productIdA = 346;
+        $productIdB = 347;
+        $productIdC = '60-10';
+        $this->changeProductDeliveryRhythm($productIdA, '0-individual', '28.09.2018');
+        $this->addProductToCart($productIdA, 3);
+        $this->addProductToCart($productIdB, 2);
+        $this->addProductToCart($productIdC, 1);
+        $this->finishCart(1, 1);
+        
+        $emailLogs = $this->EmailLog->find('all')->toArray();
+        $this->assertEquals(1, count($emailLogs));
+    }
+    
+    public function testFinishOrderStockNotificationsIsStockProductDisabled() {
+        
+        $this->loginAsSuperadmin();
+        $this->browser->ajaxPost('/admin/products/editIsStockProduct', [
+            'productId' => '350-13',
+            'isStockProduct' => 0
+        ]);
+        $this->browser->ajaxPost('/admin/products/editIsStockProduct', [
+            'productId' => 349,
+            'isStockProduct' => 0
+        ]);
+        $this->placeOrderWithStockProducts();
+        
+        $emailLogs = $this->EmailLog->find('all')->toArray();
+        $this->assertEquals(1, count($emailLogs));
+    }
+    
+    public function testFinishOrderStockNotificationsStockManagementDisabled() {
+        
+        $manufacturerId = $this->Customer->getManufacturerIdByCustomerId(Configure::read('test.vegetableManufacturerId'));
+        $this->changeManufacturer($manufacturerId, 'stock_management_enabled', 0);
+        
+        $this->loginAsSuperadmin();
+        $this->placeOrderWithStockProducts();
+        
+        $emailLogs = $this->EmailLog->find('all')->toArray();
+        $this->assertEquals(1, count($emailLogs));
+    }
+    
+    public function testFinishOrderStockNotificationsDisabled() {
+        
+        $manufacturerId = $this->Customer->getManufacturerIdByCustomerId(Configure::read('test.vegetableManufacturerId'));
+        $this->changeManufacturer($manufacturerId, 'send_product_sold_out_limit_reached_for_manufacturer', 0);
+        $this->changeManufacturer($manufacturerId, 'send_product_sold_out_limit_reached_for_contact_person', 0);
+        
+        $this->loginAsSuperadmin();
+        $this->placeOrderWithStockProducts();
+        
+        $emailLogs = $this->EmailLog->find('all')->toArray();
+        $this->assertEquals(1, count($emailLogs));
+    }
+    
+    public function testFinishOrderStockNotificationsEnabled()
+    {
+        
+        $this->loginAsSuperadmin();
+        $this->placeOrderWithStockProducts();
+        
+        $emailLogs = $this->EmailLog->find('all')->toArray();
+        
+        // check email to manufacturer
+        $this->assertEmailLogs(
+            $emailLogs[0],
+            'Lagerstand für Produkt "Lagerprodukt mit Varianten : 0,5 kg": 0',
+            [
+                'Lagerstand: <b>0</b>',
+                'Bestellungen möglich bis zu einem Lagerstand von: <b>-5</b>'
+            ],
+            [
+                Configure::read('test.loginEmailVegetableManufacturer')
+            ]
+        );
+        
+        // check email to contact person
+        $this->assertEmailLogs(
+            $emailLogs[1],
+            '',
+            [],
+            [
+                Configure::read('test.loginEmailAdmin')
+            ]
+        );
+        
+        // check email to manufacturer
+        $this->assertEmailLogs(
+            $emailLogs[2],
+            'Lagerstand für Produkt "Lagerprodukt": -1',
+            [
+                'Lagerstand: <b>-1</b>',
+                'Bestellungen möglich bis zu einem Lagerstand von: <b>-5</b>'
+            ],
+            [
+                Configure::read('test.loginEmailVegetableManufacturer')
+            ]
+        );
+        
+        // check email to contact person
+        $this->assertEmailLogs(
+            $emailLogs[3],
+            '',
+            [],
+            [
+                Configure::read('test.loginEmailAdmin')
+            ]
+        );
+        
+        $this->browser->doFoodCoopShopLogout();
+    }
 
+    public function testFinishOrderTimebasedCurrencyEnabledCustomerOverdraftReached()
+    {
+        $reducedMaxPercentage = 15;
+        $this->prepareTimebasedCurrencyConfiguration($reducedMaxPercentage);
+        
+        $this->loginAsSuperadmin();
+        $this->fillCart();
+        
+        // bratwürstel, manufacturerId 4
+        $this->addProductToCart(103, 50); 
+        $this->addProductToCart(103, 99);
+        $this->addProductToCart(103, 99);
+        
+        $this->finishCart(1, 1, '', '38000');
+        $this->assertRegExpWithUnquotedString('Dein Überziehungsrahmen von 10 h ist erreicht.', $this->browser->getContent());
+    }
+    
     public function testFinishOrderTimebasedCurrencyEnabled()
     {
         $reducedMaxPercentage = 15;
@@ -305,10 +477,10 @@ class CartsControllerTest extends AppCakeTestCase
         $this->checkCartStatusAfterFinish();
         
         $cart = $this->getCartById($cartId);
-        $orderDetailA = $cart->cart_products[0]->order_detail;
-        $orderDetailB = $cart->cart_products[1]->order_detail;
-        $orderDetailC = $cart->cart_products[2]->order_detail;
-        $orderDetailD = $cart->cart_products[3]->order_detail;
+        $orderDetailA = $cart->cart_products[3]->order_detail;
+        $orderDetailB = $cart->cart_products[2]->order_detail;
+        $orderDetailC = $cart->cart_products[1]->order_detail;
+        $orderDetailD = $cart->cart_products[0]->order_detail;
         
         // check table order_detail
         $this->assertEquals($orderDetailA->total_price_tax_incl, 2.700000, 'order_detail->total_price_tax_incl not correct');
@@ -364,12 +536,12 @@ class CartsControllerTest extends AppCakeTestCase
         $pickupDay = Configure::read('app.timeHelper')->getDeliveryDateByCurrentDayForDb();
         
         // check order_details
-        $this->checkOrderDetails($cart->cart_products[0]->order_detail, 'Forelle : Stück', 2, 0, 0, 9.54, 10.5, 0.48, 0.96, 2, $pickupDay);
-        $this->checkOrderDetails($cart->cart_products[1]->order_detail, 'Rindfleisch', 3, 11, 0, 27.27, 30, 0.91, 2.73, 2, $pickupDay);
+        $this->checkOrderDetails($cart->cart_products[1]->order_detail, 'Forelle : Stück', 2, 0, 0, 9.54, 10.5, 0.48, 0.96, 2, $pickupDay);
+        $this->checkOrderDetails($cart->cart_products[0]->order_detail, 'Rindfleisch', 3, 11, 0, 27.27, 30, 0.91, 2.73, 2, $pickupDay);
 
         // check order_details_units
-        $orderDetailA = $cart->cart_products[0]->order_detail;
-        $orderDetailB = $cart->cart_products[1]->order_detail;
+        $orderDetailA = $cart->cart_products[1]->order_detail;
+        $orderDetailB = $cart->cart_products[0]->order_detail;
         
         $this->assertEquals($orderDetailA->order_detail_unit->product_quantity_in_units, 700);
         $this->assertEquals($orderDetailA->order_detail_unit->price_incl_per_unit, 1.5);
@@ -404,12 +576,13 @@ class CartsControllerTest extends AppCakeTestCase
         $this->assertRegExpWithUnquotedString('Diese Bestellung wird für <b>' . $testCustomer->name . '</b> getätigt.', $responseHtml);
         $this->assertUrl($this->browser->getUrl(), $this->browser->baseUrl . '/', 'redirect did not work');
         
-        $this->fillCart();
+        $this->addProductToCart($this->productId2, 3); // attribute
+        $this->addProductToCart(349, 1); // stock product - no notification!
         
         $this->finishCart(1, 1);
         $cartId = Configure::read('app.htmlHelper')->getCartIdFromCartFinishedUrl($this->browser->getUrl());
         
-        $this->assertRegExpWithUnquotedString('Die Sofort-Bestellung für <b>Demo Mitglied</b> wurde erfolgreich getätigt. Folgende Hersteller wurden darüber informiert: <b>Demo Gemüse-Hersteller, Demo Milch-Hersteller</b>', $this->browser->getContent());
+        $this->assertRegExpWithUnquotedString('Die Sofort-Bestellung für <b>Demo Mitglied</b> wurde erfolgreich getätigt. Folgende Hersteller wurden darüber informiert: <b>Demo Milch-Hersteller</b>', $this->browser->getContent());
         
         $cart = $this->getCartById($cartId);
         
@@ -420,21 +593,10 @@ class CartsControllerTest extends AppCakeTestCase
         }
         
         $emailLogs = $this->EmailLog->find('all')->toArray();
-        $this->assertEmailLogs(
-            $emailLogs[0],
-            'Benachrichtigung über Sofort-Bestellung',
-            [
-                'Artischocke : Stück',
-                'Hallo Demo,',
-                '3,64'
-            ],
-            [
-                Configure::read('test.loginEmailVegetableManufacturer')
-            ]
-        );
+        $this->assertEquals(2, count($emailLogs));
         
         $this->assertEmailLogs(
-            $emailLogs[1],
+            $emailLogs[0],
             'Benachrichtigung über Sofort-Bestellung',
             [
                 'Milch : 0,5l',
@@ -519,7 +681,7 @@ class CartsControllerTest extends AppCakeTestCase
 
     private function changeStockAvailable($productId, $amount)
     {
-        $this->Product->changeQuantity([[$productId => $amount]]);
+        $this->Product->changeQuantity([[$productId => ['quantity' => $amount]]]);
     }
 
     private function checkStockAvailable($productId, $result)
@@ -550,7 +712,7 @@ class CartsControllerTest extends AppCakeTestCase
         $this->assertEquals($orderDetail->total_price_tax_incl, $totalPriceTaxIncl, 'order_detail total_price_tax_incl not correct');
         $this->assertEquals($orderDetail->id_tax, $taxId, 'order_detail id_tax not correct');
         $this->assertEquals($orderDetail->id_customer, $this->browser->getLoggedUserId(), 'order_detail id_customer not correct');
-        $this->assertEquals($orderDetail->order_state, ORDER_STATE_OPEN, 'order_detail order_state not correct');
+        $this->assertEquals($orderDetail->order_state, ORDER_STATE_ORDER_PLACED, 'order_detail order_state not correct');
         $this->assertEquals($orderDetail->pickup_day->i18nFormat(Configure::read('app.timeHelper')->getI18Format('Database')), $pickupDay, 'order_detail pickup_day not correct');
         
         // check order_details_tax

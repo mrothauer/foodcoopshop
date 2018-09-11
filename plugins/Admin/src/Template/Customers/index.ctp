@@ -9,7 +9,7 @@
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 use Cake\Core\Configure;
@@ -92,7 +92,7 @@ foreach ($customers as $customer) {
             $customerName = '<i class="fa fa-pagelines" title="'.__d('admin', 'Newbie_only_{0}_products_ordered.', [$customer->order_detail_count]).'"></i> ' . $customerName;
         }
 
-        echo '<span class="name">' . $this->Html->link($customerName, '/admin/order-details?orderStates[]=' . join(',', Configure::read('app.htmlHelper')->getOrderStateIds()) . '&pickupDay[]=01.01.2014&pickupDay[]=' . date(Configure::read('app.timeHelper')->getI18Format('DateShortAlt')) . '&customerId=' . $customer->id_customer . '&sort=OrderDetails.pickup_day&direction=desc', [
+        echo '<span class="name">' . $this->Html->link($customerName, '/admin/order-details?&pickupDay[]='.Configure::read('app.timeHelper')->formatToDateShort('2014-01-01').'&pickupDay[]=' . Configure::read('app.timeHelper')->formatToDateShort('2022-12-31') . '&customerId=' . $customer->id_customer . '&sort=OrderDetails.pickup_day&direction=desc', [
             'title' => __d('admin', 'Show_all_orders_from_{0}', [$this->Html->getNameRespectingIsDeleted($customer)]),
             'escape' => false
         ]) . '</span>';

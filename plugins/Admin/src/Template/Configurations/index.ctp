@@ -9,7 +9,7 @@
  * @since         FoodCoopShop 1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 
@@ -75,15 +75,10 @@ $this->element('addScript', [
                 echo '</td>';
 
                 echo '<td style="width:30px;">';
-
-                    // timebased currency module is still in beta mode - only enable it in database and do not show edit icon
-                    if ($configuration->name != 'FCS_TIMEBASED_CURRENCY_ENABLED') {
-                        echo $this->Html->getJqueryUiIcon($this->Html->image($this->Html->getFamFamFamPath('page_edit.png')), [
-                            'title' => __d('admin', 'Edit'),
-                            'class' => 'edit-configuration-button'
-                        ], $this->Slug->getConfigurationEdit($configuration->id_configuration, $configuration->name));
-                    }
-
+                    echo $this->Html->getJqueryUiIcon($this->Html->image($this->Html->getFamFamFamPath('page_edit.png')), [
+                        'title' => __d('admin', 'Edit'),
+                        'class' => 'edit-configuration-button'
+                    ], $this->Slug->getConfigurationEdit($configuration->id_configuration, $configuration->name));
                 echo '</td>';
 
                 echo '<td>';

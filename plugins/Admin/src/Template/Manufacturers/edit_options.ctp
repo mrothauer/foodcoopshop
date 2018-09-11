@@ -9,7 +9,7 @@
  * @since         FoodCoopShop 1.4.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
- * @copyright     Copyright (c) Mario Rothauer, http://www.rothauer-it.com
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 
@@ -58,27 +58,26 @@ echo $this->Form->hidden('referer', ['value' => $referer]);
 
 echo '<h2>'.__d('admin', 'Visibility_of_the_products').'</h2>';
 
-echo $this->Form->control('Manufacturers.active', [
-    'label' => ''.__d('admin', 'Active').'? <span class="after small">'.__d('admin', 'Manufacturer_profile_and_products_are_visible_(cannot_be_changed_by_manufacturer).').'</span>',
-    'disabled' => ($appAuth->isManufacturer() ? 'disabled' : ''),
-    'type' => 'checkbox',
-    'escape' => false
-]);
-
-echo '<div class="holiday-wrapper">';
-    echo '<div class="input">';
-        echo '<label>'.__d('admin', 'Delivery_break').'?';
-    echo '</div>';
-    echo $this->element('dateFields', [
-        'dateFrom' => !empty($manufacturer->holiday_from) ? $manufacturer->holiday_from->i18nFormat(Configure::read('app.timeHelper')->getI18Format('DateLong2')) : '',
-        'nameFrom' => 'Manufacturers[holiday_from]',
-        'dateTo' => !empty($manufacturer->holiday_to) ? $manufacturer->holiday_to->i18nFormat(Configure::read('app.timeHelper')->getI18Format('DateLong2')) : '',
-        'nameTo' => 'Manufacturers[holiday_to]'
+    echo $this->Form->control('Manufacturers.active', [
+        'label' => ''.__d('admin', 'Active').'? <span class="after small">'.__d('admin', 'Manufacturer_profile_and_products_are_visible_(cannot_be_changed_by_manufacturer).').'</span>',
+        'disabled' => ($appAuth->isManufacturer() ? 'disabled' : ''),
+        'type' => 'checkbox',
+        'escape' => false
     ]);
-    echo '<span class="description small">';
-    echo '<a href="'.$this->Html->getDocsUrl(__d('admin', 'docs_route_manufacturers')).'" target="_blank">'.__d('admin', 'How_do_I_use_the_function_delivery_break?').'</a>';
-    echo '</span>';
-    echo '</div>';
+
+    $this->element('addScript', ['script' =>
+        Configure::read('app.jsNamespace') . ".Admin.setSelectPickerMultipleDropdowns('#manufacturers-no-delivery-days');"
+    ]);
+    echo $this->Form->control('Manufacturers.no_delivery_days', [
+        'type' => 'select',
+        'multiple' => true,
+        'data-val' => $manufacturer->no_delivery_days,
+        'label' => __d('admin', 'Delivery_break').' <span class="after small"><a href="'.$this->Html->getDocsUrl(__d('admin', 'docs_route_manufacturers')).'" target="_blank">'.__d('admin', 'How_do_I_use_the_function_delivery_break?').'</a></span>',
+        'options' => $noDeliveryBreakOptions,
+        'escape' => false
+    ]);
+    echo '<div class="sc"></div>';
+
 
     echo $this->Form->control('Manufacturers.is_private', [
         'label' => __d('admin', 'Only_for_members').'? <span class="after small">'.__d('admin', 'Manufacturer_profile_and_products_are_only_visible_for_signed_in_members.').'</span>',
@@ -153,6 +152,28 @@ echo '<div class="holiday-wrapper">';
         'options' => $taxesForDropdown
     ]);
 
+    echo $this->Form->control('Manufacturers.stock_management_enabled', [
+        'label' => __d('admin', 'Advanced_stock_management_active?').' <span class="after small"><a href="'.$this->Html->getDocsUrl(__d('admin', 'docs_route_products')).'" target="_blank">'.__d('admin', 'Infos_to_the_advanced_stock_management').'</a></span>',
+        'type' => 'checkbox',
+        'escape' => false
+    ]);
+
+    
+    if ($manufacturer->stock_management_enabled) {
+        echo $this->Form->control('Manufacturers.send_product_sold_out_limit_reached_for_manufacturer', [
+            'label' => __d('admin', 'Sold_out_limit_reached_notification_for_manufacturer?').' <span class="after small">'.($appAuth->isManufacturer() ? __d('admin', 'I_want') : __d('admin', 'The_manufacturer_wants')) . ' ' . __d('admin', 'to_receive_a_notification_when_the_stock_limit_for_a_product_is_reached.').'</a></span>',
+            'type' => 'checkbox',
+            'escape' => false
+        ]);
+        if (!$appAuth->isManufacturer()) {
+            echo $this->Form->control('Manufacturers.send_product_sold_out_limit_reached_for_contact_person', [
+                'label' => __d('admin', 'Sold_out_limit_reached_notification_for_contact_person?').' <span class="after small">'. __d('admin', 'The_contact_person_wants_to_receive_a_notification_when_the_stock_limit_for_a_product_is_reached.').'</a></span>',
+                'type' => 'checkbox',
+                'escape' => false
+            ]);
+        }
+    }
+
     if (!$appAuth->isManufacturer()) {
         echo $this->Form->control('Manufacturers.bulk_orders_allowed', [
         'label' => __d('admin', 'Manufacturer_optimized_for_bulk_orders?').' <span class="after small">'.__d('admin', 'Disables_all_notifications_except_sent_invoices.').' <a href="'.$this->Html->getDocsUrl(__d('admin', 'docs_route_bulk_orders')).'" target="_blank">'.__d('admin', 'Info_page_for_bulk_orders').'</a>.</span>',
@@ -192,7 +213,7 @@ echo '<div class="holiday-wrapper">';
     if (Configure::read('appDb.FCS_TIMEBASED_CURRENCY_ENABLED')) {
         echo '<h2>'.__d('admin', 'Paying_with_time').'</h2>';
         echo $this->Form->control('Manufacturers.timebased_currency_enabled', [
-            'label' => __d('admin', 'Paying_with_time_module_active?').' <span class="after small"><a href="'.$this->Html->getDocsUrl(__d('admin', 'docs_route_paying-with-time-module')).'" target="_blank">'.__d('admin', 'How_do_I_use_the_paying_with_time_module?').'</a>.</span>',
+            'label' => __d('admin', 'Paying_with_time_module_active?').' <span class="after small"><a href="'.$this->Html->getDocsUrl(__d('admin', 'docs_route_paying_with_time_module')).'" target="_blank">'.__d('admin', 'How_do_I_use_the_paying_with_time_module?').'</a></span>',
             'type' => 'checkbox',
             'escape' => false
         ]);
@@ -204,7 +225,9 @@ echo '<div class="holiday-wrapper">';
                 'escape' => false
             ]);
             echo $this->Form->control('Manufacturers.timebased_currency_max_credit_balance', [
-                'label' => __d('admin', 'Maximum_credit_balance_in_{0}', [Configure::read('appDb.FCS_TIMEBASED_CURRENCY_NAME')]).' <span class="after small">'.__d('admin', 'up_to_which_it_can_be_paid_in_{0}.', [Configure::read('appDb.FCS_TIMEBASED_CURRENCY_NAME')]).'</span>',
+                'label' => __d('admin', 'Maximum_credit_balance_in_{0}', [Configure::read('appDb.FCS_TIMEBASED_CURRENCY_NAME')]).' <span class="after small">'.__d('admin', 'up_to_which_it_can_be_paid_in_{0}.', [Configure::read('appDb.FCS_TIMEBASED_CURRENCY_NAME')]).
+                ' ' . __d('admin', 'Zero_means_no_limit_and_global_limit_of_{0}_is_used.', [Configure::read('appDb.FCS_TIMEBASED_CURRENCY_MAX_CREDIT_BALANCE_MANUFACTURER') . ' ' . Configure::read('appDb.FCS_TIMEBASED_CURRENCY_NAME')]) .
+                '</span>',
                 'type' => 'text',
                 'class' => 'short',
                 'escape' => false
