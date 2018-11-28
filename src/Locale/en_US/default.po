@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2018-09-09 21:52+0200\n"
-"PO-Revision-Date: 2018-09-09 21:54+0200\n"
+"POT-Creation-Date: 2018-11-26 16:14+0100\n"
+"PO-Revision-Date: 2018-11-26 16:18+0100\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "Language: en_US\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 2.2\n"
 
 msgid "You_have_been_signed_out."
 msgstr "You have been signed out."
@@ -87,11 +87,11 @@ msgstr "Your overdraft frame of {0} is reached."
 msgid "Errors_occurred."
 msgstr "Errors occurred."
 
-msgid "Instant_order_successfully_placed_for_{0}."
-msgstr "Instant order successfully placed for {0}."
+msgid "Instant_order_({0})_successfully_placed_for_{1}."
+msgstr "Instant order ({0}) successfully placed for {1}."
 
-msgid "Instant_order_successfully_placed_for_{0}._The_following_manufacturers_were_notified:_{1}"
-msgstr "Instant order successfully placed for {0}. The following manufacturers were notified: {1}"
+msgid "Instant_order_({0})_successfully_placed_for_{1}._The_following_manufacturers_were_notified:_{2}"
+msgstr "Instant order ({0}) successfully placed for {1}. The following manufacturers were notified: {2}"
 
 msgid "Pickup_day"
 msgstr "Pickup day"
@@ -147,17 +147,17 @@ msgstr "Request new password"
 msgid "Errors_while_saving!"
 msgstr "Errors while saving!"
 
-msgid "Request_for_new_password_for_{0}"
-msgstr "Request for new password for {0}"
+msgid "New_password_for_{0}"
+msgstr "New password for {0}"
 
-msgid "We_sent_a_link_to_you_for_generating_a_new_password."
-msgstr "We sent a link to you to generate a new password."
+msgid "We_sent_your_new_password_to_you_it_needs_to_be_activated."
+msgstr "We sent your new pasword to you. It needs to be activated!"
 
-msgid "Generated_new_password_for_{0}"
-msgstr "Generated a new password for you {0}"
+msgid "Your_new_password_was_already_activated_or_the_activation_code_was_not_valid."
+msgstr "Your new password was already activated or the activation code was not valid."
 
-msgid "We_sent_a_new_password_to_you."
-msgstr "We sent a new password to you."
+msgid "Your_new_password_was_successfully_activated."
+msgstr "Your new password was successfully activated and you are already signed in."
 
 msgid "Sign_in"
 msgstr "Sign in"
@@ -798,9 +798,6 @@ msgstr "First delivery day"
 msgid "Delivery_day"
 msgstr "Delivery day"
 
-msgid "Individual_delivery_day_info."
-msgstr "The product can be ordered from now on and will be deactivated automatically as soon as the last order day of the given delivery day is reached."
-
 msgid "First_delivery_day_info."
 msgstr "The product can be ordered from now on."
 
@@ -809,9 +806,6 @@ msgstr "can be left blank"
 
 msgid "Order_possible_until"
 msgstr "Order possible until"
-
-msgid "Order_possible_until_info."
-msgstr "The product can only be ordered until this date."
 
 msgid "Info_page_for_delivery_rhythm"
 msgstr "Info page for delivery rhythms"
@@ -834,6 +828,60 @@ msgstr "rotate anti clockwise?"
 msgid "rotate_clockwise?"
 msgstr "rotate clockwise?"
 
+msgid "Change_general_terms_and_conditions"
+msgstr "Change general terms and conditions"
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Product"
+msgstr "Product"
+
+msgid "An_attribute_cannot_be_assigned_to_a_product."
+msgstr "An attribute cannot be assigned to a product."
+
+msgid "A_product_cannot_be_assigned_to_an_attribute."
+msgstr "A product cannot be assigned to an attribute."
+
+msgid "Image"
+msgstr "Image"
+
+msgid "Name_additional_info"
+msgstr "Name, unit, descriptions, product declaration"
+
+msgid "Quantity"
+msgstr "Quantity"
+
+msgid "Price"
+msgstr "Price"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "No_products_or_attributes_selected."
+msgstr "No products or attributes selected."
+
+msgid "No_product_data_selected."
+msgstr "No product data selected."
+
+msgid "Please_enter_your_credentials."
+msgstr "Please enter your credentials."
+
+msgid "Really_synchronize?"
+msgstr "Really synchronize?"
+
+msgid "This_action_cannot_be_undone."
+msgstr "This action cannot be undone."
+
+msgid "Really_synchronize_data_{0}_from_{1}_and_{2}_to_the_following_foodcoops?_{3}"
+msgstr "Really synchronize data {0} from {1} and {2} to the following foodcoops? {3}"
+
+msgid "attribute"
+msgstr "attribute"
+
+msgid "attributes"
+msgstr "attributes"
+
 msgid "Manufacturer"
 msgstr "Manufacturer"
 
@@ -845,6 +893,21 @@ msgstr "Privacy policy"
 
 msgid "List_of_allergens"
 msgstr "List of allergens"
+
+msgid "Tax_rates_overview_table"
+msgstr "Tax rates overview table"
+
+msgid "Tax_rate"
+msgstr "Tax rate"
+
+msgid "Sum_price_excl."
+msgstr "Sum price excl."
+
+msgid "Sum_tax"
+msgstr "Sum tax"
+
+msgid "Sum_price_incl."
+msgstr "Sum price incl."
 
 msgid "Price_excl."
 msgstr "Price excl."
@@ -1107,6 +1170,9 @@ msgstr "Cronjob: Invoices sent"
 msgid "Action_Log_Cronjob_email_order_reminder_sent"
 msgstr "Cronjob: Email order reminder sent"
 
+msgid "Action_Log_Cronjob_pickup_reminder_sent"
+msgstr "Cronjob: Pickup reminder sent"
+
 msgid "Action_Log_Cronjob_check_credit_balance"
 msgstr "Cronjob: Credit balances checked"
 
@@ -1202,6 +1268,9 @@ msgstr "Please accept the information about the right of withdrawal."
 
 msgid "Please_accept_the_general_terms_and_conditions."
 msgstr "Please accept the general terms and conditions."
+
+msgid "Please_promise_to_pick_up_the_ordered_products."
+msgstr "Please promise to pick up the ordered products."
 
 msgid "offline"
 msgstr "offline"
@@ -1416,6 +1485,9 @@ msgstr "today"
 msgid "tomorrow"
 msgstr "tomorrow"
 
+msgid "Pickup_reminder_for"
+msgstr "Pickup reminder for"
+
 msgid "to_(time_context)"
 msgstr "to"
 
@@ -1469,6 +1541,9 @@ msgstr "From which in"
 
 msgid "Including_vat"
 msgstr "Included VAT"
+
+msgid "The_delivered_weight_will_eventually_be_adapted_which_means_the_price_can_change_slightly."
+msgstr "The delivered weight will eventually be adapted, so the price can change slightly."
 
 msgid "To_finish_order_click_here."
 msgstr "To finish your order please click the button below."
@@ -1545,9 +1620,6 @@ msgstr "I accept the {0}"
 msgid "Please_enter_your_email_address_and_click_on_send_button."
 msgstr "Please enter your email address and click on send button."
 
-msgid "You_will_then_get_a_link_to_change_your_password."
-msgstr "You will then get a link to change your password."
-
 msgid "Send"
 msgstr "Send"
 
@@ -1596,6 +1668,15 @@ msgstr "Show cart"
 msgid "Already_ordered_products"
 msgstr "Already ordered products"
 
+msgid "Replace_existing_file"
+msgstr "Replace existing file"
+
+msgid "Upload_new_file"
+msgstr "Upload new file"
+
+msgid "Search_PC"
+msgstr "Search computer"
+
 msgid "Information"
 msgstr "Information"
 
@@ -1619,9 +1700,6 @@ msgstr "Upload new image"
 
 msgid "Please_only_use_self_made_images_(not_from_the_internet)."
 msgstr "Please only use self-made images (no images from the internet)."
-
-msgid "Search_PC"
-msgstr "Search computer"
 
 msgid "DELIVERY_DAY"
 msgstr "DELIVERY_DAY"
@@ -1653,6 +1731,9 @@ msgstr "right of withdrawal"
 msgid "I_accept_the_{0}_and_accept_that_it_is_not_valid_for_perishable_goods."
 msgstr "I accept the {0} and accept that this is not valid for perishable goods."
 
+msgid "General_terms_and_conditions_of_{0}"
+msgstr "general terms and conditions of {0}"
+
 msgid "general_terms_and_conditions"
 msgstr "general terms and conditions"
 
@@ -1674,14 +1755,11 @@ msgstr "Your message will be shown next to your order in the admin panel. Manufa
 msgid "Pickup_place:_{0}"
 msgstr "Pickup place: {0}"
 
+msgid "I_promise_to_pick_up_the_products_on_the_selected_pickup_day_and_to_pay_in_cash_in_the_shop."
+msgstr "I promise to pick up the products on the selected pickup day and I will pay in cash in the shop."
+
 msgid "How_much_of_it_do_i_want_to_pay_in_{0}?"
 msgstr "How much of it do I want to pay in {0}?"
-
-msgid "Product"
-msgstr "Product"
-
-msgid "Price"
-msgstr "Price"
 
 msgid "Total"
 msgstr "Total"
@@ -1755,20 +1833,14 @@ msgstr "There has been placed a instant order for {0} by {1}."
 msgid "You_receive_this_message_because_the_delivery_day_of_this_order_was_automatically_set_to_today_{0}_and_therefore_it_does_not_appear_on_your_order_lists."
 msgstr "You receive this message because the delivery day for this order was set to <b>today ({0})</b>, and therefore it does not appear on your order lists."
 
-msgid "please_click_on_this_link_to_generate_a_new_password"
-msgstr "Please click on this link to generate a new password"
+msgid "your_new_password_is:"
+msgstr "your new password:"
 
-msgid "you_just_generated_a_new_password_which_is"
-msgstr "you just generated a new password which is"
-
-msgid "You_can_sign_in_and_change_your_password_here"
-msgstr "You can sign in and change your password here"
+msgid "Please_click_on_this_link_to_activate_your_new_password"
+msgstr "Please click on this link to activate your new password"
 
 msgid "thank_you_for_your_order_from_{0}."
 msgstr "thank you for order from {0}."
-
-msgid "The_delivered_weight_will_eventually_be_adapted_which_means_the_price_can_change_slightly."
-msgstr "The delivered weight will eventually be adapted, so the price can change slightly."
 
 msgid "The_amount_was_reduced_from_your_credit_balance."
 msgstr "The amount was reduced from your credit balance."
@@ -2037,8 +2109,8 @@ msgstr "registration-successful"
 msgid "route_registration"
 msgstr "register"
 
-msgid "route_generate_new_password"
-msgstr "generate-new-password"
+msgid "route_activate_new_password"
+msgstr "activate-new-password"
 
 msgid "route_request_new_password"
 msgstr "request-new-password"
@@ -2087,6 +2159,30 @@ msgstr "information-about-right-of-withdrawal"
 
 msgid "route_product"
 msgstr "product"
+
+#~ msgid "You_will_then_get_a_link_to_change_your_password."
+#~ msgstr "You will then get a link to change your password."
+
+#~ msgid "Request_for_new_password_for_{0}"
+#~ msgstr "Request for new password for {0}"
+
+#~ msgid "We_sent_a_link_to_you_for_generating_a_new_password."
+#~ msgstr "We sent a link to you to generate a new password."
+
+#~ msgid "you_just_generated_a_new_password_which_is"
+#~ msgstr "you just generated a new password which is"
+
+#~ msgid "You_can_sign_in_and_change_your_password_here"
+#~ msgstr "You can sign in and change your password here"
+
+#~ msgid "route_generate_new_password"
+#~ msgstr "generate-new-password"
+
+#~ msgid "Individual_delivery_day_info."
+#~ msgstr "The product can be ordered from now on and will be deactivated automatically as soon as the last order day of the given delivery day is reached."
+
+#~ msgid "Order_possible_until_info."
+#~ msgstr "The product can only be ordered until this date."
 
 #~ msgid "The_manufacturer_of_the_product_{0}_is_on_holiday_or_product_is_not_activated."
 #~ msgstr "The manufacturer of the product {0} either has a delivery break or the product is not activated any more."

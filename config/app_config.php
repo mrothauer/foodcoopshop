@@ -33,7 +33,6 @@ define('CUSTOMER_GROUP_MEMBER', 3);
 define('CUSTOMER_GROUP_ADMIN', 4);
 define('CUSTOMER_GROUP_SUPERADMIN', 5);
 
-define('PASSWORD_REGEX', '/^([^\\s]){6,32}$/');
 define('PHONE_REGEX', '/^[0-9 ()+-\/]{7,20}$/');
 define('ZIP_REGEX', '/^[0-9]{4,5}$/');
 define('IBAN_REGEX', '/^([a-zA-Z]\s?){2}(([0-9]){18}|([0-9]){22})$/'); // austria and germany supported
@@ -56,6 +55,7 @@ return [
         'filesDir' => DS . 'files',
         'tmpWwwDir' => DS.'tmp',
         'uploadedImagesDir' => DS . 'files' . DS . 'images',
+        'uploadedFilesDir' => DS . 'files' . DS . 'files',
         'folder_invoices' => ROOT . DS . 'files_private'. DS . 'invoices',
         'folder_order_lists' => ROOT . DS. 'files_private' . DS .'order_lists',
         'folder_invoices_with_current_year_and_month' => ROOT . DS . 'files_private'. DS . 'invoices'.DS.date('Y').DS.date('m'),
@@ -75,7 +75,8 @@ return [
         'isDepositPaymentCashless' => true,
         'depositPaymentCashlessStartDate' => '2016-01-01',
         'depositForManufacturersStartDate' => '2016-01-01',
-
+        'dateOfFirstSendInvoiceCronjobWithPickupDayUpdate' => '2018-11-11', //pickupDayMigration was released in v2.2
+        
         /**
          * weekday on which the weekly cronjob "SendOrderList" is called
          * the available options (in combination with deliveryDayDelta) can be found in tests/TestCase/src/View/Helper/MyTimeHelperTest.php
@@ -89,7 +90,14 @@ return [
          * - lastname
          */
         'customerMainNamePart' => 'firstname',
-
+        
+        'showManufacturerImprint' => true,
+        'termsOfUseEnabled' => true,
+        'generalTermsAndConditionsEnabled' => true,
+        'rightOfWithdrawalEnabled' => true,
+        'promiseToPickUpProductsCheckboxEnabled' => false,
+        'showPaymentInfoText' => true,
+        
         /**
          * id of the category "all products"
          */
@@ -117,8 +125,9 @@ return [
         'sliderImageSizes' => [
             '905' => ['suffix' => '-slider'] // detail AND lightbox
         ],
-        'tmpUploadImagesDir' => DS.'tmp' . DS . 'images',
-
+        'tmpUploadImagesDir' => DS . 'tmp' . DS . 'images',
+        'tmpUploadFilesDir' => DS . 'tmp' . DS . 'files',
+        
         'countryId' => 2, // austria: 2, germany: 1
 
         /**
@@ -134,6 +143,9 @@ return [
 
         'implementedLocales' => ['de_DE', 'en_US'],
 
+        // allows to use another color theme for the frontend, can be any valid css color code
+        'customFrontendColorTheme' => '#719f41',
+        
         'htmlHelper' => new App\View\Helper\MyHtmlHelper(new Cake\View\View()),
         'timeHelper' => new App\View\Helper\MyTimeHelper(new Cake\View\View()),
         'numberHelper' => new App\View\Helper\MyNumberHelper(new Cake\View\View()),

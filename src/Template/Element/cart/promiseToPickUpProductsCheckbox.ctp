@@ -6,23 +6,22 @@
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @since         FoodCoopShop 2.2.0
+ * @since         FoodCoopShop 2.3.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * @author        Mario Rothauer <office@foodcoopshop.com>
  * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
  * @link          https://www.foodcoopshop.com
  */
 
-use Cake\I18n\I18n;
+use Cake\Core\Configure;
 
-echo '<div id="general-terms-and-conditions" class="featherlight-overlay">';
-    echo $this->element('legal/'.I18n::getLocale().'/generalTermsAndConditions');
-echo '</div>';
-$generalTermsOfUseLink = '<a href="#general-terms-and-conditions">'.__('general_terms_and_conditions').'</a>';
-echo $this->Form->control('Carts.general_terms_and_conditions_accepted', [
-    'label' => __('I_accept_the_{0}', [$generalTermsOfUseLink]),
+if (!Configure::read('app.promiseToPickUpProductsCheckboxEnabled')) {
+    return false;
+}
+
+echo $this->Form->control('Carts.promise_to_pickup_products', [
+    'label' => __('I_promise_to_pick_up_the_products_on_the_selected_pickup_day_and_to_pay_in_cash_in_the_shop.'),
     'type' => 'checkbox',
     'escape' => false
 ]);
-
 ?>

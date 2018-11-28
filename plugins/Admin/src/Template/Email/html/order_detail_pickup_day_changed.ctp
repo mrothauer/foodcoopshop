@@ -41,7 +41,7 @@
                 echo __d('admin', 'The_following_{0}_products_are_affected', [count($orderDetails)]);
             }
             ?>:</p>
-            <ul style="padding-left: 10px;">
+            <ul style="padding-left:10px;">
     			<?php
     			     foreach($orderDetails as $orderDetail) {
     			         echo '<li>' .  $orderDetail->product_amount . 'x ' . $orderDetail->product_name . ', ' . $orderDetail->product->manufacturer->name . '</li>';

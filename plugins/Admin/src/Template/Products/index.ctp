@@ -98,7 +98,7 @@ use Cake\Core\Configure;
                     ]);
                     echo '<div id="add-product-button-wrapper" class="add-button-wrapper">';
                     echo $this->Html->link('<i class="fa fa-plus-square fa-lg"></i> ' . __d('admin', 'Add_product'), 'javascript:void(0);', [
-                        'class' => 'btn btn-default',
+                        'class' => 'btn btn-outline-light',
                         'escape' => false
                     ]);
                     echo '</div>';
@@ -113,7 +113,7 @@ use Cake\Core\Configure;
                             '<i class="fa fa-arrow-circle-right"></i> ' . __d('admin', 'Synchronize_products'),
                             $this->Network->getSyncProductData(),
                             [
-                                'class' => 'btn btn-default',
+                                'class' => 'btn btn-outline-light',
                                 'escape' => false
                             ]
                         );
@@ -253,14 +253,14 @@ use Cake\Core\Configure;
     // dropdowns and checkboxes for overlays are only rendered once (performance)
     echo $this->Form->control('productAttributeId', ['type' => 'select', 'class' => 'hide', 'label' => '', 'options' => $attributesForDropdown]);
     
-    echo '<div class="categories-checkboxes hide">';
+    echo '<div class="categories-checkboxes">';
         echo $this->Form->control('Products.CategoryProducts', [
             'label' => '',
             'multiple' => 'checkbox',
             'options' => $categoriesForSelect
         ]);
         echo '</div>';
-        echo '<div class="tax-dropdown-wrapper hide">';
+        echo '<div class="tax-dropdown-wrapper">';
         echo $this->Form->control('Taxes.id_tax', [
             'type' => 'select',
             'label' => '',
@@ -268,7 +268,7 @@ use Cake\Core\Configure;
         ]);
     echo '</div>';
     
-    echo '<div class="delivery-rhythm-dropdown-wrapper hide">';
+    echo '<div class="delivery-rhythm-dropdown-wrapper">';
         echo $this->Form->control('RhythmTypes', [
             'type' => 'select',
             'label' => '',

@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2018-09-09 21:52+0200\n"
-"PO-Revision-Date: 2018-09-07 14:29+0200\n"
+"POT-Creation-Date: 2018-11-23 11:12+0100\n"
+"PO-Revision-Date: 2018-11-23 10:37+0100\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "Language: de_DE\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 2.2\n"
 
 msgid "Activities"
 msgstr "Aktivitäten"
@@ -204,13 +204,13 @@ msgstr "Hersteller"
 msgid "Invoice_for_manufacturer_{0}_successfully_sent_to_{1}."
 msgstr "Rechnung für Hersteller {0} erfolgreich versendet an {1}."
 
-msgid "Invoice_number_abbreviataion_{1}_{2}"
+msgid "Invoice_number_abbreviataion_{0}_{1}"
 msgstr "Rechnung Nr. {0}, {1}"
 
 msgid "Order_lists_successfully_generated_for_manufacturer_{0}."
 msgstr "Bestelllisten für Hersteller {0} erfolgreich generiert."
 
-msgid "Order_lists_successfully_generated_for_manufacturer_{0}_and_sent_to_{0}."
+msgid "Order_lists_successfully_generated_for_manufacturer_{0}_and_sent_to_{1}."
 msgstr "Bestelllisten für Hersteller {0} erfolgreich generiert und an {1} versendet."
 
 msgid "Order_lists_for_the_day"
@@ -387,6 +387,9 @@ msgstr "Liefertag"
 msgid "First_delivery_day"
 msgstr "Erster Liefertag"
 
+msgid "Order_possible_until"
+msgstr "Bestellbar bis"
+
 msgid "Saving_successful."
 msgstr "Speichern erfolgreich."
 
@@ -502,7 +505,7 @@ msgid "Edit_time_entry"
 msgstr "Zeit-Eintragung bearbeiten"
 
 msgid "Credit_balance_of_{0}"
-msgstr "Kontostand voin {0}"
+msgstr "Kontostand von {0}"
 
 msgid "of"
 msgstr "von"
@@ -512,6 +515,9 @@ msgstr "Mein {0}"
 
 msgid "My_credit_balance"
 msgstr "Mein Kontostand"
+
+msgid "Filename_General-terms-and-conditions"
+msgstr "Allgemeine-Geschaeftsbedingungen"
 
 msgid "all_activities"
 msgstr "alle Aktivitäten"
@@ -1140,10 +1146,6 @@ msgstr "Lieferrhythmus ändern"
 msgid "delivery_rhythm_from"
 msgstr "ab"
 
-#, fuzzy
-msgid "Order_possible_until"
-msgstr "Anzahl Bestellungen"
-
 msgid "change_deposit"
 msgstr "Pfand ändern"
 
@@ -1324,6 +1326,12 @@ msgstr "Bitte überprüfe die Guthaben-Aufladung, die du im System eingetragen h
 msgid "Comment"
 msgstr "Kommentar"
 
+msgid "Please_do_not_forget_that_you_have_products_to_pick_up_on_{0}."
+msgstr "bitte vergiss nicht, dass am {0} folgende Produkte zum Abholen bereit sind:"
+
+msgid "As_your_order_is_longer_than_{0}_days_ago_you_get_this_reminder."
+msgstr "Du bekommst diese E-Mail, weil deine Bestellung länger als {0} Tage her ist."
+
 msgid "Hello"
 msgstr "Hallo"
 
@@ -1370,10 +1378,10 @@ msgid "Order_list_by_member"
 msgstr "Bestellliste nach Mitglied"
 
 msgid "Show_list_(grouped_by_product)"
-msgstr "Liste anzeigen (gruppiet nach Produkt)"
+msgstr "Liste anzeigen (gruppiert nach Produkt)"
 
 msgid "Show_list_(grouped_by_member)"
-msgstr "Liste anzeigen (gruppiet nach Mitglied)"
+msgstr "Liste anzeigen (gruppiert nach Mitglied)"
 
 msgid "General"
 msgstr "Allgemein"
@@ -1446,6 +1454,24 @@ msgstr "UID-Nummer"
 
 msgid "if_it_is_available"
 msgstr "sofern vorhanden"
+
+msgid "General_terms_and_conditions"
+msgstr "AGB"
+
+msgid "If_you_do_not_upload_your_own_general_terms_and_conditions_(as_pdf)_the_default_general_terms_and_conditions_are_applied."
+msgstr "Falls du keine eigenen AGB hochlädst (als PDF), werden beim Bestellen die Standard AGB verwendet."
+
+msgid "Change_general_terms_and_conditions"
+msgstr "AGB ändern"
+
+msgid "Upload_general_terms_and_conditions"
+msgstr "AGB hochladen"
+
+msgid "Upload_general_terms_and_conditions_or_change_them"
+msgstr "Neue AGB hochladen oder ersetzen"
+
+msgid "Delete_general_terms_and_conditions?"
+msgstr "AGB löschen?"
 
 msgid "Commercial_register_number"
 msgstr "Firmenbuchnummer"
@@ -1611,6 +1637,9 @@ msgstr "OB"
 
 msgid "Settings_abbreviation"
 msgstr "Opt."
+
+msgid "{0,plural,=1{1_product} other{#_products}}"
+msgstr "{0,plural,=1{1 Produkt} other{# Produkte}}"
 
 msgid "Show_all_products_from_{0}"
 msgstr "Alle Produkte von {0} anzeigen"
@@ -1846,11 +1875,24 @@ msgstr "Produkt anzeigen"
 msgid "Show_manufacturer"
 msgstr "Hersteller anzeigen"
 
-msgid "{0,plural,=1{1_product} other{#_products}}"
-msgstr "{0,plural,=1{Datensatz} other{Datensätze}}"
-
 msgid "The_delivered_weight_will_eventually_be_adapted_which_means_the_price_can_change_slightly."
 msgstr "Das tatsächlich gelieferte Gewicht wird evtl. noch angepasst, d. h. der Preis kann sich noch geringfügig ändern."
+
+#, fuzzy
+#~ msgid "Terms_of_use"
+#~ msgstr "Nutzungsbedingungen"
+
+#, fuzzy
+#~ msgid "Change_terms_of_use"
+#~ msgstr "Gruppe ändern"
+
+#, fuzzy
+#~ msgid "Upload_terms_of_use"
+#~ msgstr "Nutzungsbedingungen"
+
+#, fuzzy
+#~ msgid "Delete_terms_of_use?"
+#~ msgstr "Variante löschen?"
 
 #~ msgid "Customer"
 #~ msgstr "Mitglied"

@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2018-09-09 21:52+0200\n"
-"PO-Revision-Date: 2018-09-07 14:30+0200\n"
+"POT-Creation-Date: 2018-11-23 11:12+0100\n"
+"PO-Revision-Date: 2018-11-23 10:44+0100\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "Language: en_US\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 2.2\n"
 
 msgid "Activities"
 msgstr "Activities"
@@ -204,13 +204,13 @@ msgstr "Manufacturers"
 msgid "Invoice_for_manufacturer_{0}_successfully_sent_to_{1}."
 msgstr "Invoice for manufacturer {0} successfully sent to {1}."
 
-msgid "Invoice_number_abbreviataion_{1}_{2}"
+msgid "Invoice_number_abbreviataion_{0}_{1}"
 msgstr "Invoice nº {0}, {1}"
 
 msgid "Order_lists_successfully_generated_for_manufacturer_{0}."
 msgstr "Order lists successfully generated for manufacturer {0}."
 
-msgid "Order_lists_successfully_generated_for_manufacturer_{0}_and_sent_to_{0}."
+msgid "Order_lists_successfully_generated_for_manufacturer_{0}_and_sent_to_{1}."
 msgstr "Order_lists_successfully_generated_for_manufacturer_{0} and sent to {1}."
 
 msgid "Order_lists_for_the_day"
@@ -283,7 +283,7 @@ msgid "The_pickup_day_of_your_order_was_changed_to"
 msgstr "The pickup day of your order was changed to"
 
 msgid "The_pickup_day_of_{0,plural,=1{1_product} other{#_products}}_was_changed_successfully_to_{1}_and_{2,plural,=1{1_customer} other{#_customers}}_were_notified."
-msgstr "The pickup day of {0,plural,=1{one product} other{# products}} was successfully changed to {1] and {2,plural,=1{one member was} other{# members were}} got an email."
+msgstr "The pickup day of {0,plural,=1{one product} other{# products}} was successfully changed to {1} and {2,plural,=1{one member was} other{# members were}} got an email."
 
 msgid "The_pickup_day_comment_of_{0}_was_changed:"
 msgstr "The pickup day comment {0} was changed:"
@@ -387,6 +387,9 @@ msgstr "Delivery day"
 msgid "First_delivery_day"
 msgstr "First delivery day"
 
+msgid "Order_possible_until"
+msgstr "Order possible until"
+
 msgid "Saving_successful."
 msgstr "Saving successful."
 
@@ -451,10 +454,10 @@ msgid "The_product_{0}_from_manufacturer_{1}_is_shown_as_new_from_now_on_for_the
 msgstr "The product {0} from manufacturer {1} is shown as \"new\" from now on for the next {2} days."
 
 msgid "The_product_{0}_from_manufacturer_{1}_was_deactivated."
-msgstr "The product {0} has been deactivated."
+msgstr "The product {0} of manufacturer {1} has been deactivated."
 
 msgid "The_product_{0}_from_manufacturer_{1}_was_activated."
-msgstr "The product {0} has been activated."
+msgstr "The product {0} of manufacturer {1} has been activated."
 
 msgid "Report"
 msgstr "Report"
@@ -512,6 +515,9 @@ msgstr "My {0}"
 
 msgid "My_credit_balance"
 msgstr "My credit balance"
+
+msgid "Filename_General-terms-and-conditions"
+msgstr "General-terms-and-conditions"
 
 msgid "all_activities"
 msgstr "all activities"
@@ -1140,10 +1146,6 @@ msgstr "change delivery rhythm"
 msgid "delivery_rhythm_from"
 msgstr "beginning"
 
-#, fuzzy
-msgid "Order_possible_until"
-msgstr "Order count"
-
 msgid "change_deposit"
 msgstr "change deposit"
 
@@ -1324,6 +1326,12 @@ msgstr "Please compare the credit upload that you added to our system with the a
 msgid "Comment"
 msgstr "Comment"
 
+msgid "Please_do_not_forget_that_you_have_products_to_pick_up_on_{0}."
+msgstr "Please do not forget that you have products to pick up on {0}."
+
+msgid "As_your_order_is_longer_than_{0}_days_ago_you_get_this_reminder."
+msgstr "As you placed your order earlier than {0} days ago, you get this reminder."
+
 msgid "Hello"
 msgstr "Hello"
 
@@ -1446,6 +1454,24 @@ msgstr "VAT number"
 
 msgid "if_it_is_available"
 msgstr "if available"
+
+msgid "General_terms_and_conditions"
+msgstr "General terms and conditions"
+
+msgid "If_you_do_not_upload_your_own_general_terms_and_conditions_(as_pdf)_the_default_general_terms_and_conditions_are_applied."
+msgstr "If you do not upload your own general terms and conditions (as pdf), the default general terms and conditions are applied when products are ordered."
+
+msgid "Change_general_terms_and_conditions"
+msgstr "Change general terms and conditions"
+
+msgid "Upload_general_terms_and_conditions"
+msgstr "Upload general terms and conditions"
+
+msgid "Upload_general_terms_and_conditions_or_change_them"
+msgstr "Upload general terms and conditions or change them"
+
+msgid "Delete_general_terms_and_conditions?"
+msgstr "Delete general terms and conditions?"
 
 msgid "Commercial_register_number"
 msgstr "Comercial register number"
@@ -1611,6 +1637,9 @@ msgstr "Oo"
 
 msgid "Settings_abbreviation"
 msgstr "Set."
+
+msgid "{0,plural,=1{1_product} other{#_products}}"
+msgstr "{0,plural,=1{product} other{# products}}"
 
 msgid "Show_all_products_from_{0}"
 msgstr "Show all products from {0}"
@@ -1846,11 +1875,24 @@ msgstr "Show product"
 msgid "Show_manufacturer"
 msgstr "Show manufacturer"
 
-msgid "{0,plural,=1{1_product} other{#_products}}"
-msgstr "{0,plural,=1{record} other{records}}"
-
 msgid "The_delivered_weight_will_eventually_be_adapted_which_means_the_price_can_change_slightly."
 msgstr "The delivered weight will eventually be adapted, so the price can change slightly."
+
+#, fuzzy
+#~ msgid "Terms_of_use"
+#~ msgstr "Terms-of-use"
+
+#, fuzzy
+#~ msgid "Change_terms_of_use"
+#~ msgstr "Change group"
+
+#, fuzzy
+#~ msgid "Upload_terms_of_use"
+#~ msgstr "Terms-of-use"
+
+#, fuzzy
+#~ msgid "Delete_terms_of_use?"
+#~ msgstr "Delete attribute?"
 
 #~ msgid "Zero_means_no_limit."
 #~ msgstr "0 means \"no limit\"."

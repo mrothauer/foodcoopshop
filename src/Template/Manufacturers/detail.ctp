@@ -72,7 +72,7 @@ if (Configure::read('appDb.FCS_SHOW_PRODUCTS_FOR_GUESTS') || $appAuth->user()) {
 
 <?php
 if ($blogPosts->count() > 0) {
-    echo '<h2>' . __('News_from') .  ' '.$manufacturer->name.'</a><a style="float: right;margin-top: 5px;" class="btn btn-default" href="'.$this->Slug->getManufacturerBlogList($manufacturer->id_manufacturer, $manufacturer->name).'">' . __('Go_to_blog_from') . ' ' . $manufacturer->name.'</a></h2><div class="sc"></div>';
+    echo '<h2>' . __('News_from') .  ' '.$manufacturer->name.'</a><a style="float: right;margin-top: 5px;" class="btn btn-outline-light" href="'.$this->Slug->getManufacturerBlogList($manufacturer->id_manufacturer, $manufacturer->name).'">' . __('Go_to_blog_from') . ' ' . $manufacturer->name.'</a></h2><div class="sc"></div>';
     echo $this->element('blogPosts', [
     'blogPosts' => $blogPosts
     ]);
@@ -89,16 +89,15 @@ if (!empty($manufacturer['Products'])) {
     }
 }
 
+if (Configure::read('app.showManufacturerImprint')) {
     echo '<div class="imprint">';
-
         echo '<h2>'.__('Imprint').'</h2>';
         echo $this->Html->getManufacturerImprint($manufacturer, 'html', false);
-
         if (!empty($manufacturer->modified)) {
             echo '<p><i>';
             echo __('Modified_on') . ' ' . $manufacturer->modified->i18nFormat(Configure::read('app.timeHelper')->getI18Format('DateNTimeShort'));
             echo '</i></p>';
         }
-
     echo '</div>';
+}
 ?>

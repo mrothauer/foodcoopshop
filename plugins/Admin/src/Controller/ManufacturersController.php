@@ -4,10 +4,12 @@ namespace Admin\Controller;
 
 use App\Controller\Component\StringComponent;
 use App\Mailer\AppEmail;
-use Cake\Event\Event;
 use Cake\Core\Configure;
-use Cake\I18n\Time;
+use Cake\Event\Event;
+use Cake\Filesystem\File;
+use Cake\Filesystem\Folder;
 use Cake\Http\Exception\NotFoundException;
+use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 
 /**
@@ -178,6 +180,14 @@ class ManufacturersController extends AdminAppController
                 $this->deleteUploadedImage($manufacturer->id_manufacturer, Configure::read('app.htmlHelper')->getManufacturerThumbsPath(), Configure::read('app.manufacturerImageSizes'));
             }
 
+            if (!empty($this->getRequest()->getData('Manufacturers.tmp_general_terms_and_conditions'))) {
+                $this->saveUploadedGeneralTermsAndConditions($manufacturer->id_manufacturer, $this->getRequest()->getData('Manufacturers.tmp_general_terms_and_conditions'));
+            }
+            
+            if (!empty($this->getRequest()->getData('Manufacturers.delete_general_terms_and_conditions'))) {
+                $this->deleteUploadedGeneralTermsAndConditions($manufacturer->id_manufacturer);
+            }
+            
             $this->ActionLog = TableRegistry::getTableLocator()->get('ActionLogs');
             $message = __d('admin', 'The_manufacturer_{0}_has_been_{1}.', ['<b>' . $manufacturer->name . '</b>', $messageSuffix]);
             $this->ActionLog->customSave($actionLogType, $this->AppAuth->getUserId(), $manufacturer->id_manufacturer, 'manufacturers', $message);
@@ -193,6 +203,30 @@ class ManufacturersController extends AdminAppController
         }
 
         $this->set('manufacturer', $manufacturer);
+    }
+    
+    private function saveUploadedGeneralTermsAndConditions($manufacturerId, $filename)
+    {
+        
+        $newFileName = Configure::read('app.htmlHelper')->getManufacturerTermsOfUseSrcTemplate($manufacturerId);
+        
+        $fileObject = new File(WWW_ROOT . $filename);
+        
+        // assure that folder structure exists
+        $dir = new Folder();
+        $path = dirname(WWW_ROOT . $newFileName);
+        $dir->create($path);
+        $dir->chmod($path, 0755);
+        
+        $fileObject->copy(WWW_ROOT . $newFileName);
+    }
+    
+    private function deleteUploadedGeneralTermsAndConditions($manufacturerId)
+    {
+        $fileName = Configure::read('app.htmlHelper')->getManufacturerTermsOfUseSrcTemplate($manufacturerId);
+        if (file_exists(WWW_ROOT . $fileName)) {
+            unlink(WWW_ROOT . $fileName);
+        }
     }
 
     public function setElFinderUploadPath($manufacturerId)
@@ -223,13 +257,13 @@ class ManufacturersController extends AdminAppController
 
     public function index()
     {
-        $dateFrom = date(Configure::read('DateFormat.DateShortAlt'), Configure::read('app.timeHelper')->getCurrentDay());
+        $dateFrom = Configure::read('app.timeHelper')->getPreselectedDeliveryDayForOrderDetails(Configure::read('app.timeHelper')->getCurrentDay());
         if (! empty($this->getRequest()->getQuery('dateFrom'))) {
             $dateFrom = $this->getRequest()->getQuery('dateFrom');
         }
         $this->set('dateFrom', $dateFrom);
 
-        $dateTo = date(Configure::read('DateFormat.DateShortAlt'), Configure::read('app.timeHelper')->getCurrentDay());
+        $dateTo = Configure::read('app.timeHelper')->getPreselectedDeliveryDayForOrderDetails(Configure::read('app.timeHelper')->getCurrentDay());
         if (! empty($this->getRequest()->getQuery('dateTo'))) {
             $dateTo = $this->getRequest()->getQuery('dateTo');
         }
@@ -371,7 +405,7 @@ class ManufacturersController extends AdminAppController
                     ->setAttachments([
                         $invoicePdfFile
                     ])
-                    ->setSubject(__d('admin', 'Invoice_number_abbreviataion_{1}_{2}', [$newInvoiceNumber, $invoicePeriodMonthAndYear]))
+                    ->setSubject(__d('admin', 'Invoice_number_abbreviataion_{0}_{1}', [$newInvoiceNumber, $invoicePeriodMonthAndYear]))
                     ->setViewVars([
                     'manufacturer' => $manufacturer,
                     'invoicePeriodMonthAndYear' => $invoicePeriodMonthAndYear,
@@ -453,7 +487,7 @@ class ManufacturersController extends AdminAppController
             $flashMessage = __d('admin', 'Order_lists_successfully_generated_for_manufacturer_{0}.', ['<b>'.$manufacturer->name.'</b>']);
 
             if ($sendEmail) {
-                $flashMessage = __d('admin', 'Order_lists_successfully_generated_for_manufacturer_{0}_and_sent_to_{0}.', ['<b>'.$manufacturer->name.'</b>'. $manufacturer->address_manufacturer->email]);
+                $flashMessage = __d('admin', 'Order_lists_successfully_generated_for_manufacturer_{0}_and_sent_to_{1}.', ['<b>'.$manufacturer->name.'</b>'. $manufacturer->address_manufacturer->email]);
                 $email = new AppEmail();
                 $email->setTemplate('Admin.send_order_list')
                 ->setTo($manufacturer->address_manufacturer->email)
@@ -737,7 +771,7 @@ class ManufacturersController extends AdminAppController
         $manufacturerId = $this->getRequest()->getQuery('manufacturerId');
         $dateFrom = $this->getRequest()->getQuery('dateFrom');
         $dateTo = null;
-        $orderStates = $this->getAllowedOrderStates($manufacturerId);
+        $orderStates = Configure::read('app.htmlHelper')->getOrderStateIds();
         $this->prepareInvoiceOrOrderList($manufacturerId, 'product', $dateFrom, $dateTo, $orderStates);
     }
 
@@ -746,36 +780,8 @@ class ManufacturersController extends AdminAppController
         $manufacturerId = $this->getRequest()->getQuery('manufacturerId');
         $dateFrom = $this->getRequest()->getQuery('dateFrom');
         $dateTo = $this->getRequest()->getQuery('dateTo');
-        $orderStates = $this->getAllowedOrderStates($manufacturerId);
+        $orderStates = Configure::read('app.htmlHelper')->getOrderStateIds();
         $this->prepareInvoiceOrOrderList($manufacturerId, 'customer', $dateFrom, $dateTo, $orderStates);
     }
 
-    /**
-     * if bulk orders are allowed for manufacturer, also show closed orders in order list
-     * ONLY implemented for getOrderList, not for sendOrderList!
-     *
-     * @param int $manufacturerId
-     * @return array
-     */
-    public function getAllowedOrderStates($manufacturerId)
-    {
-        $manufacturer = $this->Manufacturer->find('all', [
-            'conditions' => [
-                'Manufacturers.id_manufacturer' => $manufacturerId
-            ]
-        ])->first();
-
-        $this->set('manufacturer', $manufacturer);
-
-        $bulkOrdersAllowed = $this->Manufacturer->getOptionBulkOrdersAllowed($manufacturer->bulk_orders_allowed);
-        if ($bulkOrdersAllowed) {
-            $orderStates = Configure::read('app.htmlHelper')->getOrderStateIds();
-        } else {
-            $orderStates = [
-                ORDER_STATE_ORDER_PLACED
-            ];
-        }
-
-        return $orderStates;
-    }
 }

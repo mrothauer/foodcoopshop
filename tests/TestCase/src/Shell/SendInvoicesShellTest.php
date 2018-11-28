@@ -1,11 +1,24 @@
 <?php
 
 use App\Test\TestCase\AppCakeTestCase;
-use Cake\Console\ConsoleIo;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use App\Shell\SendInvoicesShell;
 use Cake\I18n\FrozenTime;
+
+/**
+ * FoodCoopShop - The open source software for your foodcoop
+ *
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @since         FoodCoopShop 1.0.0
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @author        Mario Rothauer <office@foodcoopshop.com>
+ * @copyright     Copyright (c) Mario Rothauer, https://www.rothauer-it.com
+ * @link          https://www.foodcoopshop.com
+ */
 
 class SendInvoicesShellTest extends AppCakeTestCase
 {
@@ -19,11 +32,14 @@ class SendInvoicesShellTest extends AppCakeTestCase
         $this->EmailLog = TableRegistry::getTableLocator()->get('EmailLogs');
         $this->Cart = TableRegistry::getTableLocator()->get('Carts');
         $this->OrderDetail = TableRegistry::getTableLocator()->get('OrderDetails');
-        $this->SendInvoices = new SendInvoicesShell(new ConsoleIo());
+        $this->SendInvoices = new SendInvoicesShell();
     }
 
     public function testSendInvoicesOk()
     {
+        
+        Configure::write('app.dateOfFirstSendInvoiceCronjobWithPickupDayUpdate', '2018-03-11');
+        
         $this->prepareSendInvoices();
         
         // reset order detail created in order to make OrderDetail::legacyUpdateOrderStateToNewBilledState happen
@@ -65,7 +81,7 @@ class SendInvoicesShellTest extends AppCakeTestCase
         
         $this->assertEmailLogs(
             $emailLogs[3],
-            'Rechnungen für August 2018 wurden verschickt',
+            'wurden verschickt',
             [
                 'excludeCreatedLastMonth=1',
             ],
@@ -90,7 +106,7 @@ class SendInvoicesShellTest extends AppCakeTestCase
         
         $this->assertEmailLogs(
             $emailLogs[4],
-            'Rechnungen für August 2018 wurden verschickt',
+            'wurden verschickt',
             [
                 'pickupDay[]=28.02.2018&groupBy=manufacturer</a>', // assures that excludeCreatedLastMonth=1 is not existing
             ],

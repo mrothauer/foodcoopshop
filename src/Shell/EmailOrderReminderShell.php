@@ -1,5 +1,4 @@
 <?php
-
 /**
  * FoodCoopShop - The open source software for your foodcoop
  *
@@ -29,7 +28,7 @@ class EmailOrderReminderShell extends AppShell
     {
 
         if (! Configure::read('app.emailOrderReminderEnabled') || ! Configure::read('appDb.FCS_CART_ENABLED')) {
-            return;
+            return true;
         }
 
         parent::main();
@@ -93,5 +92,8 @@ class EmailOrderReminderShell extends AppShell
 
         $this->out($outString);
         $this->out($this->getRuntime());
+        
+        return true;
+        
     }
 }

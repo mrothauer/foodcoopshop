@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2018-09-09 21:52+0200\n"
-"PO-Revision-Date: 2018-09-09 21:53+0200\n"
+"POT-Creation-Date: 2018-11-26 16:14+0100\n"
+"PO-Revision-Date: 2018-11-26 16:16+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 2.2\n"
 
 msgid "You_have_been_signed_out."
 msgstr "Du hast dich erfolgreich abgemeldet."
@@ -87,11 +87,11 @@ msgstr "Dein Überziehungsrahmen von {0} ist erreicht."
 msgid "Errors_occurred."
 msgstr "Es sind Fehler aufgetreten."
 
-msgid "Instant_order_successfully_placed_for_{0}."
-msgstr "Die Sofort-Bestellung für {0} wurde erfolgreich getätigt."
+msgid "Instant_order_({0})_successfully_placed_for_{1}."
+msgstr "Die Sofort-Bestellung ({0}) für {1} wurde erfolgreich getätigt."
 
-msgid "Instant_order_successfully_placed_for_{0}._The_following_manufacturers_were_notified:_{1}"
-msgstr "Die Sofort-Bestellung für {0} wurde erfolgreich getätigt. Folgende Hersteller wurden darüber informiert: {1}"
+msgid "Instant_order_({0})_successfully_placed_for_{1}._The_following_manufacturers_were_notified:_{2}"
+msgstr "Die Sofort-Bestellung ({0}) für {1} wurde erfolgreich getätigt. Folgende Hersteller wurden darüber informiert: {2}"
 
 msgid "Pickup_day"
 msgstr "Abholtag"
@@ -147,17 +147,17 @@ msgstr "Neues Passwort anfordern"
 msgid "Errors_while_saving!"
 msgstr "Beim Speichern sind Fehler aufgetreten!"
 
-msgid "Request_for_new_password_for_{0}"
-msgstr "Anfrage für neues Passwort für {0}"
+msgid "New_password_for_{0}"
+msgstr "Neues Passwort für {0}"
 
-msgid "We_sent_a_link_to_you_for_generating_a_new_password."
-msgstr "Wir haben dir einen Link zugeschickt, mit dem du dein neues Passwort generieren kannst."
+msgid "We_sent_your_new_password_to_you_it_needs_to_be_activated."
+msgstr "Wir haben dir per E-Mail ein neues Passwort zugeschickt, es muss aber noch aktiviert werden."
 
-msgid "Generated_new_password_for_{0}"
-msgstr "Neues Passwort für {0} generiert"
+msgid "Your_new_password_was_already_activated_or_the_activation_code_was_not_valid."
+msgstr "Dein neues Passwort wurde bereits aktiviert oder der Aktivierungscode war nicht gültig."
 
-msgid "We_sent_a_new_password_to_you."
-msgstr "Wir haben dir dein neues Passwort zugeschickt."
+msgid "Your_new_password_was_successfully_activated."
+msgstr "Dein neues Passwort wurde erfolgreich aktiviert und du bist bereits eingeloggt."
 
 msgid "Sign_in"
 msgstr "Anmelden"
@@ -798,9 +798,6 @@ msgstr "Erster Liefertag"
 msgid "Delivery_day"
 msgstr "Liefertag"
 
-msgid "Individual_delivery_day_info."
-msgstr "Das Produkt ist ab sofort bestellbar und wird automatisch deaktiviert, sobald der letzte Bestelltag des angegebenen Lieferdatums erreicht ist."
-
 msgid "First_delivery_day_info."
 msgstr "Das Produkt ist ab sofort bestellbar."
 
@@ -809,9 +806,6 @@ msgstr "kann freigelassen werden"
 
 msgid "Order_possible_until"
 msgstr "Bestellbar bis"
-
-msgid "Order_possible_until_info."
-msgstr "Das Produkt kann nur bis zu diesem Datum bestellt werden."
 
 msgid "Info_page_for_delivery_rhythm"
 msgstr "Infos zu den Lieferrhythmen"
@@ -834,6 +828,60 @@ msgstr "gegen den Uhrzeigersinn drehen?"
 msgid "rotate_clockwise?"
 msgstr "im Uhrzeigersinn drehen?"
 
+msgid "Change_general_terms_and_conditions"
+msgstr "AGB ändern"
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Product"
+msgstr "Produkt"
+
+msgid "An_attribute_cannot_be_assigned_to_a_product."
+msgstr "Eine Variante kann keinem Produkt zugeordnet werden."
+
+msgid "A_product_cannot_be_assigned_to_an_attribute."
+msgstr "Ein Produkt kann keiner Variante zugeordnet werden."
+
+msgid "Image"
+msgstr "Bild"
+
+msgid "Name_additional_info"
+msgstr "Name, Einheit, Beschreibungen, Produkt-Deklaration"
+
+msgid "Quantity"
+msgstr "Anzahl"
+
+msgid "Price"
+msgstr "Preis"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "No_products_or_attributes_selected."
+msgstr "Es sind keine Produkte oder Varianten ausgewählt."
+
+msgid "No_product_data_selected."
+msgstr "Es sind keine Produktdaten ausgewählt."
+
+msgid "Please_enter_your_credentials."
+msgstr "Bitte gib deine Login-Daten ein."
+
+msgid "Really_synchronize?"
+msgstr "Wirklich synchronisieren?"
+
+msgid "This_action_cannot_be_undone."
+msgstr "Diese Aktion kann nicht rückgängig gemacht werden!"
+
+msgid "Really_synchronize_data_{0}_from_{1}_and_{2}_to_the_following_foodcoops?_{3}"
+msgstr "Möchtest du die Daten {0} von {1} und {2} wirklich auf folgende FoodCoops übertragen? {3}"
+
+msgid "attribute"
+msgstr "Variante"
+
+msgid "attributes"
+msgstr "Varianten"
+
 msgid "Manufacturer"
 msgstr "Hersteller"
 
@@ -845,6 +893,21 @@ msgstr "Datenschutzerklärung"
 
 msgid "List_of_allergens"
 msgstr "Allergenliste"
+
+msgid "Tax_rates_overview_table"
+msgstr "Übersichtstabelle nach Steuersatz"
+
+msgid "Tax_rate"
+msgstr "Steuersatz"
+
+msgid "Sum_price_excl."
+msgstr "Summe Preis exkl."
+
+msgid "Sum_tax"
+msgstr "Summe Steuer"
+
+msgid "Sum_price_incl."
+msgstr "Summe Preis inkl."
 
 msgid "Price_excl."
 msgstr "Preis exkl."
@@ -1107,6 +1170,9 @@ msgstr "Cronjob: Rechnungen verschickt"
 msgid "Action_Log_Cronjob_email_order_reminder_sent"
 msgstr "Cronjob: Bestell-Erinnerung"
 
+msgid "Action_Log_Cronjob_pickup_reminder_sent"
+msgstr "Cronjob: Abhol-Erinnerung"
+
 msgid "Action_Log_Cronjob_check_credit_balance"
 msgstr "Cronjob: Guthaben überprüfen"
 
@@ -1202,6 +1268,9 @@ msgstr "Bitte akzeptiere die Information über das Rücktrittsrecht und dessen A
 
 msgid "Please_accept_the_general_terms_and_conditions."
 msgstr "Bitte akzeptiere die AGB."
+
+msgid "Please_promise_to_pick_up_the_ordered_products."
+msgstr "Bitte verspreche, die bestellten Produkte abzuholen und bei der Abholung bar zu bezahlen."
 
 msgid "offline"
 msgstr "offline"
@@ -1416,6 +1485,9 @@ msgstr "heute"
 msgid "tomorrow"
 msgstr "morgen"
 
+msgid "Pickup_reminder_for"
+msgstr "Abhol-Erinnerung für"
+
 msgid "to_(time_context)"
 msgstr "bis"
 
@@ -1469,6 +1541,9 @@ msgstr "Davon in"
 
 msgid "Including_vat"
 msgstr "Enthaltene Umsatzsteuer"
+
+msgid "The_delivered_weight_will_eventually_be_adapted_which_means_the_price_can_change_slightly."
+msgstr "Das tatsächlich gelieferte Gewicht wird evtl. noch angepasst, d. h. der Preis kann sich noch geringfügig ändern."
 
 msgid "To_finish_order_click_here."
 msgstr "Um die Bestellung abzuschließen, klicke bitte auf \"Zahlungspflichtig bestellen\"."
@@ -1545,9 +1620,6 @@ msgstr "Ich akzeptiere die {0}"
 msgid "Please_enter_your_email_address_and_click_on_send_button."
 msgstr "Bitte gib deine E-Mail-Adresse an und klicke dann auf \"Senden\"."
 
-msgid "You_will_then_get_a_link_to_change_your_password."
-msgstr "Wir senden dir dann einen Link zu, mit dem du das neue Passwort generieren kannst."
-
 msgid "Send"
 msgstr "Senden"
 
@@ -1596,6 +1668,15 @@ msgstr "Warenkorb anzeigen"
 msgid "Already_ordered_products"
 msgstr "Bereits bestellte Produkte"
 
+msgid "Replace_existing_file"
+msgstr "Bestehende Datei überschreiben"
+
+msgid "Upload_new_file"
+msgstr "Neue Datei hochladen"
+
+msgid "Search_PC"
+msgstr "PC durchsuchen"
+
 msgid "Information"
 msgstr "Informationen"
 
@@ -1619,9 +1700,6 @@ msgstr "Neues Bild hochladen"
 
 msgid "Please_only_use_self_made_images_(not_from_the_internet)."
 msgstr "Bitte nur selbstgemachte Bilder verwenden<br />(keine aus dem Internet)."
-
-msgid "Search_PC"
-msgstr "PC durchsuchen"
 
 msgid "DELIVERY_DAY"
 msgstr "ABHOLTAG"
@@ -1653,6 +1731,9 @@ msgstr "Rücktrittsrecht"
 msgid "I_accept_the_{0}_and_accept_that_it_is_not_valid_for_perishable_goods."
 msgstr "Ich nehme das {0} zur Kenntnis und akzeptiere dessen Ausschluss für leicht verderbliche Waren."
 
+msgid "General_terms_and_conditions_of_{0}"
+msgstr "AGB von {0}"
+
 msgid "general_terms_and_conditions"
 msgstr "AGB"
 
@@ -1674,14 +1755,11 @@ msgstr "Deine Nachricht wird bei deiner Bestellung im Admin-Bereich angezeigt. D
 msgid "Pickup_place:_{0}"
 msgstr "Abholort: {0}"
 
+msgid "I_promise_to_pick_up_the_products_on_the_selected_pickup_day_and_to_pay_in_cash_in_the_shop."
+msgstr "Ich verspreche die Produkte am gebuchten Abholtag abzuholen und zahle den Betrag bar an der Kassa im Laden."
+
 msgid "How_much_of_it_do_i_want_to_pay_in_{0}?"
 msgstr "Wieviel davon möchtest du in {0} bezahlen?"
-
-msgid "Product"
-msgstr "Produkt"
-
-msgid "Price"
-msgstr "Preis"
 
 msgid "Total"
 msgstr "Gesamt"
@@ -1755,20 +1833,14 @@ msgstr "Soeben wurde von {1} eine Sofort-Bestellung für {0} getätigt."
 msgid "You_receive_this_message_because_the_delivery_day_of_this_order_was_automatically_set_to_today_{0}_and_therefore_it_does_not_appear_on_your_order_lists."
 msgstr "Du erhältst diese Nachricht, weil der Liefertag dieser Bestellung automatisch auf <b>heute ({0})</b>, gesetzt wurde und sie daher nicht in deinen Bestelllisten aufscheint."
 
-msgid "please_click_on_this_link_to_generate_a_new_password"
-msgstr "bitte klicke auf folgenden Link, um dein neues Passwort zu generieren"
+msgid "your_new_password_is:"
+msgstr "dein neues Passwort lautet:"
 
-msgid "you_just_generated_a_new_password_which_is"
-msgstr "du hast gerade ein neues Passwort generiert, es lautet"
-
-msgid "You_can_sign_in_and_change_your_password_here"
-msgstr "Du kannst dich hier anmelden und das Passwort gleich ändern"
+msgid "Please_click_on_this_link_to_activate_your_new_password"
+msgstr "Bitte klicke auf folgenden Link, um dein neues Passwort zu aktivieren"
 
 msgid "thank_you_for_your_order_from_{0}."
 msgstr "vielen Dank für deine Bestellung vom {0}."
-
-msgid "The_delivered_weight_will_eventually_be_adapted_which_means_the_price_can_change_slightly."
-msgstr "Das tatsächlich gelieferte Gewicht wird evtl. noch angepasst, d. h. der Preis kann sich noch geringfügig ändern."
 
 msgid "The_amount_was_reduced_from_your_credit_balance."
 msgstr "Der Betrag wurde von deinem Guthaben abgebucht."
@@ -2037,8 +2109,8 @@ msgstr "registrierung/abgeschlossen"
 msgid "route_registration"
 msgstr "registrierung"
 
-msgid "route_generate_new_password"
-msgstr "neues-passwort-generieren"
+msgid "route_activate_new_password"
+msgstr "neues-passwort-aktivieren"
 
 msgid "route_request_new_password"
 msgstr "neues-passwort-anfordern"
@@ -2087,6 +2159,30 @@ msgstr "Informationen-ueber-Ruecktrittsrecht"
 
 msgid "route_product"
 msgstr "produkt"
+
+#~ msgid "You_will_then_get_a_link_to_change_your_password."
+#~ msgstr "Wir senden dir dann einen Link zu, mit dem du das neue Passwort generieren kannst."
+
+#~ msgid "Request_for_new_password_for_{0}"
+#~ msgstr "Anfrage für neues Passwort für {0}"
+
+#~ msgid "We_sent_a_link_to_you_for_generating_a_new_password."
+#~ msgstr "Wir haben dir einen Link zugeschickt, mit dem du dein neues Passwort generieren kannst."
+
+#~ msgid "you_just_generated_a_new_password_which_is"
+#~ msgstr "du hast gerade ein neues Passwort generiert, es lautet"
+
+#~ msgid "You_can_sign_in_and_change_your_password_here"
+#~ msgstr "Du kannst dich hier anmelden und das Passwort gleich ändern"
+
+#~ msgid "route_generate_new_password"
+#~ msgstr "neues-passwort-generieren"
+
+#~ msgid "Individual_delivery_day_info."
+#~ msgstr "Das Produkt ist ab sofort bestellbar und wird automatisch deaktiviert, sobald der letzte Bestelltag des angegebenen Lieferdatums erreicht ist."
+
+#~ msgid "Order_possible_until_info."
+#~ msgstr "Das Produkt kann nur bis zu diesem Datum bestellt werden."
 
 #~ msgid "The_manufacturer_of_the_product_{0}_is_on_holiday_or_product_is_not_activated."
 #~ msgstr "Der Hersteller des Produktes {0} hat entweder Lieferpause oder er ist nicht mehr aktiviert und das Produkt ist somit nicht mehr bestellbar."

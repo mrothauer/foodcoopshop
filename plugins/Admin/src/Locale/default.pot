@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2018-09-09 21:52+0200\n"
+"POT-Creation-Date: 2018-11-23 11:12+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -203,13 +203,13 @@ msgstr ""
 msgid "Invoice_for_manufacturer_{0}_successfully_sent_to_{1}."
 msgstr ""
 
-msgid "Invoice_number_abbreviataion_{1}_{2}"
+msgid "Invoice_number_abbreviataion_{0}_{1}"
 msgstr ""
 
 msgid "Order_lists_successfully_generated_for_manufacturer_{0}."
 msgstr ""
 
-msgid "Order_lists_successfully_generated_for_manufacturer_{0}_and_sent_to_{0}."
+msgid "Order_lists_successfully_generated_for_manufacturer_{0}_and_sent_to_{1}."
 msgstr ""
 
 msgid "Order_lists_for_the_day"
@@ -386,6 +386,9 @@ msgstr ""
 msgid "First_delivery_day"
 msgstr ""
 
+msgid "Order_possible_until"
+msgstr ""
+
 msgid "Saving_successful."
 msgstr ""
 
@@ -510,6 +513,9 @@ msgid "My_{0}_(time_account)"
 msgstr ""
 
 msgid "My_credit_balance"
+msgstr ""
+
+msgid "Filename_General-terms-and-conditions"
 msgstr ""
 
 msgid "all_activities"
@@ -1139,9 +1145,6 @@ msgstr ""
 msgid "delivery_rhythm_from"
 msgstr ""
 
-msgid "Order_possible_until"
-msgstr ""
-
 msgid "change_deposit"
 msgstr ""
 
@@ -1322,6 +1325,12 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
+msgid "Please_do_not_forget_that_you_have_products_to_pick_up_on_{0}."
+msgstr ""
+
+msgid "As_your_order_is_longer_than_{0}_days_ago_you_get_this_reminder."
+msgstr ""
+
 msgid "Hello"
 msgstr ""
 
@@ -1443,6 +1452,24 @@ msgid "VAT_number"
 msgstr ""
 
 msgid "if_it_is_available"
+msgstr ""
+
+msgid "General_terms_and_conditions"
+msgstr ""
+
+msgid "If_you_do_not_upload_your_own_general_terms_and_conditions_(as_pdf)_the_default_general_terms_and_conditions_are_applied."
+msgstr ""
+
+msgid "Change_general_terms_and_conditions"
+msgstr ""
+
+msgid "Upload_general_terms_and_conditions"
+msgstr ""
+
+msgid "Upload_general_terms_and_conditions_or_change_them"
+msgstr ""
+
+msgid "Delete_general_terms_and_conditions?"
 msgstr ""
 
 msgid "Commercial_register_number"
@@ -1608,6 +1635,9 @@ msgid "Open_orders_abbreviation"
 msgstr ""
 
 msgid "Settings_abbreviation"
+msgstr ""
+
+msgid "{0,plural,=1{1_product} other{#_products}}"
 msgstr ""
 
 msgid "Show_all_products_from_{0}"
@@ -1842,9 +1872,6 @@ msgid "Show_product"
 msgstr ""
 
 msgid "Show_manufacturer"
-msgstr ""
-
-msgid "{0,plural,=1{1_product} other{#_products}}"
 msgstr ""
 
 msgid "The_delivered_weight_will_eventually_be_adapted_which_means_the_price_can_change_slightly."

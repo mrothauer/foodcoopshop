@@ -6,8 +6,6 @@ use App\Controller\Component\StringComponent;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\I18n\FrozenDate;
-use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Security;
 
@@ -58,6 +56,7 @@ class PagesController extends FrontendController
          */
         $securityErrors = 0;
         if (Configure::read('app.cookieKey') == '') {
+            // can be removed in v3
             echo '<p>Please copy this <b>app.cookieKey</b> to your custom_config.php: '.StringComponent::createRandomString(58).'</p>';
             $securityErrors++;
         }
@@ -121,13 +120,14 @@ class PagesController extends FrontendController
         }
         $page['children'] = $this->Page->find('children', [
             'for' => $pageId,
+            'direct' => true,
             'parentField' => 'id_parent',
             'conditions' => $conditionsForChildren,
             'order' => [
                 'Pages.position' => 'ASC',
                 'Pages.title' => 'ASC'
-                ]
-            ]);
+            ]
+        ]);
 
         $correctSlug = Configure::read('app.slugHelper')->getPageDetail($page->id_page, $page->title);
         if ($correctSlug != Configure::read('app.slugHelper')->getPageDetail($pageId, StringComponent::removeIdFromSlug($this->getRequest()->getParam('pass')[0]))) {

@@ -5,7 +5,6 @@ namespace App\Model\Table;
 use App\Controller\Component\StringComponent;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 
 /**
@@ -47,6 +46,7 @@ class CartsTable extends AppTable
     {
         $validator->equals('cancellation_terms_accepted', 1, __('Please_accept_the_information_about_right_of_withdrawal.'));
         $validator->equals('general_terms_and_conditions_accepted', 1, __('Please_accept_the_general_terms_and_conditions.'));
+        $validator->equals('promise_to_pickup_products', 1, __('Please_promise_to_pick_up_the_ordered_products.'));
         return $validator;
     }
     
@@ -166,10 +166,12 @@ class CartsTable extends AppTable
             $productData['productLink'] = $productLink;
             $productData['manufacturerLink'] = $manufacturerLink;
             if (!$instantOrderMode) {
-                $productData['nextDeliveryDay'] = Configure::read('app.timeHelper')->getDateFormattedWithWeekday(strtotime($cartProduct->product->next_delivery_day));
+                $nextDeliveryDay = strtotime($cartProduct->product->next_delivery_day);
             } else {
-                $productData['nextDeliveryDay'] = Configure::read('app.timeHelper')->getDateFormattedWithWeekday(Configure::read('app.timeHelper')->getCurrentDay());
+                $nextDeliveryDay = Configure::read('app.timeHelper')->getCurrentDay();
             }
+            $productData['nextDeliveryDayAsTimestamp'] = $nextDeliveryDay;
+            $productData['nextDeliveryDay'] = Configure::read('app.timeHelper')->getDateFormattedWithWeekday($nextDeliveryDay);
             
             $preparedCart['CartProducts'][] = $productData;
 
@@ -178,12 +180,12 @@ class CartsTable extends AppTable
         $productName = [];
         $deliveryDay = [];
         foreach($preparedCart['CartProducts'] as $cartProduct) {
-            $deliveryDay[] = StringComponent::slugify($cartProduct['nextDeliveryDay']);
+            $deliveryDay[] = $cartProduct['nextDeliveryDayAsTimestamp'];
             $productName[] = StringComponent::slugify($cartProduct['productName']);
         }
         
         array_multisort(
-            $deliveryDay, SORT_ASC,
+            $deliveryDay, SORT_DESC, // !SIC - array is reversed later
             $productName, SORT_DESC, // !SIC - array is reversed later
             $preparedCart['CartProducts']
         );
@@ -295,7 +297,7 @@ class CartsTable extends AppTable
             'manufacturerId' => $cartProduct->product->id_manufacturer,
             'manufacturerName' => $cartProduct->product->manufacturer->name,
             'price' => $grossPrice,
-            'priceExcl' => $cartProduct->product->price * $cartProduct->amount,
+            'priceExcl' => $grossPrice - $tax,
             'tax' => $tax,
             'pickupDay' => $cartProduct->pickup_day,
             'isStockProduct' => $cartProduct->product->is_stock_product
@@ -320,9 +322,11 @@ class CartsTable extends AppTable
             $quantityInUnits = $cartProduct->product->unit_product->quantity_in_units;
             $newPriceIncl = round($priceInclPerUnit * $quantityInUnits / $unitAmount, 2);
             $netPricePerPiece = round($productsTable->getNetPrice($cartProduct->id_product, $newPriceIncl), 2);
-            $productData['price'] =  $newPriceIncl * $cartProduct->amount;
-            $productData['priceExcl'] = $netPricePerPiece * $cartProduct->amount;
-            $productData['tax'] = ($newPriceIncl - $netPricePerPiece) * $cartProduct->amount;
+            $price = $newPriceIncl * $cartProduct->amount;
+            $tax = ($newPriceIncl - $netPricePerPiece) * $cartProduct->amount;
+            $productData['price'] = $price;
+            $productData['tax'] = $tax;
+            $productData['priceExcl'] = $price - $tax;
             if ($unity != '') {
                 $unity .= ', ';
             }
@@ -364,7 +368,7 @@ class CartsTable extends AppTable
             'manufacturerId' => $cartProduct->product->id_manufacturer,
             'manufacturerName' => $cartProduct->product->manufacturer->name,
             'price' => $grossPrice,
-            'priceExcl' => $cartProduct->product_attribute->price * $cartProduct->amount,
+            'priceExcl' => $grossPrice - $tax,
             'tax' => $tax,
             'pickupDay' => $cartProduct->pickup_day,
             'isStockProduct' => $cartProduct->product->is_stock_product

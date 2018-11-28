@@ -1,8 +1,8 @@
 <?php
 namespace Admin\Controller;
 
-use App\Auth\AppPasswordHasher;
 use App\Mailer\AppEmail;
+use Cake\Auth\DefaultPasswordHasher;
 use Cake\Core\Configure;
 use Cake\Core\Exception\Exception;
 use Cake\Datasource\Exception\RecordNotFoundException;
@@ -133,7 +133,7 @@ class CustomersController extends AdminAppController
             $this->Flash->error(__d('admin', 'Errors_while_saving!'));
             $this->set('customer', $customer);
         } else {
-            $ph = new AppPasswordHasher();
+            $ph = new DefaultPasswordHasher();
             $this->Customer->save(
                 $this->Customer->patchEntity(
                     $customer,
@@ -408,7 +408,6 @@ class CustomersController extends AdminAppController
             )
         );
 
-        $statusText = 'deaktiviert';
         $message = __d('admin', 'The_member_{0}_has_been_deactivated_succesfully.', ['<b>' . $customer->name . '</b>']);
         $actionLogType = 'customer_set_inactive';
         if ($status) {
@@ -429,7 +428,9 @@ class CustomersController extends AdminAppController
                 'newPassword' => $newPassword
                 ]);
 
-            $email->addAttachments([__d('admin', 'Filename_Terms-of-use').'.pdf' => ['data' => $this->generateTermsOfUsePdf($customer), 'mimetype' => 'application/pdf']]);
+            if (Configure::read('app.termsOfUseEnabled')) {
+                $email->addAttachments([__d('admin', 'Filename_Terms-of-use').'.pdf' => ['data' => $this->generateTermsOfUsePdf($customer), 'mimetype' => 'application/pdf']]);
+            }
             $email->send();
 
             $message = __d('admin', 'The_member_{0}_has_been_activated_succesfully_and_the_member_was_notified_by_email.', ['<b>' . $customer->name . '</b>']);

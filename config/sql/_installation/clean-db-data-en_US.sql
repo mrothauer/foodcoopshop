@@ -19,6 +19,8 @@ TRUNCATE TABLE `fcs_carts`;
 TRUNCATE TABLE `fcs_category`;
 TRUNCATE TABLE `fcs_category_product`;
 TRUNCATE TABLE `fcs_configuration`;
+TRUNCATE TABLE `fcs_cronjob_logs`;
+TRUNCATE TABLE `fcs_cronjobs`;
 TRUNCATE TABLE `fcs_customer`;
 TRUNCATE TABLE `fcs_deposits`;
 TRUNCATE TABLE `fcs_email_logs`;
@@ -78,7 +80,7 @@ INSERT INTO `fcs_configuration` VALUES
 (456,1,'FCS_FOOTER_CMS_TEXT','Additional text for footer',NULL,'textarea_big',80,'en_US','2014-06-11 17:50:55','2016-07-01 21:47:47'),
 (508,1,'FCS_FACEBOOK_URL','Facebook url for embedding in footer','https://www.facebook.com/FoodCoopShop/','text',90,'en_US','2015-07-08 13:23:54','2015-07-08 13:23:54'),
 (538,1,'FCS_REGISTRATION_EMAIL_TEXT','Additional text that is sent in the registration e-mail after a successful registration. <br /> <a href=\"/admin/configurations/previewEmail/FCS_REGISTRATION_EMAIL_TEXT\" target=\"_blank\"><img src=\"/node_modules/famfamfam-silk/dist/png/information.png?1483041252\" alt=\"\"> E-mail preview</a>','','textarea_big',170,'en_US','2016-06-26 00:00:00','2016-06-26 00:00:00'),
-(543,1,'FCS_RIGHT_INFO_BOX_HTML','Content of the box in the right column below the shopping cart. <br /><div class=\"small\">To make the background of a row green, please format as \"Heading 3\".<br />The variable {DELIVERY_DAY} shows the correct date of the delivery day.</div>','<h3>Delivery time</h3>\r\n\r\n<p>If you order your products now, you can pick them up on <strong>{DELIVERY_DAY}</strong>&nbsp;between 5 and 7 pm.</p>\r\n\r\n<p>You can order every week until Tuesday midnight and pick them up the following Friday.</p>\r\n','textarea_big',150,'en_US','2017-07-26 13:24:47','2017-07-26 13:24:47'),
+(543,1,'FCS_RIGHT_INFO_BOX_HTML','Content of the box in the right column below the shopping cart. <br /><div class=\"small\">To make the background of a row green, please format as \"Heading 3\".</div>','<h3>Delivery time</h3>\r\n\r\n<p>The pickup day can be seen in the product description, you can pick the product up on <strong>{DELIVERY_DAY}</strong>&nbsp;between 5 and 7 pm.</p>\r\n\r\n<p>You can order every week until Tuesday midnight and pick them up the following Friday.</p>\r\n','textarea_big',150,'en_US','2017-07-26 13:24:47','2017-07-26 13:24:47'),
 (544,1,'FCS_CART_ENABLED','Is the shopping cart activated?<br /><div class=\"small\">If the food-coop is on holiday, please deactivate the order function here.</div>','1','boolean',10,'en_US','2017-07-26 13:24:47','2017-07-26 13:24:47'),
 (545,1,'FCS_ACCOUNTING_EMAIL','E-mail address for the financial manager<br /><div class=\"small\">Who receives the notification that invoices have been sent?</div>','','text',110,'en_US','2017-07-26 13:24:47','2017-07-26 13:24:47'),
 (546,1,'FCS_AUTHENTICATION_INFO_TEXT','Info text in registration form<br /><div class=\"small\">This info text is shown in the registration form below the e-mail address.</div>','You need to be a member if you want to order here.','textarea',160,'en_US','2017-07-26 13:24:47','2017-07-26 13:24:47'),
@@ -110,6 +112,19 @@ INSERT INTO `fcs_configuration` VALUES
 (575,1,'FCS_CURRENCY_SYMBOL','Currency symbol','$','readonly',52,'en_US','2018-06-13 19:53:14','2018-06-13 19:53:14'),
 (576,1,'FCS_DEFAULT_LOCALE','Language','en_US','readonly',55,'en_US','2018-06-26 10:18:55','2018-06-26 10:18:55');
 /*!40000 ALTER TABLE `fcs_configuration` ENABLE KEYS */;
+
+/*!40000 ALTER TABLE `fcs_cronjob_logs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `fcs_cronjob_logs` ENABLE KEYS */;
+
+/*!40000 ALTER TABLE `fcs_cronjobs` DISABLE KEYS */;
+INSERT INTO `fcs_cronjobs` VALUES
+(1,'BackupDatabase','day',NULL,NULL,'04:00:00',1),
+(2,'CheckCreditBalance','week',NULL,'Friday','22:30:00',1),
+(3,'EmailOrderReminder','week',NULL,'Monday','18:00:00',1),
+(4,'PickupReminder','week',NULL,'Monday','09:00:00',1),
+(5,'SendInvoices','month',11,NULL,'07:30:00',1),
+(6,'SendOrderLists','week',NULL,'Wednesday','04:30:00',1);
+/*!40000 ALTER TABLE `fcs_cronjobs` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `fcs_customer` DISABLE KEYS */;
 /*!40000 ALTER TABLE `fcs_customer` ENABLE KEYS */;
@@ -207,7 +222,12 @@ INSERT INTO `phinxlog` VALUES
 (20180720130810,'RemoveOrdersTable','2018-08-01 07:31:44','2018-08-01 07:31:44',0),
 (20180727070325,'CorrectBicLength','2018-08-01 07:31:44','2018-08-01 07:31:44',0),
 (20180814121543,'ImprovedStockManagement','2018-08-14 14:57:53','2018-08-14 14:57:53',0),
-(20180827074035,'AdditionalOrderPeriods','2018-08-27 08:28:29','2018-08-27 08:28:29',0);
+(20180827074035,'AdditionalOrderPeriods','2018-08-27 08:28:29','2018-08-27 08:28:29',0),
+(20181001120127,'UpdatePasswordHashingMethod','2018-08-27 08:28:29','2018-08-27 08:28:29',0),
+(20181015080309,'ImproveNewPasswordRequest','2018-08-27 08:28:29','2018-08-27 08:28:29',0),
+(20181018125456,'Cronjobs','2018-08-27 08:28:29','2018-08-27 08:28:29',0),
+(20181027192224,'BootstrapUpdate','2018-10-27 08:28:29','2018-10-27 08:28:29',0),
+(20181029212405,'CorrectNetPrice','2018-10-29 08:28:29','2018-10-29 08:28:29',0);
 /*!40000 ALTER TABLE `phinxlog` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

@@ -1,7 +1,5 @@
 <?php
 /**
- * BackupDatabaseShell
- *
  * FoodCoopShop - The open source software for your foodcoop
  *
  * Licensed under The MIT License
@@ -84,5 +82,8 @@ class BackupDatabaseShell extends AppShell
 
         $this->ActionLog->customSave('cronjob_backup_database', $this->browser->getLoggedUserId(), 0, '', $message . '<br />' . $this->getRuntime());
         $this->out($this->getRuntime());
+        
+        return true;
+        
     }
 }

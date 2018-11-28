@@ -1,8 +1,5 @@
 <?php
-
 /**
- * CheckCreditBalanceShell
- *
  * FoodCoopShop - The open source software for your foodcoop
  *
  * Licensed under The MIT License
@@ -80,5 +77,8 @@ class CheckCreditBalanceShell extends AppShell
 
         $this->out($outString);
         $this->out($this->getRuntime());
+        
+        return true;
+    
     }
 }

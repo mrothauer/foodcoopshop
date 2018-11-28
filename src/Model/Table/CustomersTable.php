@@ -2,7 +2,7 @@
 
 namespace App\Model\Table;
 
-use App\Auth\AppPasswordHasher;
+use Cake\Auth\DefaultPasswordHasher;
 use App\Controller\Component\StringComponent;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
@@ -89,7 +89,7 @@ class CustomersTable extends AppTable
             'rule'=>  function ($value, $context) {
                 $user = $this->get($context['data']['id_customer']);
                 if ($user) {
-                    if ((new AppPasswordHasher())->check($value, $user->passwd)) {
+                    if ((new DefaultPasswordHasher())->check($value, $user->passwd)) {
                         return true;
                     }
                 }
@@ -165,7 +165,7 @@ class CustomersTable extends AppTable
         ]);
         return $validator;
     }
-
+    
     public function validationTermsOfUse(Validator $validator)
     {
         return $this->getValidationTermsOfUse($validator);
@@ -240,7 +240,7 @@ class CustomersTable extends AppTable
      */
     public function setNewPassword($customerId)
     {
-        $ph = new AppPasswordHasher();
+        $ph = new DefaultPasswordHasher();
         $newPassword = StringComponent::createRandomString(12);
 
         // reset change password code
@@ -418,7 +418,7 @@ class CustomersTable extends AppTable
         return round($paymentProductSum - $paybackProductSum + $paymentDepositSum - $productSum - $depositSum, 2);
     }
 
-    public function getForDropdown($includeManufacturers = false, $index = 'id_customer', $includeOfflineCustomers = true)
+    public function getForDropdown($includeManufacturers = false, $index = 'id_customer', $includeOfflineCustomers = true, $conditions = [])
     {
         $contain = [];
         if (! $includeManufacturers) {
@@ -427,8 +427,9 @@ class CustomersTable extends AppTable
             $contain[] = 'AddressCustomers'; // to make exclude happen using dropManufacturersInNextFind
         }
 
+        $conditions = array_merge($conditions, $this->getConditionToExcludeHostingUser());
         $customers = $this->find('all', [
-            'conditions' => $this->getConditionToExcludeHostingUser(),
+            'conditions' => $conditions,
             'order' => Configure::read('app.htmlHelper')->getCustomerOrderBy(),
             'contain' => $contain
         ]);
@@ -459,7 +460,7 @@ class CustomersTable extends AppTable
                     $offlineCustomers[$customer->$index] = $userNameForDropdown;
                 } else {
                     if (! $includeManufacturers) {
-                        if (empty($customer->valid_orders)) {
+                        if (empty($customer->valid_order_details)) {
                             $notYetOrderedCustomers[$customer->$index] = $userNameForDropdown;
                         } else {
                             $onlineCustomers[$customer->$index] = $userNameForDropdown;

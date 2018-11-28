@@ -19,6 +19,8 @@ TRUNCATE TABLE `fcs_carts`;
 TRUNCATE TABLE `fcs_category`;
 TRUNCATE TABLE `fcs_category_product`;
 TRUNCATE TABLE `fcs_configuration`;
+TRUNCATE TABLE `fcs_cronjob_logs`;
+TRUNCATE TABLE `fcs_cronjobs`;
 TRUNCATE TABLE `fcs_customer`;
 TRUNCATE TABLE `fcs_deposits`;
 TRUNCATE TABLE `fcs_email_logs`;
@@ -78,7 +80,7 @@ INSERT INTO `fcs_configuration` VALUES
 (456,1,'FCS_FOOTER_CMS_TEXT','Zusätzlicher Text für den Footer',NULL,'textarea_big',80,'de_DE','2014-06-11 17:50:55','2016-07-01 21:47:47'),
 (508,1,'FCS_FACEBOOK_URL','Facebook-Url für die Einbindung im Footer','https://www.facebook.com/FoodCoopShop/','text',90,'de_DE','2015-07-08 13:23:54','2015-07-08 13:23:54'),
 (538,1,'FCS_REGISTRATION_EMAIL_TEXT','Zusätzlicher Text, der in der Bestätigungsmail nach einer Registrierung versendet wird. <br /> <a href=\"/admin/configurations/previewEmail/FCS_REGISTRATION_EMAIL_TEXT\" target=\"_blank\"><img src=\"/node_modules/famfamfam-silk/dist/png/information.png?1483041252\" alt=\"\"> E-Mail-Vorschau anzeigen</a>','','textarea_big',170,'de_DE','2016-06-26 00:00:00','2016-06-26 00:00:00'),
-(543,1,'FCS_RIGHT_INFO_BOX_HTML','Inhalt der Box in der rechten Spalte unterhalb des Warenkorbes. <br /><div class=\"small\">Um eine Zeile grün zu hinterlegen (Überschrift) bitte als \"Überschrift 3\" formatieren.<br />Die Variable {ABHOLTAG} zeigt automatisch das richtige Abholdatum an.</div>','<h3>Abholzeiten</h3>\r\n\r\n<p>Wenn du deine Produkte jetzt bestellst, kannst du sie am <strong>{ABHOLTAG}</strong>&nbsp;zwischen 17 und 19 Uhr abholen.</p>\r\n\r\n<p>Du kannst jede Woche bis sp&auml;testens Dienstag Mitternacht bestellen und sie am darauffolgenden Freitag abholen.</p>\r\n','textarea_big',150,'de_DE','2017-07-26 13:24:47','2017-07-26 13:24:47'),
+(543,1,'FCS_RIGHT_INFO_BOX_HTML','Inhalt der Box in der rechten Spalte unterhalb des Warenkorbes. <br /><div class=\"small\">Um eine Zeile grün zu hinterlegen (Überschrift) bitte als \"Überschrift 3\" formatieren.</div>','<h3>Abholzeiten</h3>\r\n\r\n<p>Der Abholtag steht jetzt immer in der Produktbeschreibung, du kannst deine Produkte am Freitag abholen.</p>\r\n\r\n<p>Du kannst jede Woche bis sp&auml;testens Dienstag Mitternacht bestellen und sie am darauffolgenden Freitag abholen.</p>\r\n','textarea_big',150,'de_DE','2017-07-26 13:24:47','2017-07-26 13:24:47'),
 (544,1,'FCS_CART_ENABLED','Ist die Bestell-Funktion aktiviert?<br /><div class=\"small\">Falls die Foodcoop mal Urlaub macht, kann das Bestellen hier deaktiviert werden.</div>','1','boolean',10,'de_DE','2017-07-26 13:24:47','2017-07-26 13:24:47'),
 (545,1,'FCS_ACCOUNTING_EMAIL','E-Mail-Adresse des Finanzverantwortlichen<br /><div class=\"small\">Wer bekommt die Benachrichtigung über den erfolgten Rechnungsversand?</div>','','text',110,'de_DE','2017-07-26 13:24:47','2017-07-26 13:24:47'),
 (546,1,'FCS_AUTHENTICATION_INFO_TEXT','Info-Text beim Registrierungsformular<br /><div class=\"small\">Beim Registrierungsformlar wird unterhalb der E-Mail-Adresse dieser Text angezeigt.</div>','Um bei uns zu bestellen musst du Vereinsmitglied sein.','textarea',160,'de_DE','2017-07-26 13:24:47','2017-07-26 13:24:47'),
@@ -110,6 +112,19 @@ INSERT INTO `fcs_configuration` VALUES
 (575,1,'FCS_CURRENCY_SYMBOL','Währungssymbol','€','readonly',52,'de_DE','2018-06-13 19:53:14','2018-06-13 19:53:14'),
 (576,1,'FCS_DEFAULT_LOCALE','Sprache','de_DE','readonly',55,'de_DE','2018-06-26 10:18:55','2018-06-26 10:18:55');
 /*!40000 ALTER TABLE `fcs_configuration` ENABLE KEYS */;
+
+/*!40000 ALTER TABLE `fcs_cronjob_logs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `fcs_cronjob_logs` ENABLE KEYS */;
+
+/*!40000 ALTER TABLE `fcs_cronjobs` DISABLE KEYS */;
+INSERT INTO `fcs_cronjobs` VALUES
+(1,'BackupDatabase','day',NULL,NULL,'04:00:00',1),
+(2,'CheckCreditBalance','week',NULL,'Friday','22:30:00',1),
+(3,'EmailOrderReminder','week',NULL,'Monday','18:00:00',1),
+(4,'PickupReminder','week',NULL,'Monday','09:00:00',1),
+(5,'SendInvoices','month',11,NULL,'07:30:00',1),
+(6,'SendOrderLists','week',NULL,'Wednesday','04:30:00',1);
+/*!40000 ALTER TABLE `fcs_cronjobs` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `fcs_customer` DISABLE KEYS */;
 /*!40000 ALTER TABLE `fcs_customer` ENABLE KEYS */;
@@ -207,7 +222,12 @@ INSERT INTO `phinxlog` VALUES
 (20180720130810,'RemoveOrdersTable','2018-08-01 07:28:57','2018-08-01 07:28:57',0),
 (20180727070325,'CorrectBicLength','2018-08-01 07:28:57','2018-08-01 07:28:57',0),
 (20180814121543,'ImprovedStockManagement','2018-08-14 14:57:53','2018-08-14 14:57:53',0),
-(20180827074035,'AdditionalOrderPeriods','2018-08-27 08:28:29','2018-08-27 08:28:29',0);
+(20180827074035,'AdditionalOrderPeriods','2018-08-27 08:28:29','2018-08-27 08:28:29',0),
+(20181001120127,'UpdatePasswordHashingMethod','2018-08-27 08:28:29','2018-08-27 08:28:29',0),
+(20181015080309,'ImproveNewPasswordRequest','2018-08-27 08:28:29','2018-08-27 08:28:29',0),
+(20181018125456,'Cronjobs','2018-08-27 08:28:29','2018-08-27 08:28:29',0),
+(20181027192224,'BootstrapUpdate','2018-10-27 08:28:29','2018-10-27 08:28:29',0),
+(20181029212405,'CorrectNetPrice','2018-10-29 08:28:29','2018-10-29 08:28:29',0);
 /*!40000 ALTER TABLE `phinxlog` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

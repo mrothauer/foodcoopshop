@@ -16,7 +16,7 @@ use Cake\Core\Configure;
 
 $this->element('addScript', ['script' =>
     Configure::read('app.jsNamespace').".Helper.init();".
-    Configure::read('app.jsNamespace').".AppFeatherlight.initLightboxForHref('.cart .input.checkbox label a');".
+    Configure::read('app.jsNamespace').".AppFeatherlight.initLightboxForHref('.cart .input.checkbox label a.open-with-featherlight');".
     Configure::read('app.jsNamespace').".Cart.initCartFinish();"
 ]);
 if (!$appAuth->termsOfUseAccepted()) {
@@ -44,6 +44,12 @@ if (!$appAuth->termsOfUseAccepted()) {
     <?php if (!empty($appAuth->Cart->getProducts())) { ?>
         <p class="tax-sum-wrapper"><?php echo __('Including_vat'); ?>: <span class="sum"><?php echo $this->Number->formatAsCurrency(0); ?></span></p>
 
+        <?php if ($appAuth->Cart->getProductsWithUnitCount() > 0) { ?>
+            <p>
+            	<?php echo __('The_delivered_weight_will_eventually_be_adapted_which_means_the_price_can_change_slightly.'); ?>
+            </p>
+        <?php } ?>
+
         <?php
             echo $this->Form->create($cart, [
                 'class' => 'fcs-form',
@@ -54,16 +60,19 @@ if (!$appAuth->termsOfUseAccepted()) {
             echo $this->element('cart/variableMemberFeeInfoText');
         ?>
 
-        <p style="margin-top: 20px;">
-        	<?php echo __('To_finish_order_click_here.'); ?> 
-        	<?php echo $this->element('cart/paymentInfoText'); ?>
-        </p>
+		<?php if (Configure::read('app.showPaymentInfoText')) { ?>
+            <p style="margin-top:10px;">
+            	<?php echo __('To_finish_order_click_here.'); ?> 
+            	<?php echo $this->element('cart/paymentInfoText'); ?>
+            </p>
+        <?php } ?>
          
         <?php echo $this->element('cart/pickupPlaceInfoText'); ?>
     
     	<?php
-            echo $this->element('cart/generalTermsOfUseCheckbox');
+            echo $this->element('cart/generalTermsAndConditionsCheckbox');
             echo $this->element('cart/cancellationTermsCheckbox');
+            echo $this->element('cart/promiseToPickUpProductsCheckbox');
         ?>
         <div class="sc"></div>
         

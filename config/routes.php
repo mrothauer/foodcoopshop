@@ -18,6 +18,7 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
+use Cake\Core\Configure;
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
 use Cake\Routing\Route\DashedRoute;
@@ -53,14 +54,16 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/'.__('route_registration'), ['controller' => 'Customers', 'action' => 'login']);
     $routes->connect('/'.__('route_registration_successful'), ['controller' => 'Customers', 'action' => 'registrationSuccessful']);
     $routes->connect('/'.__('route_information_about_right_of_withdrawal'), ['controller' => 'Carts', 'action' => 'generateRightOfWithdrawalInformationPdf']);
-    $routes->connect('/'.__('route_terms_of_use'), ['controller' => 'Pages', 'action' => 'termsOfUse']);
+    if (Configure::read('app.termsOfUseEnabled')) {
+        $routes->connect('/'.__('route_terms_of_use'), ['controller' => 'Pages', 'action' => 'termsOfUse']);
+    }
     $routes->connect('/'.__('route_privacy_policy'), ['controller' => 'Pages', 'action' => 'privacyPolicy']);
     $routes->connect('/'.__('route_list_of_allergens'), ['controller' => 'Pages', 'action' => 'listOfAllergens']);
     $routes->connect('/'.__('route_accept_terms_of_use'), ['controller' => 'Customers', 'action' => 'acceptUpdatedTermsOfUse']);
 
     $routes->connect('/'.__('route_new_products'), ['controller' => 'Categories', 'action' => 'newProducts']);
     $routes->connect('/'.__('route_request_new_password'), ['controller' => 'Customers', 'action' => 'newPasswordRequest']);
-    $routes->connect('/'.__('route_generate_new_password').'/*', ['controller' => 'Customers', 'action' => 'generateNewPassword']);
+    $routes->connect('/'.__('route_activate_new_password').'/*', ['controller' => 'Customers', 'action' => 'activateNewPassword']);
 
     $routes->connect('/'.__('route_news_list'), ['controller' => 'BlogPosts', 'action' => 'index']);
     $routes->connect('/'.__('route_news_detail').'/*', ['controller' => 'BlogPosts', 'action' => 'detail']);

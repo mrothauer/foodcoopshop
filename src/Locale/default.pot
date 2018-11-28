@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2018-09-09 21:52+0200\n"
+"POT-Creation-Date: 2018-11-26 16:14+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -86,10 +86,10 @@ msgstr ""
 msgid "Errors_occurred."
 msgstr ""
 
-msgid "Instant_order_successfully_placed_for_{0}."
+msgid "Instant_order_({0})_successfully_placed_for_{1}."
 msgstr ""
 
-msgid "Instant_order_successfully_placed_for_{0}._The_following_manufacturers_were_notified:_{1}"
+msgid "Instant_order_({0})_successfully_placed_for_{1}._The_following_manufacturers_were_notified:_{2}"
 msgstr ""
 
 msgid "Pickup_day"
@@ -146,16 +146,16 @@ msgstr ""
 msgid "Errors_while_saving!"
 msgstr ""
 
-msgid "Request_for_new_password_for_{0}"
+msgid "New_password_for_{0}"
 msgstr ""
 
-msgid "We_sent_a_link_to_you_for_generating_a_new_password."
+msgid "We_sent_your_new_password_to_you_it_needs_to_be_activated."
 msgstr ""
 
-msgid "Generated_new_password_for_{0}"
+msgid "Your_new_password_was_already_activated_or_the_activation_code_was_not_valid."
 msgstr ""
 
-msgid "We_sent_a_new_password_to_you."
+msgid "Your_new_password_was_successfully_activated."
 msgstr ""
 
 msgid "Sign_in"
@@ -797,9 +797,6 @@ msgstr ""
 msgid "Delivery_day"
 msgstr ""
 
-msgid "Individual_delivery_day_info."
-msgstr ""
-
 msgid "First_delivery_day_info."
 msgstr ""
 
@@ -807,9 +804,6 @@ msgid "can_be_left_blank"
 msgstr ""
 
 msgid "Order_possible_until"
-msgstr ""
-
-msgid "Order_possible_until_info."
 msgstr ""
 
 msgid "Info_page_for_delivery_rhythm"
@@ -833,6 +827,60 @@ msgstr ""
 msgid "rotate_clockwise?"
 msgstr ""
 
+msgid "Change_general_terms_and_conditions"
+msgstr ""
+
+msgid "Id"
+msgstr ""
+
+msgid "Product"
+msgstr ""
+
+msgid "An_attribute_cannot_be_assigned_to_a_product."
+msgstr ""
+
+msgid "A_product_cannot_be_assigned_to_an_attribute."
+msgstr ""
+
+msgid "Image"
+msgstr ""
+
+msgid "Name_additional_info"
+msgstr ""
+
+msgid "Quantity"
+msgstr ""
+
+msgid "Price"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "No_products_or_attributes_selected."
+msgstr ""
+
+msgid "No_product_data_selected."
+msgstr ""
+
+msgid "Please_enter_your_credentials."
+msgstr ""
+
+msgid "Really_synchronize?"
+msgstr ""
+
+msgid "This_action_cannot_be_undone."
+msgstr ""
+
+msgid "Really_synchronize_data_{0}_from_{1}_and_{2}_to_the_following_foodcoops?_{3}"
+msgstr ""
+
+msgid "attribute"
+msgstr ""
+
+msgid "attributes"
+msgstr ""
+
 msgid "Manufacturer"
 msgstr ""
 
@@ -843,6 +891,21 @@ msgid "Privacy_policy"
 msgstr ""
 
 msgid "List_of_allergens"
+msgstr ""
+
+msgid "Tax_rates_overview_table"
+msgstr ""
+
+msgid "Tax_rate"
+msgstr ""
+
+msgid "Sum_price_excl."
+msgstr ""
+
+msgid "Sum_tax"
+msgstr ""
+
+msgid "Sum_price_incl."
 msgstr ""
 
 msgid "Price_excl."
@@ -1106,6 +1169,9 @@ msgstr ""
 msgid "Action_Log_Cronjob_email_order_reminder_sent"
 msgstr ""
 
+msgid "Action_Log_Cronjob_pickup_reminder_sent"
+msgstr ""
+
 msgid "Action_Log_Cronjob_check_credit_balance"
 msgstr ""
 
@@ -1200,6 +1266,9 @@ msgid "Please_accept_the_information_about_right_of_withdrawal."
 msgstr ""
 
 msgid "Please_accept_the_general_terms_and_conditions."
+msgstr ""
+
+msgid "Please_promise_to_pick_up_the_ordered_products."
 msgstr ""
 
 msgid "offline"
@@ -1415,6 +1484,9 @@ msgstr ""
 msgid "tomorrow"
 msgstr ""
 
+msgid "Pickup_reminder_for"
+msgstr ""
+
 msgid "to_(time_context)"
 msgstr ""
 
@@ -1467,6 +1539,9 @@ msgid "From_which_in"
 msgstr ""
 
 msgid "Including_vat"
+msgstr ""
+
+msgid "The_delivered_weight_will_eventually_be_adapted_which_means_the_price_can_change_slightly."
 msgstr ""
 
 msgid "To_finish_order_click_here."
@@ -1544,9 +1619,6 @@ msgstr ""
 msgid "Please_enter_your_email_address_and_click_on_send_button."
 msgstr ""
 
-msgid "You_will_then_get_a_link_to_change_your_password."
-msgstr ""
-
 msgid "Send"
 msgstr ""
 
@@ -1595,6 +1667,15 @@ msgstr ""
 msgid "Already_ordered_products"
 msgstr ""
 
+msgid "Replace_existing_file"
+msgstr ""
+
+msgid "Upload_new_file"
+msgstr ""
+
+msgid "Search_PC"
+msgstr ""
+
 msgid "Information"
 msgstr ""
 
@@ -1617,9 +1698,6 @@ msgid "Upload_new_image"
 msgstr ""
 
 msgid "Please_only_use_self_made_images_(not_from_the_internet)."
-msgstr ""
-
-msgid "Search_PC"
 msgstr ""
 
 msgid "DELIVERY_DAY"
@@ -1652,6 +1730,9 @@ msgstr ""
 msgid "I_accept_the_{0}_and_accept_that_it_is_not_valid_for_perishable_goods."
 msgstr ""
 
+msgid "General_terms_and_conditions_of_{0}"
+msgstr ""
+
 msgid "general_terms_and_conditions"
 msgstr ""
 
@@ -1673,13 +1754,10 @@ msgstr ""
 msgid "Pickup_place:_{0}"
 msgstr ""
 
+msgid "I_promise_to_pick_up_the_products_on_the_selected_pickup_day_and_to_pay_in_cash_in_the_shop."
+msgstr ""
+
 msgid "How_much_of_it_do_i_want_to_pay_in_{0}?"
-msgstr ""
-
-msgid "Product"
-msgstr ""
-
-msgid "Price"
 msgstr ""
 
 msgid "Total"
@@ -1754,19 +1832,13 @@ msgstr ""
 msgid "You_receive_this_message_because_the_delivery_day_of_this_order_was_automatically_set_to_today_{0}_and_therefore_it_does_not_appear_on_your_order_lists."
 msgstr ""
 
-msgid "please_click_on_this_link_to_generate_a_new_password"
+msgid "your_new_password_is:"
 msgstr ""
 
-msgid "you_just_generated_a_new_password_which_is"
-msgstr ""
-
-msgid "You_can_sign_in_and_change_your_password_here"
+msgid "Please_click_on_this_link_to_activate_your_new_password"
 msgstr ""
 
 msgid "thank_you_for_your_order_from_{0}."
-msgstr ""
-
-msgid "The_delivered_weight_will_eventually_be_adapted_which_means_the_price_can_change_slightly."
 msgstr ""
 
 msgid "The_amount_was_reduced_from_your_credit_balance."
@@ -2036,7 +2108,7 @@ msgstr ""
 msgid "route_registration"
 msgstr ""
 
-msgid "route_generate_new_password"
+msgid "route_activate_new_password"
 msgstr ""
 
 msgid "route_request_new_password"

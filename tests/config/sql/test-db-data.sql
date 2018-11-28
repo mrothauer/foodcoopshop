@@ -19,6 +19,8 @@ TRUNCATE TABLE `fcs_carts`;
 TRUNCATE TABLE `fcs_category`;
 TRUNCATE TABLE `fcs_category_product`;
 TRUNCATE TABLE `fcs_configuration`;
+TRUNCATE TABLE `fcs_cronjob_logs`;
+TRUNCATE TABLE `fcs_cronjobs`;
 TRUNCATE TABLE `fcs_customer`;
 TRUNCATE TABLE `fcs_deposits`;
 TRUNCATE TABLE `fcs_email_logs`;
@@ -150,14 +152,24 @@ INSERT INTO `fcs_configuration` VALUES
 (576,1,'FCS_DEFAULT_LOCALE','Sprache','de_DE','readonly',55,'de_DE','2018-06-26 10:18:55','2018-06-26 10:18:55');
 /*!40000 ALTER TABLE `fcs_configuration` ENABLE KEYS */;
 
+/*!40000 ALTER TABLE `fcs_cronjob_logs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `fcs_cronjob_logs` ENABLE KEYS */;
+
+/*!40000 ALTER TABLE `fcs_cronjobs` DISABLE KEYS */;
+INSERT INTO `fcs_cronjobs` VALUES
+(1,'TestCronjob','day',NULL,NULL,'22:30:00',1),
+(2,'TestCronjob','week',NULL,'Monday','09:00:00',1),
+(3,'TestCronjob','month',11,NULL,'07:30:00',1);
+/*!40000 ALTER TABLE `fcs_cronjobs` ENABLE KEYS */;
+
 /*!40000 ALTER TABLE `fcs_customer` DISABLE KEYS */;
 INSERT INTO `fcs_customer` VALUES
-(87,3,'Demo','Mitglied','fcs-demo-mitglied@mailinator.com','',NULL,1,'2018-08-03',1,'2014-12-02 12:19:31','2015-12-06 23:37:44',0),
-(88,4,'Demo','Admin','fcs-demo-admin@mailinator.com','',NULL,1,'2018-08-03',1,'2014-12-02 12:28:43','2016-09-29 16:25:09',0),
-(89,4,'Demo','Gemüse-Hersteller','fcs-demo-gemuese-hersteller@mailinator.com','',NULL,0,'2018-08-03',1,'2014-12-02 12:37:26','2015-03-11 18:12:10',0),
-(90,4,'Demo','Milch-Hersteller','fcs-demo-milch-hersteller@mailinator.com','',NULL,0,'2018-08-03',1,'2014-12-02 12:37:49','2015-03-11 18:11:54',0),
-(91,4,'Demo','Fleisch-Hersteller','fcs-demo-fleisch-hersteller@mailinator.com','',NULL,0,'2018-08-03',1,'2014-12-02 12:38:12','2015-03-11 18:11:47',0),
-(92,5,'Demo','Superadmin','fcs-demo-superadmin@mailinator.com','',NULL,1,'2018-08-03',1,'2016-09-29 16:26:12','2016-09-29 16:26:12',0);
+(87,3,'Demo','Mitglied','fcs-demo-mitglied@mailinator.com','$2y$10$uu/znwy2GwCx0NlLOIqaquY862AdcV6BgTGtNEUdKj4o1US.idVlm',NULL,NULL,1,'2018-08-03',1,'2014-12-02 12:19:31','2015-12-06 23:37:44',0),
+(88,4,'Demo','Admin','fcs-demo-admin@mailinator.com','$2y$10$uu/znwy2GwCx0NlLOIqaquY862AdcV6BgTGtNEUdKj4o1US.idVlm',NULL,NULL,1,'2018-08-03',1,'2014-12-02 12:28:43','2016-09-29 16:25:09',0),
+(89,4,'Demo','Gemüse-Hersteller','fcs-demo-gemuese-hersteller@mailinator.com','$2y$10$uu/znwy2GwCx0NlLOIqaquY862AdcV6BgTGtNEUdKj4o1US.idVlm',NULL,NULL,0,'2018-08-03',1,'2014-12-02 12:37:26','2015-03-11 18:12:10',0),
+(90,4,'Demo','Milch-Hersteller','fcs-demo-milch-hersteller@mailinator.com','$2y$10$uu/znwy2GwCx0NlLOIqaquY862AdcV6BgTGtNEUdKj4o1US.idVlm',NULL,NULL,0,'2018-08-03',1,'2014-12-02 12:37:49','2015-03-11 18:11:54',0),
+(91,4,'Demo','Fleisch-Hersteller','fcs-demo-fleisch-hersteller@mailinator.com','$2y$10$uu/znwy2GwCx0NlLOIqaquY862AdcV6BgTGtNEUdKj4o1US.idVlm',NULL,NULL,0,'2018-08-03',1,'2014-12-02 12:38:12','2015-03-11 18:11:47',0),
+(92,5,'Demo','Superadmin','fcs-demo-superadmin@mailinator.com','$2y$10$uu/znwy2GwCx0NlLOIqaquY862AdcV6BgTGtNEUdKj4o1US.idVlm',NULL,NULL,1,'2018-08-03',1,'2016-09-29 16:26:12','2016-09-29 16:26:12',0);
 /*!40000 ALTER TABLE `fcs_customer` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `fcs_deposits` DISABLE KEYS */;
@@ -182,17 +194,17 @@ INSERT INTO `fcs_images` VALUES
 
 /*!40000 ALTER TABLE `fcs_manufacturer` DISABLE KEYS */;
 INSERT INTO `fcs_manufacturer` VALUES
-(4,'Demo Fleisch-Hersteller','<p>tests</p>\r\n','','2014-05-14 13:23:02','2015-05-15 13:31:41',1,0,'','','','','','','','','','',NULL,0,1,1,2,'testfcs1@mailinator.com;testfcs2@mailinator.com',0,NULL,NULL,NULL,NULL,NULL,0,30,100,0,0,0,''),
-(5,'Demo Gemüse-Hersteller','<p>Gem&uuml;se-Hersteller Beschreibung&nbsp;lang</p>','<div class=\"entry-content\">\r\n<p>Gem&uuml;se-Hersteller Beschreibung kurz</p>\r\n</div>','2014-05-14 13:36:44','2016-09-27 09:34:51',1,0,'','','','','','','','','','',88,10,1,1,1,'',0,NULL,NULL,NULL,NULL,'1',0,30,100,1,1,1,''),
+(4,'Demo Fleisch-Hersteller','<p>tests</p>\r\n','','2014-05-14 13:23:02','2015-05-15 13:31:41',1,0,'','','','','','','','','','',NULL,0,1,1,2,'testfcs1@mailinator.com;testfcs2@mailinator.com',0,NULL,NULL,NULL,1,NULL,0,30,100,0,0,0,''),
+(5,'Demo Gemüse-Hersteller','<p>Gem&uuml;se-Hersteller Beschreibung&nbsp;lang</p>','<div class=\"entry-content\">\r\n<p>Gem&uuml;se-Hersteller Beschreibung kurz</p>\r\n</div>','2014-05-14 13:36:44','2016-09-27 09:34:51',1,0,'','','','','','','','','','',88,0,1,1,1,'',0,NULL,NULL,NULL,NULL,'1',0,30,100,1,1,1,''),
 (15,'Demo Milch-Hersteller','<p>Ja, ich bin der Milchhersteller!</p>','','2014-06-04 21:45:12','2016-03-07 09:02:25',1,0,'','','','','','','','','','',NULL,0,1,1,4,'test@test.at',0,NULL,NULL,NULL,NULL,NULL,0,30,100,0,0,0,''),
 (16,'Hersteller ohne Customer-Eintrag','','','2014-06-04 21:45:12','2016-03-07 09:02:25',1,0,'','','','','','','','','','',NULL,10,1,1,1,'',0,NULL,NULL,NULL,NULL,NULL,0,30,100,0,0,0,'');
 /*!40000 ALTER TABLE `fcs_manufacturer` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `fcs_order_detail` DISABLE KEYS */;
 INSERT INTO `fcs_order_detail` VALUES
-(1,346,0,'Artischocke : Stück',1,1.820000,1.652893,2,0.50,92,1,3,'2018-02-02','2018-02-01 09:17:14','2018-07-27 17:08:52'),
-(2,340,0,'Beuschl',1,4.545455,4.545455,0,0.00,92,2,3,'2018-02-02','2018-02-01 09:17:14','2018-07-27 17:08:52'),
-(3,60,10,'Milch : 0,5l',1,0.620000,0.545455,3,0.50,92,3,3,'2018-02-02','2018-02-01 09:17:14','2018-07-27 17:08:52');
+(1,346,0,'Artischocke : Stück',1,1.820000,1.650000,2,0.50,92,1,3,'2018-02-02','2018-02-01 09:17:14','2018-07-27 17:08:52'),
+(2,340,0,'Beuschl',1,4.540000,4.540000,0,0.00,92,2,3,'2018-02-02','2018-02-01 09:17:14','2018-07-27 17:08:52'),
+(3,60,10,'Milch : 0,5l',1,0.620000,0.550000,3,0.50,92,3,3,'2018-02-02','2018-02-01 09:17:14','2018-07-27 17:08:52');
 /*!40000 ALTER TABLE `fcs_order_detail` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `fcs_order_detail_tax` DISABLE KEYS */;
@@ -285,6 +297,11 @@ INSERT INTO `fcs_sync_domains` VALUES
 /*!40000 ALTER TABLE `fcs_sync_domains` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `fcs_sync_products` DISABLE KEYS */;
+INSERT INTO `fcs_sync_products` VALUES
+(1,1,346,346,0,0),
+(2,1,350,350,0,0),
+(3,1,350,350,14,14),
+(4,1,350,350,13,13);
 /*!40000 ALTER TABLE `fcs_sync_products` ENABLE KEYS */;
 
 /*!40000 ALTER TABLE `fcs_tax` DISABLE KEYS */;
@@ -331,7 +348,12 @@ INSERT INTO `phinxlog` VALUES
 (20180720130810,'RemoveOrdersTable','2018-08-01 07:44:17','2018-08-01 07:44:17',0),
 (20180727070325,'CorrectBicLength','2018-08-01 07:44:17','2018-08-01 07:44:17',0),
 (20180814121543,'ImprovedStockManagement','2018-08-14 14:57:59','2018-08-14 14:57:59',0),
-(20180827074035,'AdditionalOrderPeriods','2018-08-27 08:28:29','2018-08-27 08:28:29',0);
+(20180827074035,'AdditionalOrderPeriods','2018-08-27 08:28:29','2018-08-27 08:28:29',0),
+(20181001120127,'UpdatePasswordHashingMethod','2018-08-27 08:28:29','2018-08-27 08:28:29',0),
+(20181015080309,'ImproveNewPasswordRequest','2018-08-27 08:28:29','2018-08-27 08:28:29',0),
+(20181018125456,'Cronjobs','2018-08-27 08:28:29','2018-08-27 08:28:29',0),
+(20181027192224,'BootstrapUpdate','2018-10-27 08:28:29','2018-10-27 08:28:29',0),
+(20181029212405,'CorrectNetPrice','2018-10-29 08:28:29','2018-10-29 08:28:29',0);
 /*!40000 ALTER TABLE `phinxlog` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

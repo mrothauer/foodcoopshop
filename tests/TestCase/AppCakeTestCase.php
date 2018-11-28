@@ -1,22 +1,21 @@
 <?php
 namespace App\Test\TestCase;
 
-use App\Auth\AppPasswordHasher;
 use App\Lib\SimpleBrowser\AppSimpleBrowser;
 use App\View\Helper\MyHtmlHelper;
 use App\View\Helper\MyTimeHelper;
+use App\View\Helper\PricePerUnitHelper;
 use App\View\Helper\SlugHelper;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
 use Cake\Filesystem\File;
 use Cake\ORM\TableRegistry;
 use Cake\View\View;
+use Network\View\Helper\NetworkHelper;
 
 require_once ROOT . DS . 'tests' . DS . 'config' . DS . 'test.config.php';
 
 /**
- * AppCakeTestCase
- *
  * FoodCoopShop - The open source software for your foodcoop
  *
  * Licensed under The MIT License
@@ -63,6 +62,8 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
         $this->Slug = new SlugHelper($View);
         $this->Html = new MyHtmlHelper($View);
         $this->Time = new MyTimeHelper($View);
+        $this->Network = new NetworkHelper($View);
+        $this->PricePerUnit = new PricePerUnitHelper($View);
         $this->Configuration = TableRegistry::getTableLocator()->get('Configurations');
         $this->Customer = TableRegistry::getTableLocator()->get('Customers');
         $this->Manufacturer = TableRegistry::getTableLocator()->get('Manufacturers');
@@ -98,20 +99,9 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
     
     protected function resetTestDatabaseData()
     {
-
         $this->dbConnection = ConnectionManager::get('test');
         $this->testDumpDir = ROOT . DS .  'tests' . DS . 'config' . DS . 'sql' . DS;
         $this->importDump($this->testDumpDir . 'test-db-data.sql');
-
-        // regenerate password hashes
-        $ph = new AppPasswordHasher();
-        $query = 'UPDATE fcs_customer SET passwd = :passwd;';
-        $params = [
-            'passwd' => $ph->hash(Configure::read('test.loginPassword'))
-        ];
-        $statement = $this->dbConnection->prepare($query);
-        $statement->execute($params);
-
     }
 
     public function initSimpleBrowser()
@@ -395,7 +385,7 @@ abstract class AppCakeTestCase extends \PHPUnit\Framework\TestCase
      * @param number $priceQuantityInUnits
      * @return mixed
      */
-    protected function changeProductPrice($productId, $price, $usePricePerUnit = false, $pricePerUnitEnabled = false, $priceInclPerUnit = 0, $priceUnitName = '', $priceUnitAmount = 0, $priceQuantityInUnits = 0)
+    protected function changeProductPrice($productId, $price, $pricePerUnitEnabled = false, $priceInclPerUnit = 0, $priceUnitName = '', $priceUnitAmount = 0, $priceQuantityInUnits = 0)
     {
         $this->browser->ajaxPost('/admin/products/editPrice', [
             'productId' => $productId,

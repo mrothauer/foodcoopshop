@@ -158,7 +158,7 @@ class OrderDetailsController extends AdminAppController
         $pickupDay = [$this->getRequest()->getQuery('pickupDay')];
         
         $this->OrderDetail = TableRegistry::getTableLocator()->get('OrderDetails');
-        $odParams = $this->OrderDetail->getOrderDetailParams($this->AppAuth, '', '', '', [], $pickupDay, '', '');
+        $odParams = $this->OrderDetail->getOrderDetailParams($this->AppAuth, '', '', '', $pickupDay, '', '');
         $contain = $odParams['contain'];
         $this->OrderDetail->getAssociation('PickupDayEntities')->setConditions([
             'PickupDayEntities.pickup_day' => Configure::read('app.timeHelper')->formatToDbFormatDate($pickupDay[0])
@@ -207,6 +207,7 @@ class OrderDetailsController extends AdminAppController
             $orderDetailId = $this->getRequest()->getQuery('orderDetailId');
         }
 
+        $legacyCall = false;
         $pickupDay = [];
         if ($orderDetailId == '') {
             if (in_array('pickupDay', array_keys($this->getRequest()->getQueryParams()))) {
@@ -217,10 +218,12 @@ class OrderDetailsController extends AdminAppController
                 }
             } else {
                 // default value
-                $pickupDay[0] = date(Configure::read('DateFormat.DateShortAlt'), Configure::read('app.timeHelper')->getCurrentDay());
+                $pickupDay[0] = Configure::read('app.timeHelper')->getPreselectedDeliveryDayForOrderDetails(Configure::read('app.timeHelper')->getCurrentDay());
             }
             // START legacy code - can be safely removed in v3
+            // assures that old links (before v2.2) in emails to the financial responsible person still work after v2.2
             if ($this->getRequest()->getQuery('dateFrom')) {
+                $legacyCall = true;
                 $pickupDay[0] = $this->getRequest()->getQuery('dateFrom');
             }
             if ($this->getRequest()->getQuery('dateTo')) {
@@ -243,20 +246,6 @@ class OrderDetailsController extends AdminAppController
             $deposit = $this->getRequest()->getQuery('deposit');
         }
         $this->set('deposit', $deposit);
-
-        $orderStates = Configure::read('app.htmlHelper')->getOrderStateIds();
-        if ($this->AppAuth->isManufacturer()) {
-            $orderStates = ORDER_STATE_ORDER_PLACED;
-        }
-
-        $orderStates = Configure::read('app.htmlHelper')->getOrderStateIds();
-        if (in_array('orderStates', array_keys($this->getRequest()->getQueryParams()))) {
-            $orderStates = $this->getRequest()->getQuery('orderStates');
-            if ($orderStates == '') {
-                $orderStates = [];
-            }
-        }
-        $this->set('orderStates', $orderStates);
 
         $productId = '';
         if (! empty($this->getRequest()->getQuery('productId'))) {
@@ -286,7 +275,7 @@ class OrderDetailsController extends AdminAppController
         $this->set('groupBy', $groupBy);
 
         $this->OrderDetail = TableRegistry::getTableLocator()->get('OrderDetails');
-        $odParams = $this->OrderDetail->getOrderDetailParams($this->AppAuth, $manufacturerId, $productId, $customerId, $orderStates, $pickupDay, $orderDetailId, $deposit);
+        $odParams = $this->OrderDetail->getOrderDetailParams($this->AppAuth, $manufacturerId, $productId, $customerId, $pickupDay, $orderDetailId, $deposit);
 
         $contain = $odParams['contain'];
         if (($groupBy == 'customer' || $groupBy == '') && count($pickupDay) == 1) {
@@ -296,6 +285,12 @@ class OrderDetailsController extends AdminAppController
             $contain[] = 'PickupDayEntities';
         }
 
+        if ($legacyCall) {
+            foreach($odParams['conditions'] as &$condition) {
+                $condition = preg_replace('/OrderDetails.pickup_day/', 'OrderDetails.created', $condition);
+            }
+        }
+        
         $query = $this->OrderDetail->find('all', [
             'conditions' => $odParams['conditions'],
             'contain' => $contain,
@@ -372,7 +367,12 @@ class OrderDetailsController extends AdminAppController
         $this->set('manufacturersForDropdown', $this->OrderDetail->Products->Manufacturers->getForDropdown());
 
         if (!$this->AppAuth->isManufacturer()) {
-            $this->set('customersForInstantOrderDropdown', $this->OrderDetail->Customers->getForDropdown(false, 'id_customer', $this->AppAuth->isSuperadmin()));
+            $filter = [];
+            if ($this->AppAuth->isCustomer()) {
+                $filter = ['Customers.id_customer' => $this->AppAuth->getUserId()];
+            }
+            $customersForInstantOrderDropdown = $this->OrderDetail->Customers->getForDropdown(false, 'id_customer', $this->AppAuth->isSuperadmin(), $filter);
+            $this->set('customersForInstantOrderDropdown', $customersForInstantOrderDropdown);
         }
 
         $this->set('title_for_layout', __d('admin', 'Orders'));
@@ -883,10 +883,16 @@ class OrderDetailsController extends AdminAppController
             $message = __d('admin', 'Errors_while_saving!');
         }
         
+        $redirectUrl = '';
+        if (preg_match('/customerId\='.$customerIds[0].'/', $this->referer())) {
+            $redirectUrl = '/admin/order-details?pickupDay[]='.$this->getRequest()->getData('pickupDay').'&groupBy=customer';
+        }
+        
         $this->set('data', [
             'pickupDay' => $pickupDay,
             'result' => $result,
             'status' => !empty($result),
+            'redirectUrl' => $redirectUrl,
             'msg' => $message
         ]);
         

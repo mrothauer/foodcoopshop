@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\Component\StringComponent;
 use App\Mailer\AppEmail;
 use Cake\Core\Configure;
 use Cake\Datasource\Exception\RecordNotFoundException;
@@ -246,10 +247,32 @@ class CartsController extends FrontendController
                 'originalLoggedCustomer' => $this->getRequest()->getSession()->check('Auth.originalLoggedCustomer') ? $this->getRequest()->getSession()->read('Auth.originalLoggedCustomer') : null
             ]);
 
-            $email->addAttachments([__('Filename_Right-of-withdrawal-information-and-form').'.pdf' => ['data' => $this->generateRightOfWithdrawalInformationAndForm($cart, $products), 'mimetype' => 'application/pdf']]);
+            if (Configure::read('app.rightOfWithdrawalEnabled')) {
+                $email->addAttachments([__('Filename_Right-of-withdrawal-information-and-form').'.pdf' => ['data' => $this->generateRightOfWithdrawalInformationAndForm($cart, $products), 'mimetype' => 'application/pdf']]);
+            }
             $email->addAttachments([__('Filename_Order-confirmation').'.pdf' => ['data' => $this->generateOrderConfirmation($cart), 'mimetype' => 'application/pdf']]);
-            $email->addAttachments([__('Filename_General-terms-and-conditions').'.pdf' => ['data' => $this->generateGeneralTermsAndConditions(), 'mimetype' => 'application/pdf']]);
-
+            if (Configure::read('app.generalTermsAndConditionsEnabled')) {
+                $generalTermsAndConditionsFiles = [];
+                $uniqueManufacturers = $this->AppAuth->Cart->getUniqueManufacturers();
+                foreach($uniqueManufacturers as $manufacturerId => $manufacturer) {
+                    $src = Configure::read('app.htmlHelper')->getManufacturerTermsOfUseSrc($manufacturerId);
+                    if ($src !== false) {
+                        $generalTermsAndConditionsFiles[__('Filename_General-terms-and-conditions') . '-' . StringComponent::slugifyAndKeepCase($manufacturer['name']) . '.pdf'] = [
+                            'file' => WWW_ROOT . Configure::read('app.htmlHelper')->getManufacturerTermsOfUseSrcTemplate($manufacturerId), // avoid timestamp
+                            'mimetype' => 'application/pdf'
+                        ];
+                    }
+                }
+                if (count($uniqueManufacturers) > count($generalTermsAndConditionsFiles)) {
+                    $generalTermsAndConditionsFiles[__('Filename_General-terms-and-conditions').'.pdf'] = [
+                        'data' => $this->generateGeneralTermsAndConditions(),
+                        'mimetype' => 'application/pdf'
+                    ];
+                }
+                
+                $email->addAttachments($generalTermsAndConditionsFiles);
+            }
+            
             $email->send();
         }
     }
@@ -571,11 +594,13 @@ class CartsController extends FrontendController
             $this->ActionLog = TableRegistry::getTableLocator()->get('ActionLogs');
             if ($this->getRequest()->getSession()->check('Auth.instantOrderCustomer')) {
                 if (empty($manufacturersThatReceivedInstantOrderNotification)) {
-                    $message = __('Instant_order_successfully_placed_for_{0}.', [
+                    $message = __('Instant_order_({0})_successfully_placed_for_{1}.', [
+                        Configure::read('app.numberHelper')->formatAsCurrency($this->AppAuth->Cart->getProductSum()),
                         '<b>' . $this->request->getSession()->read('Auth.instantOrderCustomer')->name . '</b>'
                     ]);
                 } else {
-                    $message = __('Instant_order_successfully_placed_for_{0}._The_following_manufacturers_were_notified:_{1}', [
+                    $message = __('Instant_order_({0})_successfully_placed_for_{1}._The_following_manufacturers_were_notified:_{2}', [
+                        Configure::read('app.numberHelper')->formatAsCurrency($this->AppAuth->Cart->getProductSum()),
                         '<b>' . $this->request->getSession()->read('Auth.instantOrderCustomer')->name . '</b>',
                         '<b>' . join(', ', $manufacturersThatReceivedInstantOrderNotification) . '</b>'
                     ]);

@@ -65,6 +65,7 @@ return [
     'app' => [
         /**
          * please create a unique cookie key and put it here
+         * can be removed in v3
          */
         'cookieKey' => '',
 
@@ -95,7 +96,8 @@ return [
         'memberFeeEnabled' => false,
 
         /**
-         * cronjob needs to be activated too
+         * cronjob needs to be activated / deactivated too if you change emailOrderReminderEnabled
+         * @see https://foodcoopshop.github.io/en/cronjobs
          */
         'emailOrderReminderEnabled' => true,
 

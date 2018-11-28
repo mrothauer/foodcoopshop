@@ -7,8 +7,6 @@ use Cake\ORM\TableRegistry;
 use Cake\I18n\FrozenDate;
 
 /**
- * ProductTest
- *
  * FoodCoopShop - The open source software for your foodcoop
  *
  * Licensed under The MIT License
@@ -32,9 +30,139 @@ class ProductsTableTest extends AppCakeTestCase
         $this->Product = TableRegistry::getTableLocator()->get('Products');
     }
     
+    public function testRemoveTimestampFromFileValidTimestamp()
+    {
+        $filename = 'asdf.jpg?1539847477';
+        $result = 'asdf.jpg';
+        $this->assertEquals($result, $this->Product->removeTimestampFromFile($filename));
+    }
+    
+    public function testRemoveTimestampFromFileNoTimestamp()
+    {
+        $filename = 'asdf.jpg';
+        $result = 'asdf.jpg';
+        $this->assertEquals($result, $this->Product->removeTimestampFromFile($filename));
+    }
+    
+    public function testRemoveTimestampFromFileInvalidTimestamp()
+    {
+        $filename = 'asdf.jpg?adfs';
+        $result = 'asdf.jpg';
+        $this->assertEquals($result, $this->Product->removeTimestampFromFile($filename));
+    }
+    
+    public function testChangeImageValidImageAndDeleteImage()
+    {
+        
+        // add image
+        $productId = 346;
+        $products = [
+            [$productId => Configure::read('app.cakeServerName') . '/img/tests/test-product-image.jpg']
+        ];
+        $this->Product->changeImage($products);
+        
+        $product = $this->Product->find('all', [
+            'conditions' => [
+                'Products.id_product' => $productId
+            ],
+            'contain' => [
+                'Images'
+            ]
+        ])->first();
+        $imageId = $product->image->id_image;
+        
+        $imageIdAsPath = Configure::read('app.htmlHelper')->getProductImageIdAsPath($imageId);
+        $thumbsPath = Configure::read('app.htmlHelper')->getProductThumbsPath($imageIdAsPath);
+        
+        foreach (Configure::read('app.productImageSizes') as $thumbSize => $options) {
+            $thumbsFileName = $thumbsPath . DS . $imageId . $options['suffix'] . '.' . 'jpg';
+            $this->assertTrue(file_exists($thumbsFileName), 'physical file not added');
+        }
+        
+        // delete image
+        $products = [
+            [$productId => 'no-image']
+        ];
+        $this->Product->changeImage($products);
+        
+        $product = $this->Product->find('all', [
+            'conditions' => [
+                'Products.id_product' => $productId
+            ],
+            'contain' => [
+                'Images'
+            ]
+        ])->first();
+        
+        $this->assertTrue(empty($product->image));
+        
+        foreach (Configure::read('app.productImageSizes') as $thumbSize => $options) {
+            $thumbsFileName = $thumbsPath . DS . $imageId . $options['suffix'] . '.' . 'jpg';
+            $this->assertFalse(file_exists($thumbsFileName), 'physical file not deleted');
+        }
+        
+    }
+    
+    public function testChangeImageInvalidImage()
+    {
+        $productId = 346;
+        $products = [
+            [$productId => Configure::read('app.cakeServerName') . '/css/global.css']
+        ];
+        $exceptionThrown = false;
+        
+        try {
+            $this->Product->changeImage($products);
+        } catch (InvalidParameterException $e) {
+            $exceptionThrown = true;
+        }
+        
+        $this->assertSame(true, $exceptionThrown);
+    }
+    
+    public function testChangeImageNonExistingFile()
+    {
+        $productId = 346;
+        $products = [
+            [$productId => Configure::read('app.cakeServerName') . '/img/tests/non-existing-file.jpg']
+        ];
+        $exceptionThrown = false;
+        
+        try {
+            $this->Product->changeImage($products);
+        } catch (InvalidParameterException $e) {
+            $exceptionThrown = true;
+        }
+        
+        $this->assertSame(true, $exceptionThrown);
+    }
+    
     public function testCalculatePickupDayRespectingDeliveryRhythm()
     {
         $tests = [
+            [
+                'product' => $this->Product->newEntity(
+                    [
+                        'delivery_rhythm_type' => 'week',
+                        'delivery_rhythm_count' => '1',
+                        'delivery_rhythm_first_delivery_day' => new FrozenDate('2018-11-02'),
+                        'is_stock_product' => '0'
+                    ]
+                    ),
+                'currentDay' => '2018-10-07',
+                'result' => '2018-11-02'
+            ],
+            [
+                'product' => $this->Product->newEntity(
+                    [
+                        'delivery_rhythm_type' => 'week',
+                        'delivery_rhythm_count' => '1',
+                        'is_stock_product' => '0'
+                    ]
+                    ),
+                'currentDay' => '2018-10-07',
+                'result' => '2018-10-12'
+            ],
             [
                 'product' => $this->Product->newEntity(
                     [
@@ -86,13 +214,13 @@ class ProductsTableTest extends AppCakeTestCase
                 'product' => $this->Product->newEntity(
                     [
                         'delivery_rhythm_type' => 'week',
-                        'delivery_rhythm_count' => '3',
+                        'delivery_rhythm_count' => '4',
                         'is_stock_product' => '0',
                         'delivery_rhythm_first_delivery_day' => new FrozenDate('2018-08-03')
                     ]
                 ),
                 'currentDay' => '2018-08-07',
-                'result' => '2018-08-24'
+                'result' => '2018-08-31'
             ],
             [
                 'product' => $this->Product->newEntity(
@@ -109,12 +237,12 @@ class ProductsTableTest extends AppCakeTestCase
                 'product' => $this->Product->newEntity(
                     [
                         'delivery_rhythm_type' => 'month',
-                        'delivery_rhythm_count' => '2',
+                        'delivery_rhythm_count' => '0',
                         'is_stock_product' => '0',
                     ]
                 ),
-                'currentDay' => '2018-08-07',
-                'result' => '2018-08-10'
+                'currentDay' => '2018-09-13',
+                'result' => '2018-09-28'
             ],
             [
                 'product' => $this->Product->newEntity(
@@ -125,7 +253,7 @@ class ProductsTableTest extends AppCakeTestCase
                     ]
                 ),
                 'currentDay' => '2018-08-07',
-                'result' => '2018-08-10'
+                'result' => '2018-08-31'
             ],
             [
                 'product' => $this->Product->newEntity(
@@ -332,7 +460,7 @@ class ProductsTableTest extends AppCakeTestCase
     {
 
         $products = [
-            [346 => '-1']
+            [346 => ['gross_price' => '-1']]
         ];
 
         $exceptionThrown = false;
@@ -350,7 +478,7 @@ class ProductsTableTest extends AppCakeTestCase
     public function testChangePriceOneProductAndInvalidStringPrice()
     {
         $products = [
-            [346 => 'invalid-price']
+            [346 => ['gross_price' => 'invalid-price']]
         ];
 
         $exceptionThrown = false;
@@ -368,7 +496,7 @@ class ProductsTableTest extends AppCakeTestCase
     public function testChangePriceWithOneProduct()
     {
         $products = [
-            [102 => '5,22']
+            [102 => ['gross_price' => '5,22']]
         ];
         $this->Product->changePrice($products);
         $this->assertProductPrice($products);
@@ -377,7 +505,7 @@ class ProductsTableTest extends AppCakeTestCase
     public function testChangePriceWithOneProductAttribute()
     {
         $products = [
-            ['60-10' => '3,22']
+            ['60-10' => ['gross_price' => '3,22']]
         ];
         $this->Product->changePrice($products);
         $this->assertProductPrice($products);
@@ -386,9 +514,9 @@ class ProductsTableTest extends AppCakeTestCase
     public function testChangePriceWithMultipleProductsAndAttributes()
     {
         $products = [
-            [102 => '5,22'],
-            [346 => '1,00'],
-            ['60-10' => '2,98']
+            [102 => ['gross_price' => '5,22']],
+            [346 => ['gross_price' => '1,00']],
+            ['60-10' => ['gross_price' => '2,98']]
         ];
         $this->Product->changePrice($products);
         $this->assertProductPrice($products);
@@ -400,18 +528,18 @@ class ProductsTableTest extends AppCakeTestCase
         // 1) change prices to same price to be able to test if the price has not changed
         $samePrice = '2,55';
         $products = [
-            [346 => $samePrice],
-            [102 => $samePrice],
-            [103 => $samePrice]
+            [346 => ['gross_price' => $samePrice]],
+            [102 => ['gross_price' => $samePrice]],
+            [103 => ['gross_price' => $samePrice]]
         ];
         $this->Product->changePrice($products);
         $this->assertProductPrice($products);
 
         // try to change prices, but include one invalid price
         $products = [
-            [346 => '-1'], // invalid price
-            [102 => '2,58'],
-            [103 => '1,01']
+            [346 => ['gross_price' => '-1']], // invalid price
+            [102 => ['gross_price' => '2,58']],
+            [103 => ['gross_price' => '1,01']]
         ];
 
         $exceptionThrown = false;
@@ -471,7 +599,7 @@ class ProductsTableTest extends AppCakeTestCase
         $exceptionThrown = false;
 
         try {
-            $this->Product->changePrice($products);
+            $this->Product->changeDeposit($products);
         } catch (InvalidParameterException $e) {
             $exceptionThrown = true;
         }
@@ -747,7 +875,7 @@ class ProductsTableTest extends AppCakeTestCase
             $originalProductId = key($product);
             $productAndAttributeId = $this->Product->getProductIdAndAttributeId($originalProductId);
             $productId = $productAndAttributeId['productId'];
-            $expectedPrice = $product[$originalProductId];
+            $expectedPrice = $product[$originalProductId]['gross_price'];
             if ($forceUseThisPrice) {
                 $expectedPrice = $forceUseThisPrice;
             }
